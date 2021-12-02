@@ -9,7 +9,6 @@
 <link  type="text/css" rel="stylesheet" href="/js/google-code-prettify/prettify.css"/>
 <script>
   $(function(){
-    // google code prettifyの有効化
     $("pre").addClass("prettyprint");
     function init(event){
       prettyPrint();
@@ -18,7 +17,6 @@
     else if(window.attachEvent)window.attachEvent("onload",init);
     
     $(".to-top").click(function() {
-      // ページの一番上までスクロールさせます。
       $('body, html').animate({scrollTop: 0}, 300, 'linear');;
     });
   });
