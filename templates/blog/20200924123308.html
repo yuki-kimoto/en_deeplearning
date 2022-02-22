@@ -1,29 +1,29 @@
-<h2>ベクトルの内積の計算</h2>
+<h2> Calculation of vector inner product </ h2>
 
-ベクトルの内積の計算方法を解説します。ベクトルの内積は、逆誤伝播法で、中間層のバイアスの傾きを求めるときに使用します。
+I will explain how to calculate the inner product of vectors. The vector inner product is used in the reverse mispropagation method to determine the slope of the bias of the middle layer.
 
-ベクトルの内積とは以下の計算のことをいいます。ベクトルのサイズは同じである必要があります。
+The vector inner product is the following calculation. The size of the vectors should be the same.
 
 <pre>
-内積 = ベクトル0の要素0 * ベクトル1の要素0 + ベクトル0の要素1 * ベクトル1の要素1 + ... + ベクトル0の要素n * ベクトル1の要素n
-</pre>
+Inner product = element of vector 0 0 * element of vector 1 0 + element of vector 0 1 * element of vector 1 1 + ... + element of vector 0 n * element of vector 1 n
+</ pre>
 
-<h3>ベクトルの内積を求めるPerlプログラム</h3>
+<h3> Perl program to find the inner product of vectors </ h3>
 
-ベクトルの内積を求めるPerlプログラムです。
+A Perl program that finds the inner product of vectors.
 
 <pre>
 use strict;
 use warnings;
 
-my $vec1 = [1, 2, 3];
-my $vec2 = [4, 5, 6];
+my $ vec1 = [1, 2, 3];
+my $ vec2 = [4, 5, 6];
 
-my $vec_inmul = 0;
-for (my $i = 0; $i < @$vec1; $i++) {
-  $vec_inmul += $vec1->[$i] * $vec2->[$i];
+my $ vec_inmul = 0;
+for (my $ i = 0; $ i <@ $ vec1; $ i ++) {
+   $ vec_inmul + = $ vec1-> [$ i] * $ vec2-> [$ i];
 }
 
 # 32
-print "$vec_inmul\n";
-</pre>
+print "$ vec_inmul \ n";
+</ pre>

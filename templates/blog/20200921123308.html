@@ -1,47 +1,47 @@
-<h2>勾配(こうばい)とは</h2>
+<h2> What is a gradient? </ H2>
 
-ディープラーニングにおける、勾配(こうばい)とは、バイアスの各パラメータに対する損失関数の傾きを求めて、ベクトルとして一つにまとめたものです。あるいは、重み各列の各パラメーターに対する損失関数の傾きを求めて、ベクトルとして一つにまとめたものです。
+In deep learning, the slope is the slope of the loss function for each parameter of the bias, which is combined into one as a vector. Alternatively, the slope of the loss function for each parameter of each weight column is calculated and combined into one as a vector.
 
-<h3>バイアスパラメーターの場合</h3>
+<h3> For bias parameters </ h3>
 
-n層のb1を0.01増やしたとき、損失関数の値が0.002増えたとすると、傾きは「2 = 0.002/0.001」です。
+If the value of the loss function increases by 0.002 when b1 of layer n is increased by 0.01, the slope is "2 = 0.002 / 0.001".
 
-n層のb2を0.01増やしたとき、損失関数の値が0.005増えたとすると、傾きは「5 = 0.005/0.001」です。
+If the value of the loss function increases by 0.005 when b2 of layer n is increased by 0.01, the slope is "5 = 0.005 / 0.001".
 
-n層のb3を0.01増やしたとき、損失関数の値が0.003増えたとすると、傾きは「3 = 0.003/0.001」です。
+If the value of the loss function increases by 0.003 when b3 of layer n is increased by 0.01, the slope is "3 = 0.003 / 0.001".
 
-勾配は傾きを求めてベクトルとして一つにまとめたものなので「[2, 5, 3]」です。
+The slope is "[2, 5, 3]" because the slope is calculated and combined into one as a vector.
 
-アルゴリズムとして考える場合は、個々の傾きだけを考えるので十分です。
+When considering it as an algorithm, it is sufficient to consider only the individual slopes.
 
-<h3>重みパラメーターの場合</h3>
+<h3> For weight parameters </ h3>
 
-<b>1列目</b>
+<b> First column </ b>
 
-n層のw11を0.01増やしたとき、損失関数の値が0.002増えたとすると、傾きは「2 = 0.002/0.001」です。
+If the value of the loss function increases by 0.002 when w11 of layer n is increased by 0.01, the slope is "2 = 0.002 / 0.001".
 
-n層のw21を0.01増やしたとき、損失関数の値が0.005増えたとすると、傾きは「5 = 0.005/0.001」です。
+If the value of the loss function increases by 0.005 when w21 of layer n is increased by 0.01, the slope is "5 = 0.005 / 0.001".
 
-n層のw31を0.01増やしたとき、損失関数の値が0.003増えたとすると、傾きは「3 = 0.003/0.001」です。
+If the value of the loss function increases by 0.003 when w31 of n layers is increased by 0.01, the slope is "3 = 0.003 / 0.001".
 
-勾配は傾きを求めてベクトルとして一つにまとめたものなので「[2, 5, 3]」です。
+The slope is "[2, 5, 3]" because the slope is calculated and combined into one as a vector.
 
-<b>2列目</b>
+<b> Second row </ b>
 
-n層のw12を0.01増やしたとき、損失関数の値が0.006増えたとすると、傾きは「6 = 0.006/0.001」です。
+If the value of the loss function increases by 0.006 when w12 of the n layer is increased by 0.01, the slope is "6 = 0.006 / 0.001".
 
-n層のw22を0.01増やしたとき、損失関数の値が0.004増えたとすると、傾きは「4 = 0.004/0.001」です。
+If the value of the loss function increases by 0.004 when w22 of the n layer is increased by 0.01, the slope is "4 = 0.004 / 0.001".
 
-n層のw32を0.01増やしたとき、損失関数の値が0.002増えたとすると、傾きは「2 = 0.002/0.001」です。
+If the value of the loss function increases by 0.002 when w32 of n layers is increased by 0.01, the slope is "2 = 0.002 / 0.001".
 
-勾配は傾きを求めてベクトルとして一つにまとめたものなので「[6, 4, 2]」です。
+The slope is "[6, 4, 2]" because the slope is calculated and combined into one as a vector.
 
-追加知識として、それぞれの勾配を縦に並べて、つなげた行列をヤコビ行列と呼びます。
+As an additional knowledge, the matrix in which each gradient is arranged vertically and connected is called the Jacobian determinant.
 
 <pre>
 2 6
 5 4
 3 2
-</pre>
+</ pre>
 
-アルゴリズムとして考える場合は、個々の傾きだけを考えるので十分です。勾配やヤコビ行列をアルゴリズムの中で意識する必要はありません。単に配列として意識してください。
+When considering it as an algorithm, it is sufficient to consider only the individual slopes. There is no need to be aware of the gradient or Jacobian determinant in the algorithm. Just be aware of it as an array.

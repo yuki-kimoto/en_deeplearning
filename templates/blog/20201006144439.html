@@ -1,68 +1,68 @@
-<h2>Heの初期値</h2>
+<h2> Initial value of He </ h2>
 
-Heの初期値を求めてみましょう。Heの初期値は、<a href="/blog/20201005144439.html">正規分布に従う乱数</a>で、平均を0、標準偏差を「sqrt(2/入力数)」と指定したものです。
+Let's find the initial value of He. The initial value of He is <a href="/blog/20201005144439.html"> random number that follows a normal distribution </a>, with the mean specified as 0 and the standard deviation specified as "sqrt (2 / number of inputs)". ..
 
-入力数とは、mからn個への変換におけるmの値のことです。
+The number of inputs is the value of m in the conversion from m to n.
 
-主に<a href="/blog/20200911102242.html">ReLU関数</a>を<a href="/blog/20200902120907.html">活性化関数</a>として使う場合の重みの初期値に利用するようです。良い初期値を選ぶことで、各層でのmからnへの変換後に活性化関数が適用された値が、適度にばらつきます。
+Initial value of weight when mainly using <a href="/blog/20200911102242.html"> ReLU function </a> as <a href="/blog/20200902120907.html"> activation function </a> It seems to be used for. By choosing a good initial value, the value to which the activation function is applied after the conversion from m to n in each layer will vary moderately.
 
 <pre>
-# Heの初期値を取得
+Get the initial value of #He
 sub he_init_value {
-  my ($inputs_length) = @_;
+  my ($ inputs_length) = @_;
   
-  return randn(0, sqrt(1 / $inputs_length));
+  return randn (0, sqrt (1 / $ inputs_length));
 }
-</pre>
+</ pre>
 
-<h3>Heの初期値を使って重みの配列を初期化</h3>
+<h3> Initialize an array of weights using the initial value of He </ h3>
 
 <pre>
 use strict;
 use warnings;
 
-# 正規分布に従う乱数を求める関数
-# $m は平均, $sigma は標準偏差、
+# Function to find random numbers that follow a normal distribution
+# $ m is mean, $ sigma is standard deviation,
 sub randn {
-  my ($m, $sigma) = @_;
-  my ($r1, $r2) = (rand(), rand());
-  while ($r1 == 0) { $r1 = rand(); }
-  return ($sigma * sqrt(-2 * log($r1)) * sin(2 * 3.14159265359 * $r2)) + $m;
+  my ($ m, $ sigma) = @_;
+  my ($ r1, $ r2) = (rand (), rand ());
+  while ($ r1 == 0) {$ r1 = rand ();}
+  return ($ sigma * sqrt (-2 * log ($ r1)) * sin (2 * 3.14159265359 * $ r2)) + $ m;
 }
 
-# Heの初期値を作成
+# Create initial value of He
 sub create_he_init_value {
-  my ($inputs_length) = @_;
+  my ($ inputs_length) = @_;
   
-  return randn(0, sqrt(2 / $inputs_length));
+  return randn (0, sqrt (2 / $ inputs_length));
 }
 
-# Heの初期値で配列を作成する
+#Create an array with the default value of He
 sub array_create_he_init_value {
-  my ($array_length, $inputs_length) = @_;
+  my ($ array_length, $ inputs_length) = @_;
   
-  my $nums_out = [];
-  for (my $i = 0; $i < $array_length; $i++) {
-    $nums_out->[$i] = create_he_init_value($inputs_length);
+  my $ nums_out = [];
+  for (my $ i = 0; $ i <$ array_length; $ i ++) {
+    $ nums_out-> [$ i] = create_he_init_value ($ inputs_length);
   }
   
-  return $nums_out;
+  return $ nums_out;
 }
 
-# 入力数を728として、出力数を30とすると、行列が持つ配列の長さは「728 * 30」
-my $inputs_length = 728;
-my $outputs_length = 30;
-my $weights_mat = {
-  rows_length => $outputs_length,
-  columns_length => $inputs_length,
-};
-my $weights_values_length = $inputs_length * $outputs_length;
-$weights_mat->{values} = array_create_he_init_value($weights_values_length, $inputs_length);
+# If the number of inputs is 728 and the number of outputs is 30, the length of the array of the matrix is ​​"728 * 30".
+my $ inputs_length = 728;
+my $ outputs_length = 30;
+my $ weights_mat = {
+  rows_length => $ outputs_length,
+  columns_length => $ inputs_length,
+};;
+my $ weights_values_length = $ inputs_length * $ outputs_length;
+$ weights_mat-> {values} = array_create_he_init_value ($ weights_values_length, $ inputs_length);
 
-use Data::Dumper;
-print Dumper $weights_mat;
-</pre>
+use Data :: Dumper;
+print Dumper $ weights_mat;
+</ pre>
 
-<h3>Heの初期値以外の初期値</h3>
+<h3> Initial values ​​other than the initial value of He </ h3>
 
-シグモイド関数を活性化関数として使う場合は、<a href="/blog/20201007144439.html">Xavierの初期値</a>を使うのが良い用です。
+When using the sigmoid function as the activation function, it is better to use <a href="/blog/20201007144439.html"> Xavier default value </a>.

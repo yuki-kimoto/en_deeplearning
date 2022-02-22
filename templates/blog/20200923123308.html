@@ -1,27 +1,27 @@
-<h2>学習率とは</h2>
+<h2> What is the learning rate? </ H2>
 
-ディープラーニングにおける学習率とは、重みとバイアスのパラメーター更新を行うために、傾きに対して、どの割合で増やすかを指定する値です。
+The learning rate in deep learning is a value that specifies the percentage to increase with respect to the slope in order to update the weight and bias parameters.
 
-言葉で書いてもややこしいので、例を書きます。
+It's complicated to write in words, so I'll write an example.
 
-<h3>学習率がイメージできる例</h3>
+<h3> An example where you can imagine the learning rate </ h3>
 
-重みw11を、0.001増やすと、損失関数(誤差の指標。0に近いほど良い)の値が、0.002減ることがわかりました。重みw11に対する損失関数の傾きは-20(-0.002/0.001)です。
+It was found that increasing the weight w11 by 0.001 reduces the value of the loss function (an index of error, the closer it is to 0, the better) by 0.002. The slope of the loss function for the weight w11 is -20 (-0.002 / 0.001).
 
-重みw21を、0.001増やすと、損失関数(誤差の指標。0に近いほど良い)の値が、0.001増えることがわかりました。重みw21に対する損失関数の傾きは10(0.001/0.001)です。
+It was found that increasing the weight w21 by 0.001 increases the value of the loss function (an index of error, the closer it is to 0, the better) by 0.001. The slope of the loss function for the weight w21 is 10 (0.001 / 0.001).
 
-ディープラーニングの重みのパラメーターの更新は、求めた傾きの値をそのまま使うわけではありません。これをそのまま使ってしまうと、大きく飛び越え過ぎることになります。
+Updating the deep learning weight parameter does not use the calculated slope value as is. If you use this as it is, you will jump over too much.
 
-パラメータを増やしたり、減らしたりすると損失関数がどの程度増えたり、減ったりするかがわかったので、それを基準に、少しだけ動きましょう。この「少しだけ動く」ということを表現するのが学習率です。
+Now that we know how much the loss function increases or decreases as we increase or decrease the parameters, let's move a little based on that. The learning rate expresses this "moving a little".
 
-学習率を0.1に設定したとします
+Suppose you set the learning rate to 0.1
 
-重みw11の更新量は「-20 * 0.1 = -2」で、これを重みから引き算します「w11 = w11 - (-2)」。
+The update amount of the weight w11 is "-20 * 0.1 = -2", and this is subtracted from the weight "w11 = w11-(-2)".
 
-重みw11の更新量は「10 * 0.1 = 1」で、これを重みから引き算します「w11 = w11 - 1」。
+The update amount of the weight w11 is "10 * 0.1 = 1", and this is subtracted from the weight "w11 = w11 --1".
 
-引き算をするのは、損失関数の値が減る方向に動かす必要があるからです。
+The reason for subtraction is that we need to move the value of the loss function in a decreasing direction.
 
-バイアスのパラメーターの更新も、重みの更新とまったく同じです。
+Updating the bias parameters is exactly the same as updating the weights.
 
-重みとバイアスのパラメーターの損失関数に対する傾きは、逆誤伝播法というアルゴリズムを使うことで、すべての層において、一気に求まります。
+The slope of the weight and bias parameters with respect to the loss function can be obtained at once in all layers by using an algorithm called the inverse mispropagation method.

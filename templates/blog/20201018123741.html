@@ -1,25 +1,25 @@
-<h2>tanh関数の導関数 - 活性化関数の導関数</h2>
+<h2> Derivative of tanh function --Derivative of activation function </ h2>
 
-<a href="/blog/20200911102242.html">tanh関数</a>の<a href="/blog/20200919123308.html">導関数</a>をPerlで書いてみます。
+Let's write the <a href="/blog/20200919123308.html"> derivative </a> of the <a href="/blog/20200911102242.html"> tanh function </a> in Perl.
 
-tanh関数の導関数は、逆誤伝播法に利用します。
+The derivative of the tanh function is used for the inverse mispropagation method.
 
 <pre>
 use strict;
 use warnings;
-use Math::Trig 'tanh';
+use Math :: Trig'tanh';
 
 sub tanh_derivative {
-  my ($x) = @_;
+   my ($ x) = @_;
   
-  my $tanh_derivative = 1 - tanh($x) ** 2;
+   my $ tanh_derivative = 1 --tanh ($ x) ** 2;
   
-  return $tanh_derivative;
+   return $ tanh_derivative;
 }
 
-my $value1 = 0.5;
-my $tanh_derivative1 = tanh_derivative($value1);
+my $ value1 = 0.5;
+my $ tanh_derivative1 = tanh_derivative ($ value1);
 
 # 0.786447732965927
-print "$tanh_derivative1\n";
-</pre>
+print "$ tanh_derivative1 \ n";
+</ pre>

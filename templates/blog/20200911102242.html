@@ -1,41 +1,41 @@
-<h2>ReLU関数 - 活性化関数</h2>
+<h2> ReLU function --activation function </ h2>
 
-ReLU関数をPerlで書いてみます。ReLU関数は<a href="/blog/20200902120907.html">活性化関数</a>の一つです。
+Let's write the ReLU function in Perl. The ReLU function is one of the <a href="/blog/20200902120907.html"> activation functions </a>.
 
-ReLU関数は、値が0より大きい場合はその値を、0以下の場合は0を返す関数です。
+The ReLU function is a function that returns a value if it is greater than 0 and 0 if it is less than or equal to 0.
 
 <pre>
 use strict;
 use warnings;
 
-# ReLU関数
+#ReLU function
 sub relu {
-  my ($x) = @_;
+  my ($ x) = @_;
   
-  my $relu = $x * ($x > 0.0);
+  my $ relu = $ x * ($ x> 0.0);
   
-  return $relu;
+  return $ relu;
 }
 
-my $value1 = 0.7;
-my $relu1 = relu($value1);
+my $ value1 = 0.7;
+my $ relu1 = relu ($ value1);
 
-print "$relu1\n";
+print "$ relu1 \ n";
 
-my $value2 = -0.4;
-my $relu2 = relu($value2);
+my $ value2 = -0.4;
+my $ relu2 = relu ($ value2);
 
-print "$relu2\n";
-</pre>
+print "$ relu2 \ n";
+</ pre>
 
-ReLU関数は、ロジックが簡単で、計算量が少なく、効果が高い活性化関数として知られています。
+The ReLU function is known as an activation function with simple logic, low complexity, and high effectiveness.
 
-ReLU関数は隠れ層における活性化関数として利用されますが、出力層で出力を作成する場合にも利用することができます。
+The ReLU function is used as an activation function in the hidden layer, but it can also be used to create output in the output layer.
 
-<h3>ReLU関数の導関数</h3>
+<h3> Derivative of ReLU function </ h3>
 
-ReLU関数の導関数については以下を参考にしてください。
+Please refer to the following for the derivative of the ReLU function.
 
 <ul>
-  <li><a href="/blog/20201001161518.html">ReLU関数の導関数</a></li>
-</ul>
+  <li> <a href="/blog/20201001161518.html"> Derivatives of the ReLU function </a> </ li>
+</ ul>

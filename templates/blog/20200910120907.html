@@ -1,33 +1,33 @@
-<h2>二乗和誤差を求める - 損失関数</h2>
+<h2> Find the sum of squares error-loss function </ h2>
 
-二乗和誤差を求める関数をPerlで書いてみましょう。二乗和誤差は、出力結果と期待される出力結果(正しい答え)の誤差を計算するために使用する<a href="/blog/20200901120907.html">損失関数</a>の一つです。
+Let's write a function to find the sum of squares error in Perl. The sum of squares error is one of the <a href="/blog/20200901120907.html"> loss functions </a> used to calculate the error between the output result and the expected output result (correct answer).
 
 <pre>
 use strict;
 use warnings;
 
-# 二乗和誤差
+#Square sum error
 sub sum_of_square_error {
-  my ($outputs, $desired_outputs) = @_;
+  my ($ outputs, $ desired_outputs) = @_;
   
-  if (@$outputs != @$desired_outputs) {
+  if (@ $ outputs! = @ $ desired_outputs) {
     die "Outputs length is different from Desired length";
   }
   
-  my $total_pow2 = 0;
-  for (my $i = 0; $i < @$outputs; $i++) {
-    $total_pow2 += ($outputs->[$i] - $desired_outputs->[$i]) ** 2;
+  my $ total_pow2 = 0;
+  for (my $ i = 0; $ i <@ $ outputs; $ i ++) {
+    $ total_pow2 + = ($ outputs-> [$ i]-$ desired_outputs-> [$ i]) ** 2;
   }
-  my $sum_of_square_error = 0.5 * $total_pow2;
+  my $ sum_of_square_error = 0.5 * $ total_pow2;
   
-  return $sum_of_square_error;
+  return $ sum_of_square_error;
 }
 
-my $outputs = [0.7, 0.2, 0.1];
-my $desired_outputs = [1, 0, 0];
-my $sum_of_square_error = sum_of_square_error($outputs, $desired_outputs);
-</pre>
+my $ outputs = [0.7, 0.2, 0.1];
+my $ desired_outputs = [1, 0, 0];
+my $ sum_of_square_error = sum_of_square_error ($ outputs, $ desired_outputs);
+</ pre>
 
-ディープラーニングでは、損失関数で求められた誤差が小さくなるように、重みとバイアスのパラメーターが調整されていきます。
+In deep learning, the weight and bias parameters are adjusted so that the error obtained by the loss function is small.
 
-パターン認識の問題における損失関数としては、偏微分の形が難しく計算が複雑になるので二乗和誤差より、<a href="/blog/20200901120907.html">クロスエントロピー誤差</a>を使うほうが、望ましいようです。
+As a loss function in the problem of pattern recognition, it is better to use <a href="/blog/20200901120907.html"> cross entropy error </a> than the square sum error because the form of partial differential is difficult and the calculation is complicated. Seems desirable.

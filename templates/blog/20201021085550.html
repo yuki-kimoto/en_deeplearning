@@ -1,154 +1,154 @@
-<h2>多段の関数の場合の傾きの求め方 - 合成関数の微分</h2>
+<h2> How to find the slope in the case of a multi-stage function --Differentiation of the composite function </ h2>
 
-多段の関数の場合の傾きの求め方について解説します。傾きの求め方については、<a href="/blog/20201020085300.html">傾きとは</a>で解説しているので、これを理解していることを前提とします。
+I will explain how to find the slope in the case of a multi-stage function. How to find the slope is explained in <a href="/blog/20201020085300.html"> What is the slope </a>, so it is assumed that you understand this.
 
-多段の関数を使って傾きを求める場合は、数学の専門用語では、合成関数の微分という言葉で解説されています。ここでは、ソフトウェアエンジニアが理解できるわかりやすい言葉で解説します。
+When using a multi-stage function to find the slope, the terminology of mathematics describes it as the derivative of a composite function. Here, we will explain in easy-to-understand words that software engineers can understand.
 
-<h3>多段に関数を適用する</h3>
+<h3> Apply functions in multiple stages </ h3>
 
-まず、二乗する関数と、2倍する関数を連続して、適用したサンプルについて考えます。
-
-<pre>
-use strict;
-use warnings;
-
-sub pow2 {
-  my ($input) = @_;
-  
-  my $output = $input ** 2;
-  
-  return $output;
-}
-
-sub mul2 {
-  my ($input) = @_;
-  
-  my $output = $input * 2;
-  
-  return $output;
-}
-
-my $input = 3;
-my $output_pow2 = pow2($input);
-my $output_mul2_pow2 = mul2($output_pow2);
-
-print "$output_mul2_pow2\n";
-</pre>
-
-3を二乗して、2倍したので、結果は18となります。
-
-<h3>傾きの定義に基づいて、値を求める</h3>
-
-傾きの定義に基づいて、値を求めてみましょう。関数が多段になっていますが、最初の入力の微小変化と最後の出力の微小変化の比(分母は入力の微小変化)を見るだけなので、難しくありません。
+First, consider a sample in which a squared function and a doubled function are applied in succession.
 
 <pre>
 use strict;
 use warnings;
 
 sub pow2 {
-  my ($input) = @_;
+  my ($ input) = @_;
   
-  my $output = $input ** 2;
+  my $ output = $ input ** 2;
   
-  return $output;
+  return $ output;
 }
 
 sub mul2 {
-  my ($input) = @_;
+  my ($ input) = @_;
   
-  my $output = $input * 2;
+  my $ output = $ input * 2;
   
-  return $output;
+  return $ output;
 }
 
-my $input = 3;
-my $output_pow2 = pow2($input);
-my $output_mul2_pow2 = mul2($output_pow2);
+my $ input = 3;
+my $ output_pow2 = pow2 ($ input);
+my $ output_mul2_pow2 = mul2 ($ output_pow2);
 
-my $delta = 0.00000001;
-my $input_plus_delta = $input + $delta;
-my $output_pow2_plus_delta = pow2($input_plus_delta);
-my $output_mul2_pow2_plus_delta = mul2($output_pow2_plus_delta);
+print "$ output_mul2_pow2 \ n";
+</ pre>
 
-my $grad = ($output_mul2_pow2_plus_delta - $output_mul2_pow2) / ($input_plus_delta - $input);
+We squared 3 and doubled it, so the result is 18.
+
+<h3> Find the value based on the definition of slope </ h3>
+
+Let's find the value based on the definition of slope. The function is multi-stage, but it's not difficult because you only see the ratio of the small change of the first input to the small change of the last output (the denominator is the small change of the input).
+
+<pre>
+use strict;
+use warnings;
+
+sub pow2 {
+  my ($ input) = @_;
+  
+  my $ output = $ input ** 2;
+  
+  return $ output;
+}
+
+sub mul2 {
+  my ($ input) = @_;
+  
+  my $ output = $ input * 2;
+  
+  return $ output;
+}
+
+my $ input = 3;
+my $ output_pow2 = pow2 ($ input);
+my $ output_mul2_pow2 = mul2 ($ output_pow2);
+
+my $ delta = 0.00000001;
+my $ input_plus_delta = $ input + $ delta;
+my $ output_pow2_plus_delta = pow2 ($ input_plus_delta);
+my $ output_mul2_pow2_plus_delta = mul2 ($ output_pow2_plus_delta);
+
+my $ grad = ($ output_mul2_pow2_plus_delta-$ output_mul2_pow2) / ($ input_plus_delta-$ input);
 
 # 12
-print "$grad\n";
-</pre>
+print "$ grad \ n";
+</ pre>
 
-傾きは12となりました。
+The slope is now 12.
 
-<h3>多段の関数の傾きを求める公式</h3>
+<h3> Formula for finding the slope of a multi-stage function </ h3>
 
-実は、多段の関数の傾きを求める公式があります。それぞれの関数の導関数を使って求めた傾きの結果を乗算すればよいというものです。
+In fact, there is a formula for finding the slope of a multi-stage function. All you have to do is multiply the result of the slope obtained using the derivative of each function.
 
 <pre>
-# 多段の関数の傾きを求める公式
-my $grad = pow2_derivative($input) * mul2_derivative($input_plus_delta);
-</pre>
+# Formula for finding the slope of a multi-stage function
+my $ grad = pow2_derivative ($ input) * mul2_derivative ($ input_plus_delta);
+</ pre>
 
-では、実際にそれぞれの関数の導関数が与えられた場合に、誤差を除いて、結果が一致するかを見てみましょう。
+Now, let's see if the results match, excluding the error, given the derivatives of each function.
 
 <pre>
 use strict;
 use warnings;
 
 sub pow2 {
-  my ($input) = @_;
+  my ($ input) = @_;
   
-  my $output = $input ** 2;
+  my $ output = $ input ** 2;
   
-  return $output;
+  return $ output;
 }
 
 sub pow2_derivative {
-  my ($input) = @_;
+  my ($ input) = @_;
   
-  my $output = $input * 2;
+  my $ output = $ input * 2;
   
-  return $output;
+  return $ output;
 }
 
 
 sub mul2 {
-  my ($input) = @_;
+  my ($ input) = @_;
   
-  my $output = $input * 2;
+  my $ output = $ input * 2;
   
-  return $output;
+  return $ output;
 }
 
 sub mul2_derivative {
-  my ($input) = @_;
+  my ($ input) = @_;
   
-  my $output = 2;
+  my $ output = 2;
   
-  return $output;
+  return $ output;
 }
 
-my $input = 3;
-my $output_pow2 = pow2($input);
-my $output_mul2_pow2 = mul2($output_pow2);
+my $ input = 3;
+my $ output_pow2 = pow2 ($ input);
+my $ output_mul2_pow2 = mul2 ($ output_pow2);
 
-my $delta = 0.00000001;
-my $input_plus_delta = $input + $delta;
-my $output_pow2_plus_delta = pow2($input_plus_delta);
-my $output_mul2_pow2_plus_delta = mul2($output_pow2_plus_delta);
+my $ delta = 0.00000001;
+my $ input_plus_delta = $ input + $ delta;
+my $ output_pow2_plus_delta = pow2 ($ input_plus_delta);
+my $ output_mul2_pow2_plus_delta = mul2 ($ output_pow2_plus_delta);
 
-# 定義を使って求めた傾き
-my $grad = ($output_mul2_pow2_plus_delta - $output_mul2_pow2) / ($input_plus_delta - $input);
+#Slope obtained using the definition
+my $ grad = ($ output_mul2_pow2_plus_delta-$ output_mul2_pow2) / ($ input_plus_delta-$ input);
 
-# 公式を使って求めた傾き
-my $grad_formula = pow2_derivative($input) * mul2_derivative($output_pow2_plus_delta);
+# Slope obtained using the formula
+my $ grad_formula = pow2_derivative ($ input) * mul2_derivative ($ output_pow2_plus_delta);
 
 # 12
-print "$grad_formula\n";
-</pre>
+print "$ grad_formula \ n";
+</ pre>
 
-結果は、12となりました。合っていますね。今回は、誤差がないようです。
+The result was 12. It suits you. This time, there seems to be no error.
 
-今回は、2段階の場合の傾きの求め方ですが、3段になっても、4段になっても、考え方は変わりません。
+This time, how to find the slope in the case of 2 steps, but the way of thinking does not change whether it is 3 steps or 4 steps.
 
-ディープラーニングの場合は、偏微分という言葉がでてきますが、これは、ひとつの入力に対して傾きを求めるという意味と考えてください。変化させるひとつの入力以外は、定数とみなすことが偏微分です。ですので、今回の内容が理解できれば、偏微分についても自然と理解できています。
+In the case of deep learning, the term partial derivative is used, but think of it as meaning to find the slope for one input. Partial differentiation is to consider it as a constant except for one input to change. Therefore, if you can understand the contents of this time, you can understand the partial differential naturally.
 
-数式を使った場合は、数学の言葉と数学の言葉が含んでいる暗黙の了解を理解している必要がありますが、コードで表現すると、すべてがコードで表現されているので、ソフトウェアエンジニアにとっては、わかりやすく感じると思います。
+When using mathematical formulas, you need to understand the words of math and the implicit understanding that the words of math contain, but when expressed in code, everything is expressed in code, so for software engineers. I think it feels easy to understand.

@@ -1,34 +1,34 @@
-<h2>行列とは</h2>
+<h2> What is a matrix? </ H2>
 
-行列とは、行と列に並んだデータのことです。
+A matrix is ​​data that is lined up in rows and columns.
 
 <pre>
-# 行列
-1 4
-2 5
+# queue
+14
+twenty five
 3 6
-</pre>
+</ pre>
 
-上記は、3行2列の行列です。
+The above is a 3-by-2 matrix.
 
-<h3>列優先行列と行優先行列</h3>
+<h3> Column priority matrix and row priority matrix </ h3>
 
-プログラムで行列を表現する場合は、データは配列で持ちます。列方向に対してデータを並べる行列の表現方法を列優先の行列、行方向に対してデータを並べる行列の表現方法を行優先の行列といいます。
+When you programmatically represent a matrix, you have the data as an array. The method of expressing a matrix that arranges data in the column direction is called a column-priority matrix, and the method of expressing a matrix that arranges data in the row direction is called a row-priority matrix.
 
 <pre>
-# 列優先の行列表現
-my $mat_column_major = {
+#Column-first matrix representation
+my $ mat_column_major = {
   rows_length => 3,
   columns_length => 2,
-  values => [1, 2, 3, 4, 5, 6],
-};
+  values ​​=> [1, 2, 3, 4, 5, 6],
+};;
 
-# 行優先の行列表現
-my $mat_row_major = {
+# Row-first matrix representation
+my $ mat_row_major = {
   rows_length => 3,
   columns_length => 2,
-  values => [1, 4, 2, 5, 3, 6],
-};
-</pre>
+  values ​​=> [1, 4, 2, 5, 3, 6],
+};;
+</ pre>
 
-ディープラーニング入門では、列優先の行列表現を使います。これは、後でC言語やcuda/GPUを使って行列計算を高速化する場合に、行列計算のBLASライブラリを呼び出しやすくするためです。
+An introduction to deep learning uses column-first matrix representations. This is to make it easier to call the BLAS library for matrix calculations later when using C or cuda / GPU to speed up matrix calculations.

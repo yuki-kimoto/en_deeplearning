@@ -1,580 +1,579 @@
-<h2>逆誤差伝播法 - バックプロパゲーション 書き始め</h2>
+<h2> Inverse error propagation method --Start writing backpropagation </ h2>
 
-ディープラーニングにおいて、逆誤差伝播法(バックプロパゲーション)は、ソースコードを読むときに、最も理解するのが難しい部分だと思います。
+In deep learning, backpropagation is probably the most difficult part to understand when reading source code.
 
-ソースコードの中に、行列を転置する部分がでてきます。微分がでてきます。入力と出力と活性化された出力と重みとバイアスが入り混じっています。最終出力と中間出力の部分では、傾きを求める式の表現が異なっています。
+In the source code, there is a part to transpose the matrix. Differentiation comes out. It is a mixture of inputs and outputs, activated outputs, weights and biases. The expression for calculating the slope is different between the final output and the intermediate output.
 
-m入力からn出力の変換関数において、微分とはいったい、どのような操作なのだろう。高校数学ではならっていないぞ。ヤコビ行列? 結局、高度な数学の概念を理解していない限り、ディープラーニングは、理解できないのかな?
+What kind of operation is differentiation in the conversion function from m input to n output? It's not like high school math. Jacobian determinant? After all, unless you understand the concept of advanced mathematics, can you not understand deep learning?
 
-ソースコードを一目見たときに「いったい何をしているだろう?」と疑問が浮かぶと思います。
+At first glance at the source code, you may be wondering, "What on earth are you doing?"
 
-これは僕も感じたことです。ただ、ソースコードの解読を進めていったときに、Web上に書いてある情報とはかなりの違いがあることもわかってきました。
+This is something I also felt. However, as I proceeded to decipher the source code, I realized that there was a considerable difference from the information written on the Web.
 
-ディープラーニングは、「高校数学」と「多段の関数における傾きの求め方」と「for文の繰り返しの理解」があれば、読み解けます。行列の計算は、ソフトウェアにおけるパフォーマンスの高速化と数学的抽象化のために、行われているということがわかってきます。
+Deep learning can be understood with "high school mathematics", "how to find the slope in a multi-stage function", and "understanding the repetition of for statements". It turns out that matrix calculations are done for faster performance and mathematical abstractions in software.
 
-ひとつの要素なら具体的に読み解ける、それが繰り返されているだけだ、その繰り返しを行列を使うと簡単に速く計算できるんだということです。
+One element can be read concretely, it is only repeated, and the repetition can be calculated easily and quickly by using a matrix.
 
-今、文系で仕事に関わる方も、AIディープラーニングについて、理解を深めたいという需要を感じています。誤解のあるまま結論を急いだ判断をしないように、AIとは何かをもう少し正しく知りたいという需要です。ただ、高度な数学的理解が、壁になって、理解するのが難しくなっているということも感じます。
+Now, even those who are involved in work in the humanities are feeling the demand to deepen their understanding of AI deep learning. There is a demand to know what AI is a little more correctly so that we do not make rushed decisions with misunderstandings. However, I also feel that advanced mathematical understanding has become a barrier and difficult to understand.
 
-Perlで学ぶディープラーニング入門は、if文とfor文と高校数学(傾きの理解)+アルファで、ディープラーニングが理解できるように、工夫されたサイトです。
+The introduction to deep learning learned with Perl is a site devised so that you can understand deep learning with if sentence, for sentence and high school mathematics (understanding of inclination) + alpha.
 
-<h3>微分の定義</h3>
+<h3> Definition of differentiation </ h3>
 
-逆誤差伝播法の理解に必要な高校数学の範囲で理解できるような簡単な微分だけ少し理解しておきましょう。
+Let's understand only a little simple differentiation that can be understood within the range of high school mathematics necessary for understanding the inverse error propagation method.
 
-数学における微分の定義は以下です。
-
-<pre>
-# 微分の定義 - 以下の式においてΔxを極限まで0に近づける
-f'(x) = (f(x + Δx) - f(x)) / ((x + Δx) - x)
-</pre>
-
-「入力の微小変化に対する出力の変化の比」が、微分の定義です。直感的には、ある入力の変化に対して、どれくらい敏感に出力が変化するかということを表します。
-
-<h3>定数関数の微分</h3>
-
-定数の微分は「0」になります。
+The definition of derivative in mathematics is as follows.
 
 <pre>
-# 定数関数
-f(x) = 5;
+#Definition of derivative --- In the following equation, make Δx as close to 0 as possible.
+f'(x) = (f (x + Δx) --f (x)) / ((x + Δx) --x)
+</ pre>
 
-# 定数関数の微分
+"Ratio of change in output to small change in input" is the definition of derivative. Intuitively, it shows how sensitive the output changes to a change in an input.
+
+<h3> Differentiation of constant function </ h3>
+
+The derivative of the constant is "0".
+
+<pre>
+#Constant function
+f (x) = 5;
+
+# Differentiation of constant function
 f'(x) = 0;
-</pre>
+</ pre>
 
-上記の「=」は数学記号の等価を表現しています。プログラムにおける代入ではないので、注意してください。
+The "=" above represents the equivalence of mathematical symbols. Please note that it is not an assignment in the program.
 
-定義に従って計算してみましょう。わかりやすいようにPerlプログラムとして書いてみますね。数学の定義だけだと、ソフトウェアエンジニアは、立ち眩みを起こす可能性があります。
+Let's calculate according to the definition. Let's write it as a Perl program so that it is easy to understand. With just the definition of mathematics, software engineers can be dazzled.
 
-定数関数なので、入力は便宜的なものだと考えてください。数学的な定義においては「$x_delta」を、極限まで0に近づけると考えてください。
+It's a constant function, so think of the input as a convenience. Think of "$ x_delta" as close to 0 in the mathematical definition.
 
 <pre>
 use strict;
 use warnings;
 
-my $x = 3;
-my $x_delta = 0.0000001;
+my $ x = 3;
+my $ x_delta = 0.0000001;
 
-# 定数関数の微分
-my $const_derivative = (const($x + $x_delta) - const($x)) / (($x + $x_delta) - $x);
+# Differentiation of constant function
+my $ const_derivative = (const ($ x + $ x_delta) --const ($ x)) / (($ x + $ x_delta)-$ x);
 
-# 定数関数
+#Constant function
 sub const {
   return 5;
 }
 
-print $const_derivative;
-</pre>
+print $ const_derivative;
+</ pre>
 
-「$x」がどのような値であっても、結果は「0」になることを確認してみてください。
+Make sure the result is "0" no matter what the value of "$ x" is.
 
-つまり、定数関数の微分は以下で表現されます。
+That is, the derivative of the constant function is expressed as follows.
 
 <pre>
-# 定数関数の微分
+# Differentiation of constant function
 sub const_derivative {
   return 0;
 }
-</pre>
+</ pre>
 
-<h3>関数の微分と導関数、微分係数と傾きの関係</h3>
+<h3> Relationship between differential and derivative of function, derivative and slope </ h3>
 
-<a href="/blog/20200919123308.html">導関数</a>は「関数の微分」と全く同じ意味です。このサイトでは「ある関数の微分」のことを「導関数」と呼ぶようにしています。そして、導関数とは、ある入力の微小変化に対する出力の変化の比、つまり、傾き(微分係数とも呼ばれる)を求めるための関数として解説しています。
+<a href="/blog/20200919123308.html"> derivative </a> has exactly the same meaning as "differential of function". On this site, "differentiation of a certain function" is called "derivative". And the derivative is explained as a function to find the ratio of the change of the output to the minute change of a certain input, that is, the slope (also called the differential coefficient).
 
-関数の微分(導関数とも呼ばれる)と微分係数(傾きとも呼ばれる)の違いは、関数の微分は、関数であるため一般的な入力を抽象化しているのに対して、微分係数は、特定の入力に対応した実際の値であるということです。
+The difference between the derivative of a function (also called the derivative) and the derivative (also called the gradient) is that the derivative of a function abstracts a general input because it is a function, whereas the derivative is specific. It is the actual value corresponding to the input.
 
-ソフトウェアエンジニアとしては、導関数とは傾きを求めるための関数であって、傾きとは実際に求めた値のことだと、理解してください。
+As a software engineer, understand that the derivative is the function for finding the slope, and the slope is the value actually found.
 
-<h3>一次関数の微分</h3>
+<h3> Differentiation of linear function </ h3>
 
-一次関数の微分は、xの係数になります。一次関数とは「3x + 2」のようなxの次数が1の関数です。
+The derivative of the linear function is the coefficient of x. A linear function is a function with a degree of x such as "3x + 2".
 
 <pre>
-# 一次関数
-f(x) = 3x + 2;
+# Linear function
+f (x) = 3x + 2;
 
-# 一次関数の微分(xの係数と同じ値になる)
+#Differentiation of linear function (same value as coefficient of x)
 f'(x) = 3;
-</pre>
+</ pre>
 
-上記の「=」は数学記号の等価を表現しています。プログラムにおける代入ではないので、注意してください。
+The "=" above represents the equivalence of mathematical symbols. Please note that it is not an assignment in the program.
 
-定義に従って計算してみましょう。わかりやすいようにPerlプログラムとして書いてみますね。数学の定義だけだと、ソフトウェアエンジニアは、立ち眩みを起こす可能性があります。
+Let's calculate according to the definition. Let's write it as a Perl program so that it is easy to understand. With just the definition of mathematics, software engineers can be dazzled.
 
-一次関数なので、入力は便宜的なものだと考えてください。数学的な定義においては「$x_delta」を、極限まで0に近づけると考えてください。
+Since it is a linear function, consider the input to be convenient. Think of "$ x_delta" as close to 0 in the mathematical definition.
 
 <pre>
 use strict;
 use warnings;
 
-my $x = 3;
-my $x_delta = 0.0000001;
+my $ x = 3;
+my $ x_delta = 0.0000001;
 
-# 一次関数の微分
-my $liner_derivative = (liner($x + $x_delta) - liner($x)) / (($x + $x_delta) - $x);
+#Differentiation of linear function
+my $ liner_derivative = (liner ($ x + $ x_delta) --liner ($ x)) / (($ x + $ x_delta)-$ x);
 
-# 一次関数
+# Linear function
 sub liner {
-  my ($x) = @_;
+  my ($ x) = @_;
   
-  my $y = 3 * $x + 2;
+  my $ y = 3 * $ x + 2;
   
-  return $y;
+  return $ y;
 }
 
-print $liner_derivative;
-</pre>
+print $ liner_derivative;
+</ pre>
 
-「$x」がどのような値でも、結果が「3」になることを確認してみてください。今回の場合は、誤差があって「3.00000000444089」となりました。「$x_delta」が極限まで0に近づくと、3になります。
+Make sure the result is "3" no matter what the value of "$ x" is. In this case, there was an error and it was "3.00000000444089". When "$ x_delta" approaches 0 to the limit, it becomes 3.
 
-つまり、「3x + 2」という一次関数の微分は以下で表現されます。
+In other words, the derivative of the linear function "3 x + 2" is expressed as follows.
 
 <pre>
-# 一次関数の微分
+#Differentiation of linear function
 sub liner_derivative {
   return 3;
 }
-</pre>
+</ pre>
 
-<h3>活性化関数の微分</h3>
+<h3> Differentiation of activation function </ h3>
 
-ディープラーニングでは、ニューロンの活性化の度合いを表現するための活性化関数と呼ばれる関数があります。ただし、実際には、ニューロンの活性の度合いを表現しているというよりも、逆誤差伝播法において、ひとつのパラメーターに対する損失関数の傾きを求めるために導入されていると考えた方がよいのかもしれません。
+In deep learning, there is a function called the activation function to express the degree of activation of neurons. However, in reality, it may be better to think that it is introduced to find the slope of the loss function for one parameter in the inverse error propagation method, rather than expressing the degree of neuron activity. Maybe.
 
-活性化関数の微分つまり、活性化関数の導関数を導出することはここではしません。ソウトウェアエンジニアとして理解しておく必要があることは、導関数が傾きを求めるための関数であるということです。
+We do not derive the derivative of the activation function, that is, the derivative of the activation function. What you need to understand as a software engineer is that the derivative is a function for finding the slope.
 
-導関数がソースコードに出現したら「おっ、ここでは、傾きを求めているのだな」と考えてください。
+When the derivative appears in the source code, think "Oh, I'm looking for the slope here."
 
 <pre>
-# 活性化関数
+#Activation function
 sub activate {
-  my ($input) = @_;
+  my ($ input) = @_;
   
   # ...
   
-  return $output;
+  return $ output;
 }
 
-# 活性化関数の微分
+# Differentiation of activation function
 sub activate_derivative {
-  my ($input) = @_;
+  my ($ input) = @_;
   
   # ...
   
-  return $output;
+  return $ output;
 }
-</pre>
+</ pre>
 
-<h3>損失関数の微分</h3>
+<h3> Differentiation of loss function </ h3>
 
-ディープラーニングでは、誤差の指標である損失関数の値を小さくすることを目標にパラメータが調整されていきます。損失関数の微分について考えてみます。
+In deep learning, the parameters are adjusted with the goal of reducing the value of the loss function, which is an indicator of error. Consider the derivative of the loss function.
 
-損失関数への入力は複数です。損失関数の出力はひとつです。
+There are multiple inputs to the loss function. The output of the loss function is one.
 
-損失関数が、これまで見てきた関数と異なるのは、複数の入力に対して、一つの出力を返すことです。
+The loss function differs from the functions we've seen so far in that it returns a single output for multiple inputs.
 
 <pre>
-# 損失関数
+# Loss function
 sub cost {
-  my ($inputs) = @_;
+  my ($ inputs) = @_;
   
-  my $output;
-  
-  # ...
-  
-  return $output;
-}
-</pre>
-
-ここで「おやっ」となると思います。複数の入力に対して、一つの出力を行う関数の微分なんて習ったことないぞと。そもそも、それはなんだい?
-
-結論を先に書くと、損失関数の微分の結果は、複数の入力に対して、複数の出力になります。
-
-<pre>
-# 損失関数の微分
-sub cost_derivative {
-  my ($inputs) = @_;
-  
-  my $outputs = [];
+  my $ output;
   
   # ...
   
-  return $outputs;
+  return $ output;
 }
-</pre>
+</ pre>
 
-ただしこれは、そう見えるというだけで、実は、一つの入力に対して、ひとつの出力があるのを、まとめているだけです。cost_derivative_eachというひとつの入力に対して、ひとつの出力を行う関数を使って、損失関数の微分を書き直してみましょう。
+I think it will be "Oya" here. I've never learned to differentiate a function that produces one output for multiple inputs. What is it in the first place?
+
+To write the conclusion first, the result of the derivative of the loss function is multiple outputs for multiple inputs.
+
+<pre>
+#Differentiation of loss function
+sub cost_derivative {
+  my ($ inputs) = @_;
+  
+  my $ outputs = [];
+  
+  # ...
+  
+  return $ outputs;
+}
+</ pre>
+
+However, this just looks like that, and in fact, it just summarizes that there is one output for one input. Let's rewrite the derivative of the loss function using a function that produces one output for one input called cost_derivative_each.
 
 <pre>
 sub cost_derivative {
-  my ($inputs) = @_;
+  my ($ inputs) = @_;
   
-  my $outputs = [];
-  for (my $i = 0; $i < @$inputs; $i++) {
-    $outputs->[$i] = cost_derivative_each($inputs->[$i]);
+  my $ outputs = [];
+  for (my $ i = 0; $ i <@ $ inputs; $ i ++) {
+    $ outputs-> [$ i] = cost_derivative_each ($ inputs-> [$ i]);
   }
   # ...
   
-  return $outputs;
+  return $ outputs;
 }
 
-# 損失関数
+# Loss function
 sub cost_derivative_each {
-  my ($input) = @_;
+  my ($ input) = @_;
   
-  my $output;
+  my $ output;
   
   # ...
   
-  return $output;
+  return $ output;
 }
-</pre>
+</ pre>
 
-誤解を恐れずにいえば、注目する一つの入力以外の入力は、定数のようなものとして扱われ、損失関数の微分の結果には何ら影響を与えません。
+Don't be afraid to misunderstand, the inputs other than the one you are interested in are treated like constants and have no effect on the result of the derivative of the loss function.
 
-損失関数の一つであるクロースエントロピー関数をみてください。式は複雑ですが、それぞれの入力の結果が、独立していることを感じ取ってもらえればOKです。
+Take a look at the close entropy function, which is one of the loss functions. The formula is complicated, but it's okay if you can feel that the results of each input are independent.
 
 <pre>
-# クロスエントロピーコストの導関数
+# Cross-entropy cost derivative
 sub cross_entropy_cost_derivative {
-  my ($vec_a, $vec_y) = @_;
+  my ($ vec_a, $ vec_y) = @_;
   
-  my $vec_out = [];
-  for (my $i = 0; $i < @$vec_a; $i++) {
-    $vec_out->[$i] = $vec_a->[$i] - $vec_y->[$i];
+  my $ vec_out = [];
+  for (my $ i = 0; $ i <@ $ vec_a; $ i ++) {
+    $ vec_out-> [$ i] = $ vec_a-> [$ i]-$ vec_y-> [$ i];
   }
   
-  return $vec_out;
+  return $ vec_out;
 }
-</pre>
+</ pre>
 
-<h3>偏微分とは何ですか?</h3>
+<h3> What is partial differential? </ H3>
 
-偏微分とは、微分のことです(笑)。注目する入力変数以外を、すべて定数とみなす微分です。
+Partial differentiation is differentiation (laughs). It is a derivative that considers all variables other than the input variable of interest as constants.
 
-<h3>最後のバイアスに対する損失関数の傾きを求める</h3>
+<h3> Find the slope of the loss function with respect to the last bias </ h3>
 
-最後のバイアスに対する損失関数の傾きを求めてみましょう。
+Let's find the slope of the loss function with respect to the final bias.
 
-多段の関数の傾きの求め方について理解しておく必要があります。
+You need to understand how to find the slope of a multi-stage function.
 
 <ul>
-  <li><a href="/blog/20201021085550.html">多段の関数の場合の傾きの求め方 - 合成関数の微分</a></li>
-</ul>
+  <li> <a href="/blog/20201021085550.html"> How to find the slope for a multi-stage function-differentiation of synthetic function </a> </ li>
+</ ul>
 
-多段の関数の傾きは次の公式で求められます。
-
-<pre>
-多段関数の傾き = 関数1の傾き * 関数2の傾き * 関数3の傾き * ... * 関数n-1の傾き * 関数nの傾き
-</pre>
-
-多段関数の傾きは、それぞれの関数の傾きの積であるということです。つまり、それぞれの関数の傾きがわかれば、それを掛け算することによって求めることができます。
-
-この式において、損失関数とは、関数nのことだと考えてください。
-
-最後のmからnへの変換関数のひとつのバイアスに着目してみましょう。ひとつのバイアスから見ると、バイアスを含んだ式は、最後のmからnの変換関数、活性化関数、損失関数につながっています。
+The slope of a multi-stage function can be calculated by the following formula.
 
 <pre>
-# バイアスを含んだ式から出力求める(最後のmからnの変換関数)
-my $output0 = $weigth0_0 * $input0 + $weigth01 * $input1 + $biase0;
+Slope of multi-stage function = Slope of function 1 * Slope of function 2 * Slope of function 3 * ... * Slope of function n-1 * Slope of function n
+</ pre>
 
-# 活性化関数を適用
-my $acivate_output0 = activate($output0);
+The slope of a multi-stage function is the product of the slopes of each function. In other words, if you know the slope of each function, you can find it by multiplying it.
 
-# 損失関数を適用(引数は、注目している$activate_outputとその他の引数という形で便宜的に記述)
-my $cost = cost($activate_output0, $other_args);
-</pre>
+In this equation, think of the loss function as the function n.
 
-mからnへの変換関数は、ひとつのバイアスに注目することによって、単なる一次式になります。「mからnへ変換する関数の微分の正体ってなんだ～?」の答えは「ひとつのバイアスに注目することによって、単なる一次式になる」でした。
-
-注目するバイアス以外は定数とみなせます。わかりやすく書くと、以下になります。
+Let's focus on one bias of the last m-to-n conversion function. Seen from one bias, the expression containing the bias leads to the last m to n conversion function, activation function, and loss function.
 
 <pre>
-# バイアスを含んだ式から出力求める(最後のmからnの変換関数)
-my $output0 = $biase0 + C;
-</pre>
+# Find the output from the equation including the bias (last m to n conversion function)
+my $ output0 = $ weigth0_0 * $ input0 + $ weigth01 * $ input1 + $ biase0;
 
-これを微分するとどうなるでしょうか? Cは定数関数ですので、微分は0になりますね。$biase0の係数は「1」なので、微分は「1」となります。つまり、傾きは「1」です。
+# Apply activation function
+my $ activated_output0 = activate ($ output0);
 
-<pre>
-my $m_to_n_grad_for_biase0 = 1;
-</pre>
+#Apply a loss function (arguments are conveniently described in the form of the $ activate_output of interest and other arguments)
+my $ cost = cost ($ activate_output0, $ other_args);
+</ pre>
 
-次に活性化関数の傾きはどうなるでしょうか? これは、活性化関数の導関数を使います。
+The m-to-n conversion function is just a linear expression by focusing on one bias. The answer to "What is the derivative of the function that transforms from m to n?" Was "By paying attention to one bias, it becomes a mere linear expression."
 
-<pre>
-# 活性化関数の傾き
-my $acivate_grad_for_output = activate_derivative($output);
-</pre>
-
-次に損失関数の傾きはどうなるでしょうか? これは、損失関数の導関数を使います。
+Other than the bias of interest, it can be regarded as a constant. To write it in an easy-to-understand manner, it is as follows.
 
 <pre>
-# 損失関数の傾き
-my $cost_grad_for_activate_output = cost_derivative($activate_output, $other_args);
-</pre>
+# Find the output from the equation including the bias (last m to n conversion function)
+my $ output0 = $ biase0 + C;
+</ pre>
 
-バイアスに対する損失関数の傾きは、それぞれの傾きの積で求められるのでした。
-
-<pre>
-# ひとつのバイアスの損失関数に対する傾き
-my $cost_grad_for_biase0 = $m_to_n_grad_for_biase0 * $acivate_grad_for_output * $cost_grad_for_activate_output;
-</pre>
-
-求まりました。他のバイアスについても、同じ方法で求まります。すべて求まったとすると、以下のような配列になります。
+What if we differentiate this? C is a constant function, so the derivative is 0, isn't it? Since the coefficient of $ bias0 is "1", the derivative is "1". That is, the slope is "1".
 
 <pre>
-[
-  $cost_grad_for_biase0,
-  $cost_grad_for_biase1,
-  $cost_grad_for_biase2,
-]
-</pre>
+my $ m_to_n_grad_for_biase0 = 1;
+</ pre>
 
-<h3>最後の重みに対する損失関数の傾きを求める</h3>
-
-最後の重みに対する損失関数の傾きを求めてみましょう。バイアスの次は、重みにチャレンジします。
-
-最後のmからnへの変換関数のひとつの重みに着目してみましょう。ひとつの重みから見ると、重みを含んだ式は、最後のmからnの変換関数、活性化関数、損失関数につながっています。
+What about the slope of the activation function next? It uses the derivative of the activation function.
 
 <pre>
-# 重みを含んだ式から出力求める(最後のmからnの変換関数)
-my $output0 = $weigth0_0 * $input0 + $weigth01 * $input1 + $biase0;
+#Inclination of activation function
+my $ acivate_grad_for_output = activate_derivative ($ output);
+</ pre>
 
-# 活性化関数を適用
-my $acivate_output0 = activate($output0);
-
-# 損失関数を適用(引数は、注目している$activate_outputとその他の引数という形で便宜的に記述)
-my $cost = cost($activate_output0, $other_args);
-</pre>
-
-mからnへの変換関数は、ひとつの重みに注目することによって、単なる一次式になります。
-
-注目する重み以外は定数とみなせます。わかりやすく書くと、以下になります。入力も「INPUT0」と書いて、定数とみなしていることに注目してください。(実際のコードでは、そのまま変数として扱います。)
+What about the slope of the loss function next? It uses the derivative of the loss function.
 
 <pre>
-# 重みを含んだ式から出力求める(最後のmからnの変換関数)
-my $output0 = $weigth0_0 * INPUT0 + C;
-</pre>
+#Loss function slope
+my $ cost_grad_for_activate_output = cost_derivative ($ activate_output, $ other_args);
+</ pre>
 
-これを微分するとどうなるでしょうか? Cは定数関数ですので、微分は0になりますね。$weight0の係数は「INPUT0」なので、微分は「INPUT0」となります。つまり、傾きは「INPUT0」です。
-
-<pre>
-my $m_to_n_grad_for_weight = INPUT0;
-</pre>
-
-次に活性化関数の傾きはどうなるでしょうか? これは、活性化関数の導関数を使います。
+The slope of the loss function with respect to the bias was calculated by multiplying the slopes of each.
 
 <pre>
-# 活性化関数の傾き
-my $acivate_grad_for_output = activate_derivative($output);
-</pre>
+# Slope of one bias with respect to the loss function
+my $ cost_grad_for_biase0 = $ m_to_n_grad_for_biase0 * $ private_grad_for_output * $ cost_grad_for_activate_output;
+</ pre>
 
-次に損失関数の傾きはどうなるでしょうか? これは、損失関数の導関数を使います。
-
-<pre>
-# 損失関数の傾き
-my $cost_grad_for_activate_output = cost_derivative($activate_output, $other_args);
-</pre>
-
-重みに対する損失関数の傾きは、それぞれの傾きの積で求められるのでした。
-
-<pre>
-# ひとつの重みの損失関数に対する傾き
-my $cost_grad_for_weight = $m_to_n_grad_for_weight * $acivate_grad_for_output * $cost_grad_for_activate_output;
-</pre>
-
-求まりました。他の重みに対しても同じ方法で求まります。
-
-重みの損失関数に対する傾きと、バイアスの損失関数に対する傾きの関係を見ておきましょう。重みの係数は「INPUT0」、バイアスの係数は「1」ですので。重みに関する傾きは、バイアスに関する傾きの「INPUT0」倍になっています。
-
-ということは、バイアスの損失関数に対する傾きを計算して「INPUT0」倍すれば、重みの損失関数に対する傾きを求められます。
-
-<pre>
-my $cost_grad_for_weight = $cost_grad_for_biase0 * INPUT0;
-</pre>
-
-すべての重みの損失関数に関する傾きが求まったとすると、以下のような配列になります。3行2列の<a href="/blog/20200914103640.html">列優先の行列</a>として表現しています。
+I was asked. The same method can be used for other biases. If all were obtained, the array would be as follows.
 
 <pre>
 [
-  $cost_grad_for_weight0_0,
-  $cost_grad_for_weight1_0,
-  $cost_grad_for_weight2_0,
-
-  $cost_grad_for_weight0_1,
-  $cost_grad_for_weight1_1,
-  $cost_grad_for_weight2_1,
+  $ cost_grad_for_biase0,
+  $ cost_grad_for_biase1,
+  $ cost_grad_for_biase2,
 ]
-</pre>
+</ pre>
 
-重みの損失関数に対する傾きを、バイアスの損失関数に対する傾きとの関係を考慮して記述すると以下のようになります。
+<h3> Find the slope of the loss function with respect to the last weight </ h3>
+
+Let's find the slope of the loss function with respect to the last weight. Next to the bias, we will challenge the weight.
+
+Let's focus on one of the weights of the last m-to-n conversion function. From the point of view of one weight, the expression containing the weight is connected to the last m to n conversion function, activation function, and loss function.
+
+<pre>
+# Output output from an expression containing weights (last m to n conversion function)
+my $ output0 = $ weigth0_0 * $ input0 + $ weigth01 * $ input1 + $ biase0;
+
+# Apply activation function
+my $ activated_output0 = activate ($ output0);
+
+#Apply a loss function (arguments are conveniently described in the form of the $ activate_output of interest and other arguments)
+my $ cost = cost ($ activate_output0, $ other_args);
+</ pre>
+
+The conversion function from m to n is just a linear expression by focusing on one weight.
+
+Other than the weight of interest, it can be regarded as a constant. To write it in an easy-to-understand manner, it is as follows. Notice that the input is also written as "INPUT 0" and is considered a constant. (In the actual code, it is treated as a variable as it is.)
+
+<pre>
+# Output output from an expression containing weights (last m to n conversion function)
+my $ output0 = $ weigth0_0 * INPUT0 + C;
+</ pre>
+
+What if we differentiate this? C is a constant function, so the derivative is 0, isn't it? Since the coefficient of $ weight0 is "INPUT0", the derivative is "INPUT0". That is, the slope is "INPUT 0".
+
+<pre>
+my $ m_to_n_grad_for_weight = INPUT0;
+</ pre>
+
+What about the slope of the activation function next? It uses the derivative of the activation function.
+
+<pre>
+#Inclination of activation function
+my $ acivate_grad_for_output = activate_derivative ($ output);
+</ pre>
+
+What about the slope of the loss function next? It uses the derivative of the loss function.
+
+<pre>
+#Loss function slope
+my $ cost_grad_for_activate_output = cost_derivative ($ activate_output, $ other_args);
+</ pre>
+
+The slope of the loss function with respect to the weight was calculated by the product of each slope.
+
+<pre>
+# Slope of one weight with respect to the loss function
+my $ cost_grad_for_weight = $ m_to_n_grad_for_weight * $ allocated_grad_for_output * $ cost_grad_for_activate_output;
+</ pre>
+
+I was asked. The same method can be used for other weights.
+
+Let's look at the relationship between the slope of the weight with respect to the loss function and the slope of the bias with respect to the loss function. The weight factor is "INPUT 0" and the bias factor is "1". The slope for weights is "INPUT 0" times the slope for bias.
+
+This means that if you calculate the slope of the bias with respect to the loss function and multiply it by "INPUT 0", you can find the slope of the weight with respect to the loss function.
+
+<pre>
+my $ cost_grad_for_weight = $ cost_grad_for_biase0 * INPUT0;
+</ pre>
+
+Assuming that the slopes for the loss functions of all weights are found, the array looks like this: It is expressed as a 3 row 2 column <a href="/blog/20200914103640.html"> column priority matrix </a>.
 
 <pre>
 [
-  $cost_grad_for_biase0 * INPUT0,
-  $cost_grad_for_biase1 * INPUT0,
-  $cost_grad_for_biase2 * INPUT0,
+  $ cost_grad_for_weight0_0,
+  $ cost_grad_for_weight1_0,
+  $ cost_grad_for_weight2_0,
 
-  $cost_grad_for_biase0 * INPUT1,
-  $cost_grad_for_biase1 * INPUT1,
-  $cost_grad_for_biase2 * INPUT1,
+  $ cost_grad_for_weight0_1,
+  $ cost_grad_for_weight1_1,
+  $ cost_grad_for_weight2_1,
 ]
-</pre>
+</ pre>
 
-<h3>重みの損失関数に対する傾きを行列で表現する</h3>
-
-重みの損失関数に対する傾きを<a href="/blog/20200928161518.html">行列</a>で表現してみましょう。それぞれの重みに対する損失関数の傾きは、ひとつづつ求まりますが、これをまとめて表現したものが行列になります。
-
-バイアス行列と入力行列を<a href="/blog/20200917123308.html">転置させた行列</a>の積になります。
-
-<pre>
-my $cost_grads_biases = [
-  $cost_grad_for_biase0,
-  $cost_grad_for_biase1,
-  $cost_grad_for_biase2,
-];
-
-my $inputs = [
-  $input0,
-  $input1
-];
-
-# バイアス行列 * 入力行列の転置
-my $cost_grads_weights = mul_mat(to_mat($cost_grads_biases), transpose(to_mat($inputs)));
-</pre>
-
-結果は以下になります。個別に考えたものと、行列で計算した結果が一致していることを確認してみてください。
+The slope of the weight with respect to the loss function is described below in consideration of the relationship with the slope of the bias with respect to the loss function.
 
 <pre>
 [
-  $cost_grad_for_biase0 * $input0,
-  $cost_grad_for_biase1 * $input0,
-  $cost_grad_for_biase2 * $input0,
+  $ cost_grad_for_biase0 * INPUT0,
+  $ cost_grad_for_biase1 * INPUT0,
+  $ cost_grad_for_biase2 * INPUT0,
 
-  $cost_grad_for_biase0 * $input1
-  $cost_grad_for_biase1 * $input1
-  $cost_grad_for_biase2 * $input1
+  $ cost_grad_for_biase0 * INPUT1,
+  $ cost_grad_for_biase1 * INPUT1,
+  $ cost_grad_for_biase2 * INPUT1,
 ]
-</pre>
+</ pre>
 
-<h3>最後から2番目のバイアスに対する損失関数の傾きを求める</h3>
+<h3> Matrix representation of the slope of the weight with respect to the loss function </ h3>
 
-最後から2番目のmからnへの変換関数のひとつのバイアスに対する損失関数の傾きを求めてみます。
+Let's express the slope of the weight with respect to the loss function as a <a href="/blog/20200928161518.html"> matrix </a>. The slope of the loss function for each weight can be obtained one by one, but the matrix is ​​a collective representation of this.
 
-ひとつのバイアスから見ると、バイアスを含んだ式は、最後から2番目のmからnの変換関数、活性化関数、最後のmからnの変換関数につながっています。
-
-<pre>
-# バイアスを含んだ式から出力求める(最後のmからnの変換関数)
-my $output0 = $weigth0_0 * $input0 + $weigth01 * $input1 + $biase0;
-
-# 活性化関数を適用
-my $acivate_output0 = activate($output0);
-
-# 活性化された出力は、次の入力になる
-my $forword_input0 = $activate_output0;
-
-# $forword_input0は、次のmからnへの関数の入力になる
-my $forword_output0 = $forword_weigth0_0 * $forword_input0 + $forword_weigth0_1 * $forword_input1 + $forword_biase0;
-my $forword_output1 = $forword_weigth1_0 * $forword_input0 + $forword_weigth1_1 * $forword_input1 + $forword_biase1;
-my $forword_output2 = $forword_weigth2_0 * $forword_input0 + $forword_weigth2_1 * $forword_input1 + $forword_biase2;
-</pre>
-
-まず注目するバイアス以外は定数とみなせます。
+It is the product of the <a href="/blog/20200917123308.html"> transposed matrix </a> of the bias matrix and the input matrix.
 
 <pre>
-# バイアスを含んだ式から出力求める(最後のmからnの変換関数)
-my $output0 = $biase0 + C;
-</pre>
+my $ cost_grads_biases = [
+  $ cost_grad_for_biase0,
+  $ cost_grad_for_biase1,
+  $ cost_grad_for_biase2,
+];;
 
-これを微分するとどうなるでしょうか? Cは定数関数ですので、微分は0になりますね。$biase0の係数は「1」なので、微分は「1」となります。つまり、傾きは「1」です。
+my $ inputs = [
+  $ input0,
+  $ input1
+];;
 
-<pre>
-my $m_to_n_grad_for_biase0 = 1;
-</pre>
+#Bias matrix * Transpose of input matrix
+my $ cost_grads_weights = mul_mat (to_mat ($ cost_grads_biases), transpose (to_mat ($ inputs)));
+</ pre>
 
-次に活性化関数の傾きはどうなるでしょうか? これは、活性化関数の導関数を使います。
-
-<pre>
-# 活性化関数の傾き
-my $acivate_grad_for_output0 = activate_derivative($output0);
-</pre>
-
-次に、活性化された出力は、次のmからnへの変換関数の入力になるということを、じっと見てみましょう。
+The result is as follows. Make sure that what you think individually matches the result of the matrix calculation.
 
 <pre>
-# 活性化された出力は、次の入力になる
-my $forword_input0 = $activate_output0;
+[
+  $ cost_grad_for_biase0 * $ input0,
+  $ cost_grad_for_biase1 * $ input0,
+  $ cost_grad_for_biase2 * $ input0,
 
-# $forword_input0は、次のmからnへの関数の入力になる
-my $forword_output0 = $forword_weigth0_0 * $forword_input0 + $forword_weigth0_1 * $forword_input1 + $forword_biase0;
-my $forword_output1 = $forword_weigth1_0 * $forword_input0 + $forword_weigth1_1 * $forword_input1 + $forword_biase1;
-my $forword_output2 = $forword_weigth2_0 * $forword_input0 + $forword_weigth2_1 * $forword_input1 + $forword_biase2;
-</pre>
+  $ cost_grad_for_biase0 * $ input1
+  $ cost_grad_for_biase1 * $ input1
+  $ cost_grad_for_biase2 * $ input1
+]
+</ pre>
 
-複数の入力になっているということは、傾きは、その和になります。入力が複数になる場合は、傾きは、それぞれに対して求めた傾きの合計になります。
+<h3> Find the slope of the loss function for the penultimate bias </ h3>
 
-<pre>
-入力が複数になる場合の損失関数の傾き = 入力1に対する式0の損失関数の傾き + 入力1に対する式1の損失関数の傾き + 入力1に対する式2の損失関数の傾き
-</pre>
+Let's find the slope of the loss function for one bias of the penultimate m to n conversion function.
 
-さて式0に関して、着目している「$forword_input0」以外を、すべて定数と考えてみましょう。$forword_input0の係数は「FORWORD_WEIGTH0_0」です。
-
-<pre>
-my $forword_output0 = FORWORD_WEIGTH0_0 * $forword_input0 + C;
-</pre>
-
-さてここで、それぞれの形をどこかで見たことはないでしょうか? 以下と似ていますね。
+Seen from one bias, the expression containing the bias leads to the penultimate m to n conversion function, the activation function, and the last m to n conversion function.
 
 <pre>
-# 重みを含んだ式から出力求める(最後のmからnの変換関数)
-my $output0 = $weigth0_0 * INPUT0 + C;
-</pre>
+# Find the output from the equation including the bias (last m to n conversion function)
+my $ output0 = $ weigth0_0 * $ input0 + $ weigth01 * $ input1 + $ biase0;
 
-最後の重みに対する損失関数の傾きは、最後のバイアスの損失関数の傾きに対して、INPUT0を掛けたものでした。
+# Apply activation function
+my $ activated_output0 = activate ($ output0);
 
-<pre>
-$cost_grad_for_biase0 * INPUT0,
-</pre>
+#The activated output will be the next input
+my $ forword_input0 = $ activate_output0;
 
-式の形式が同じで、定数部分だけが異なるので「INPUT0」を「FORWORD_WEIGTH0_0」に変更すればよいわけです。今いる位置から見た場合は、ひとつ先のバイアスということなるので「biase」は「forword_biase」に変更します。
+# $ forword_input0 will be the input of the next function from m to n
+my $ forword_output0 = $ forword_weigth0_0 * $ forword_input0 + $ forword_weigth0_1 * $ forword_input1 + $ forword_biase0;
+my $ forword_output1 = $ forword_weigth1_0 * $ forword_input0 + $ forword_weigth1_1 * $ forword_input1 + $ forword_biase1;
+my $ forword_output2 = $ forword_weigth2_0 * $ forword_input0 + $ forword_weigth2_1 * $ forword_input1 + $ forword_biase2;
+</ pre>
 
-<pre>
-$cost_grad_for_forword_biase0 * FORWORD_WEIGTH0_0,
-</pre>
-
-ここで重要なポイントは最後のバイアスに対する損失関数を求める計算で「$cost_grad_for_forword_biase0」は、すでに求まっているということです。
-
-さて式0に対して求めたので、式1と式2も計算してみましょう。
+First of all, it can be regarded as a constant except for the bias of interest.
 
 <pre>
-$cost_grad_for_forword_biase0 * FORWORD_WEIGTH0_0,
-$cost_grad_for_forword_biase1 * FORWORD_WEIGTH1_0,
-$cost_grad_for_forword_biase2 * FORWORD_WEIGTH2_0,
-</pre>
+# Find the output from the equation including the bias (last m to n conversion function)
+my $ output0 = $ biase0 + C;
+</ pre>
 
-活性化関数の傾きも考慮してこれを掛けて、式0、式1、式2で求めた傾きの和を求めると以下のようになります。
-
-<pre>
-my $cost_grad_for_biase0
-  = $cost_grad_for_forword_biase0 * FORWORD_WEIGTH0_0 * $acivate_grad_for_output0 * $m_to_n_grad_for_biase0
-  + $cost_grad_for_forword_biase1 * FORWORD_WEIGTH1_0 * $acivate_grad_for_output0 * $m_to_n_grad_for_biase0
-  + $cost_grad_for_forword_biase2 * FORWORD_WEIGTH2_0 * $acivate_grad_for_output0 * $m_to_n_grad_for_biase0
-</pre>
-
-他のバイアスについて損失関数に対する傾きを求めてみましょう。
+What if we differentiate this? C is a constant function, so the derivative is 0, isn't it? Since the coefficient of $ bias0 is "1", the derivative is "1". That is, the slope is "1".
 
 <pre>
-my $cost_grad_for_biase1
-  = $cost_grad_for_forword_biase0 * FORWORD_WEIGTH0_1 * $acivate_grad_for_output1 * $m_to_n_grad_for_biase1
-  + $cost_grad_for_forword_biase1 * FORWORD_WEIGTH1_1 * $acivate_grad_for_output1 * $m_to_n_grad_for_biase1
-  + $cost_grad_for_forword_biase2 * FORWORD_WEIGTH2_1 * $acivate_grad_for_output1 * $m_to_n_grad_for_biase1
-</pre>
+my $ m_to_n_grad_for_biase0 = 1;
+</ pre>
+
+What about the slope of the activation function next? It uses the derivative of the activation function.
 
 <pre>
-my $cost_grad_for_biase2
-  = $cost_grad_for_forword_biase0 * FORWORD_WEIGTH0_2 * $acivate_grad_for_output2 * $m_to_n_grad_for_biase2
-  + $cost_grad_for_forword_biase1 * FORWORD_WEIGTH1_2 * $acivate_grad_for_output2 * $m_to_n_grad_for_biase2
-  + $cost_grad_for_forword_biase2 * FORWORD_WEIGTH2_2 * $acivate_grad_for_output2 * $m_to_n_grad_for_biase2
-</pre>
+#Inclination of activation function
+my $ acivate_grad_for_output0 = activate_derivative ($ output0);
+</ pre>
 
+Next, let's take a closer look that the activated output will be the input of the next m-to-n conversion function.
+
+<pre>
+#The activated output will be the next input
+my $ forword_input0 = $ activate_output0;
+
+# $ forword_input0 will be the input of the next function from m to n
+my $ forword_output0 = $ forword_weigth0_0 * $ forword_input0 + $ forword_weigth0_1 * $ forword_input1 + $ forword_biase0;
+my $ forword_output1 = $ forword_weigth1_0 * $ forword_input0 + $ forword_weigth1_1 * $ forword_input1 + $ forword_biase1;
+my $ forword_output2 = $ forword_weigth2_0 * $ forword_input0 + $ forword_weigth2_1 * $ forword_input1 + $ forword_biase2;
+</ pre>
+
+The fact that there are multiple inputs means that the slope is the sum of them. If there are multiple inputs, the slope will be the sum of the slopes calculated for each.
+
+<pre>
+Slope of loss function when there are multiple inputs = Slope of loss function of Eq. 0 with respect to Input 1 + Slope of loss function of Eq. 1 with respect to Input 1 + Slope of loss function of Eq. 2 with respect to Input 1
+</ pre>
+
+Now, regarding Expression 0, let's think of everything other than the "$ forword_input0" that we are paying attention to as constants. The coefficient for $ forword_input0 is "FORWORD_WEIGTH0_0".
+
+<pre>
+my $ forword_output0 = FORWORD_WEIGTH0_0 * $ forword_input0 + C;
+</ pre>
+
+Now, have you seen each shape somewhere? It's similar to the following.
+
+<pre>
+# Output output from an expression containing weights (last m to n conversion function)
+my $ output0 = $ weigth0_0 * INPUT0 + C;
+</ pre>
+
+The slope of the loss function with respect to the last weight was the slope of the loss function of the last bias multiplied by INPUT0.
+
+<pre>
+$ cost_grad_for_biase0 * INPUT0,
+</ pre>
+
+Since the format of the expression is the same, only the constant part is different, "INPUT 0" should be changed to "FORWORD_WEIGTH0_0". When viewed from the current position, it is a bias one step ahead, so change "biase" to "forword_biase".
+
+<pre>
+$ cost_grad_for_forword_biase0 * FORWORD_WEIGTH0_0,
+</ pre>
+
+The important point here is that "$ cost_grad_for_forword_biase0" has already been calculated in the calculation to calculate the loss function for the final bias.
+
+Now that we have calculated for Equation 0, let's calculate Equation 1 and Equation 2.
+
+<pre>
+$ cost_grad_for_forword_biase0 * FORWORD_WEIGTH0_0,
+$ cost_grad_for_forword_biase1 * FORWORD_WEIGTH1_0,
+$ cost_grad_for_forword_biase2 * FORWORD_WEIGTH2_0,
+</ pre>
+
+Taking the slope of the activation function into consideration and multiplying it, the sum of the slopes obtained by Equation 0, Equation 1 and Equation 2 is calculated as follows.
+
+<pre>
+my $ cost_grad_for_biase0
+  = $ cost_grad_for_forword_biase0 * FORWORD_WEIGTH0_0 * $ private_grad_for_output0 * $ m_to_n_grad_for_biase0
+  + $ cost_grad_for_forword_biase1 * FORWORD_WEIGTH1_0 * $ private_grad_for_output0 * $ m_to_n_grad_for_biase0
+  + $ cost_grad_for_forword_biase2 * FORWORD_WEIGTH2_0 * $ private_grad_for_output0 * $ m_to_n_grad_for_biase0
+</ pre>
+
+Let's find the slope for the loss function for other biases.
+
+<pre>
+my $ cost_grad_for_biase1
+  = $ cost_grad_for_forword_biase0 * FORWORD_WEIGTH0_1 * $ private_grad_for_output1 * $ m_to_n_grad_for_biase1
+  + $ cost_grad_for_forword_biase1 * FORWORD_WEIGTH1_1 * $ allocated_grad_for_output1 * $ m_to_n_grad_for_biase1
+  + $ cost_grad_for_forword_biase2 * FORWORD_WEIGTH2_1 * $ allocated_grad_for_output1 * $ m_to_n_grad_for_biase1
+</ pre>
+
+<pre>
+my $ cost_grad_for_biase2
+  = $ cost_grad_for_forword_biase0 * FORWORD_WEIGTH0_2 * $ allocated_grad_for_output2 * $ m_to_n_grad_for_biase2
+  + $ cost_grad_for_forword_biase1 * FORWORD_WEIGTH1_2 * $ allocated_grad_for_output2 * $ m_to_n_grad_for_biase2
+  + $ cost_grad_for_forword_biase2 * FORWORD_WEIGTH2_2 * $ allocated_grad_for_output2 * $ m_to_n_grad_for_biase2
+</ pre>

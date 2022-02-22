@@ -1,30 +1,30 @@
-<h2>重みとは</h2>
+<h2> What is a weight? </ H2>
 
-ディープラーニングにおける重みとは、m個の入力をn個の出力に変換する関数の「入力に乗算される項」のことをいいます。
+Weights in deep learning are the "terms multiplied by inputs" of a function that transforms m inputs into n outputs.
 
-以下は2つの入力を3つの出力に変換する関数です。重みは、<a href="/blog/20200929161518.html">列優先の行列</a>として表現されています。
+Below is a function that converts two inputs into three outputs. The weights are expressed as <a href="/blog/20200929161518.html"> column-major matrix </a>.
 
 <pre>
 use strict;
 use warnings;
 
 sub m_to_n_convert {
-  my ($inputs) = @_;
+  my ($ inputs) = @_;
   
-  my $outputs = [];
+  my $ outputs = [];
   
-  # バイアス
-  my $biases = [
+  #Bias
+  my $ biases = [
     0.12,
     0.43,
     0.16,
-  ];
+  ];;
   
-  # 重み
-  my $weights_mat = {
+  # weight
+  my $ weights_mat = {
     rows_length => 3,
     columns_length => 2,
-    values => [
+    values ​​=> [
       0.25,
       0.58,
       0.13,
@@ -32,20 +32,20 @@ sub m_to_n_convert {
       0.98,
       0.47,
     ]
-  };
-  my $weights_mat_values = $weights_mat->{values};
+  };;
+  my $ weights_mat_values ​​= $ weights_mat-> {values};
   
-  # 重みはm個の入力をn個の出力に変換する関数の入力に乗算される項
-  $outputs->[0] = $weights_mat_values->[0] * $inputs->[0] + $weights_mat_values->[3] * $inputs->[1] + $biases->[0];
-  $outputs->[1] = $weights_mat_values->[1] * $inputs->[0] + $weights_mat_values->[4] * $inputs->[1] + $biases->[1];
-  $outputs->[2] = $weights_mat_values->[2] * $inputs->[0] + $weights_mat_values->[5] * $inputs->[1] + $biases->[2];
+  #Weight is a term that is multiplied by the input of a function that transforms m inputs into n outputs.
+  $ outputs-> [0] = $ weights_mat_values-> [0] * $ inputs-> [0] + $ weights_mat_values-> [3] * $ inputs-> [1] + $ biases-> [0];
+  $ outputs-> [1] = $ weights_mat_values-> [1] * $ inputs-> [0] + $ weights_mat_values-> [4] * $ inputs-> [1] + $ biases-> [1];
+  $ outputs-> [2] = $ weights_mat_values-> [2] * $ inputs-> [0] + $ weights_mat_values-> [5] * $ inputs-> [1] + $ biases-> [2];
   
-  return $outputs;
+  return $ outputs;
 }
-</pre>
+</ pre>
 
-重みの行数は、出力数と同じです。重みの列数は、入力数と同じです。
+The number of rows of weights is the same as the number of outputs. The number of columns of weights is the same as the number of inputs.
 
-<h3>重みは自動調整されるパラメーター</h3>
+<h3> Weight is a parameter that is automatically adjusted </ h3>
 
-重みは、学習アルゴリズムを使って自動調節されるパラメーターです。誤差の指標である<a href="/blog/20200901120907.html">損失関数</a>の値が小さくなるように更新されます。更新には、<a href="/blog/20201017123741.html">勾配降下法</a>などのパラメーター更新アルゴリズムが利用されます。
+Weights are parameters that are automatically adjusted using a learning algorithm. The value of <a href="/blog/20200901120907.html"> loss function </a>, which is an index of error, is updated to be smaller. Parameter update algorithms such as <a href="/blog/20201017123741.html"> gradient descent </a> are used for the update.

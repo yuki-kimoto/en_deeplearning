@@ -1,19 +1,19 @@
-<h2>深層学習とは何か?</h2>
+<h2> What is deep learning? </ H2>
 
-深層学習は、機械学習の一つの分野です。
+Deep learning is an area of ​​machine learning.
 
-機械学習では、入力から正しい出力を得られるように、パラメーターを自動的に調整します。パラメーターを自動的に調整する仕組みを、プログラムとして実装するので、機械的に学習が進むのです。
+Machine learning automatically adjusts the parameters to get the correct output from the input. Since the mechanism that automatically adjusts the parameters is implemented as a program, learning proceeds mechanically.
 
-たとえば、入力が「人物の写真」だとして、この人は「眼鏡をかけている」「眼鏡をかけていない」というのが出力です。パターン認識と呼ばれる基本的な分野です。
+For example, if the input is a "picture of a person", the output is that this person is "wearing glasses" and "not wearing glasses". This is a basic field called pattern recognition.
 
-眼鏡をかけているかどうかの正答率を上昇させていくことが、機械学習の目標です。
+The goal of machine learning is to increase the percentage of correct answers about whether or not you are wearing glasses.
 
-深層学習は、機械学習の中でも、人間の神経伝達の仕組みを模倣した、ニューラルネットワークを利用した機械学習です。
+Deep learning is machine learning that uses neural networks to imitate the mechanism of human neural transmission.
 
-深層学習は、ニューラルネットワークの中で、深層学習と呼ばれ、複数の入力と複数の出力を、多段階に連続的につなぎ、最終的な出力を得る方法です。
+Deep learning, called deep learning in a neural network, is a method of continuously connecting multiple inputs and multiple outputs in multiple stages to obtain the final output.
 
 <pre>
-人物の写真
+Photo of a person
 ↓
 (x0, x1, x2, x3)
 ↓
@@ -21,26 +21,25 @@
 ↓
 (z0, z1, z2)
 ↓
-(眼鏡をかけている、眼鏡をかけていない)
-</pre>
+(Wearing glasses, not wearing glasses)
+</ pre>
 
-実際は、x1～xnまでは、もっと長いです。y1～ykまでももっと長いです。xの個数とyの個数は異なっても構いませんし、一般的には、異なるようにします。
+In fact, x1 to xn are much longer. It is even longer from y1 to yk. The number of x and the number of y can be different, and in general, they should be different.
 
-また、段数は、この例では、x, y, zですが、これも、もっと長くなります。
+Also, the number of stages is x, y, z in this example, but this is also longer.
 
-入力から、複数入力と複数出力を多段につなげていって、出力を得るというところがポイントです。
+The point is to get the output by connecting multiple inputs and multiple outputs in multiple stages from the input.
 
-100億個のニューロンに該当するものを作るとすれば、各層のニューロン数は1億個程度、層の数は100層くらいになります。
+If we were to make something that corresponds to 10 billion neurons, the number of neurons in each layer would be about 100 million, and the number of layers would be about 100 layers.
 
-<h3>数学の言葉をできるだけ使わないで解説</h3>
+<h3> Explanation without using mathematical words as much as possible </ h3>
 
-Perlで学ぶ深層学習入門では、高校数学だけを前提としつつ、数学の言葉をなるべく少なして解説します。
+In the introduction to deep learning learned with Perl, we will explain with as few math words as possible, assuming only high school math.
 
-まずプログラミングのサンプルで、入力と出力を提示します。そのあとで、補助的に高校生の数学で理解できる範囲で説明します。
+First, a programming sample presents the inputs and outputs. After that, I will explain as much as I can understand in high school mathematics as a supplement.
 
-「えっ、そんなことができるの?」
+"Well, can you do that?"
 
-「中身、全部ソースコードじゃないですか!!! 数学が完全にはわからなくっても、エンジニアであれば、コードは読めるはず!!!」
+"The contents are all source code !!! Even if you don't understand math completely, if you are an engineer, you should be able to read the code !!!"
 
-やってみてからのお楽しみ。
-
+Enjoy after trying it.

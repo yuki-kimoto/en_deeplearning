@@ -1,15 +1,15 @@
-<h2>バッチサイズとは - オンライン学習、ミニバッチ学習、バッチ学習</h2>
+<h2> What is batch size?-Online learning, mini-batch learning, batch learning </ h2>
 
-バッチサイズとは、重みとバイアスのパラメーターを調整を、いくつの訓練データを単位にして行うかを示す数です。
+The batch size is a number that indicates how many training data units to adjust the weight and bias parameters.
 
-複数の訓練データの勾配の平均を使って、重みとバイアスのパラメータが調整されます。
+The weight and bias parameters are adjusted using the average of the gradients of multiple training data.
 
-訓練データが50,000個あり、バッチサイズが、10の場合は、10個ずつ、5000回処理されます。
+If there are 50,000 training data and the batch size is 10, 10 pieces will be processed 5000 times.
 
-バッチサイズが1の場合をオンライン学習と呼びます。
+When the batch size is 1, it is called online learning.
 
-バッチサイズが、1以上の場合をミニバッチ学習と呼びます。
+When the batch size is 1 or more, it is called mini-batch learning.
 
-バッチサイズが、訓練データの総数と同じ場合をバッチ学習と呼びます。
+When the batch size is the same as the total number of training data, it is called batch learning.
 
-どのバッチサイズが学習効率が良いかは、データにに依存するので、どうやら勘を使って設定するようです。
+Which batch size has good learning efficiency depends on the data, so it seems that it is set by intuition.

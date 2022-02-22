@@ -1,129 +1,129 @@
-<h2>確率的勾配降下法(SGD) - 重みとバイアスのパラメータの更新</h2>
+<h2> Stochastic Gradient Descent (SGD)-Update Weight and Bias Parameters </ h2>
 
-確率的勾配降下法(SGD)は、重みとバイアスのパラメータを更新するための一つの手法です。それぞれの重みとバイアスのパラメータの微小変化に対する損失関数の微小変化が求めた後に、この値を、<a href="https://en.deeplearning.perlzemi.com/blog/20200923123308.html">学習率</a>を考慮して、現在の重みとバイアスのパラメータから減算します。訓練データをランダムで並び変えることが特徴です。
+Stochastic Gradient Descent (SGD) is a technique for updating weight and bias parameters. <a href="https://en.deeplearning.perlzemi.com/blog/20200923123308.html"> Learning after finding the small change of the loss function for the small change of each weight and bias parameter. Subtract from the current weight and bias parameters, taking into account the rate. The feature is that the training data is rearranged at random.
 
-ディープラーニングでは、それぞれの重みとバイアスのパラメータの微小変化に対する損失関数の微小変化は、逆誤伝播法によって求めますが、勾配降下法は、逆誤伝播法を実行した後に行われる処理になります。
+In deep learning, the small change of the loss function for the small change of each weight and bias parameter is obtained by the reverse mispropagation method, while the gradient descent method is the processing performed after executing the reverse mispropagation method. ..
 
-勾配というのは、それぞれの重みとバイアスのパラメータの微小変化に対する損失関数の微小変化のことだとイメージしてください。
+Imagine a gradient as a small change in the loss function for a small change in the respective weight and bias parameters.
 
-降下というのは、減算することだとイメージしてください。
+Imagine that descent is subtraction.
 
-下の図で、重みとパラメータが、どの位置にあるかを図示しました。入出力と損失関数についても、図示しています。
+The figure below illustrates where the weights and parameters are located. Input / output and loss functions are also illustrated.
 
 <pre>
-● ● ● ● ●
+●●●●●
 
-5個の入力から7個の出力へ変換する関数(重みパラメータは7行5列の行列とバイアスパラメーターは5要素の列ベクトル)
+Function to convert from 5 inputs to 7 outputs (weight parameter is a 7-by-5 ​​matrix and bias parameter is a 5-element column vector)
 
-● ● ● ● ● ● ●
+●●●●●●●
 
-7個の入力から4個の出力へ変換する関数(重みパラメータは4行7列の行列とバイアスパラメーターは4要素の列ベクトル)
+Function to convert from 7 inputs to 4 outputs (weight parameter is a 4-by-7 matrix and bias parameter is a 4-element column vector)
 
-● ● ● ●
+●●●●
 
-損失関数を適用(4つの入力は1つの誤差を表す指標へ)
+Apply loss function (4 inputs to 1 error indicator)
 
 ●
-</pre>
+</ pre>
 
-ひとつの重みやバイアスのパラメータを少しだけ増やしたときに、損失関数の値が少し増えたと考えてください。この値を使って、パラメータの微小変化に対する損失関数の微小変化「損失関数の微小変化 / パラメータの微小変化」が求まります。これは、手動で求めましたが、ディープラーニングでは、逆誤伝播法というアルゴリズムを使って求めます。
+Think of the value of the loss function as increasing a little when you increase a single weight or bias parameter a little. Using this value, the small change of the loss function for the small change of the parameter "small change of the loss function / small change of the parameter" can be obtained. This was calculated manually, but in deep learning, it is calculated using an algorithm called the reverse mispropagation method.
 
-勾配降下法は、更新されたパラメータを、いくつまとめて更新するか(<a href="https://en.deeplearning.perlzemi.com/blog/20200830120907.html">バッチサイズ</a>)ということも考慮します。勾配降下法では、訓練データは、ランダムにシャッフルすると、学習が止まりにくくなります。
+Gradient descent method is how many updated parameters are updated together (<a href="https://en.deeplearning.perlzemi.com/blog/20200830120907.html"> batch size </a>). Also consider that. In gradient descent, training data is randomly shuffled to make it harder to stop training.
 
-<h3>勾配降下法のソースコード</h3>
+<h3> Gradient descent source code </ h3>
 
-勾配降下法の部分だけを取り出したPerlのソースコードです。ミニバッチサイズで、それぞれの重みとバイアスのパラメータの傾きの合計を求めて、学習率とミニバッチサイズを考慮して、重みとバイアスを更新します。
+This is the Perl source code that extracts only the gradient descent part. In the mini-batch size, find the sum of the slopes of each weight and bias parameter and update the weight and bias taking into account the learning rate and mini-batch size.
 
 <pre>
-# エポックの回数だけ訓練セットを実行
-for (my $epoch_index = 0; $epoch_index < $epoch_count; $epoch_index++) {
+#Run the training set as many times as you epoch
+for (my $ epoch_index = 0; $ epoch_index <$ epoch_count; $ epoch_index ++) {
   
-  # 訓練データのインデックスをシャッフル(ランダムに学習させた方が汎用化するらしい)
+  # Shuffle the index of training data (It seems that it is more generalized to train randomly)
   my @training_data_indexes_shuffle = shuffle @training_data_indexes;
   
-  my $count = 0;
+  my $ count = 0;
   
-  # ミニバッチサイズ単位で学習
-  my $backprop_count = 0;
+  #Learning in mini-batch size units
+  my $ backprop_count = 0;
 
-  while (my @indexed_for_mini_batch = splice(@training_data_indexes_shuffle, 0, $mini_batch_size)) {
+  while (my @indexed_for_mini_batch = splice (@training_data_indexes_shuffle, 0, $ mini_batch_size)) {
     
-    # ミニバッチにおける各変換関数のバイアスの傾きの合計とミニバッチにおける各変換関数の重みの傾きの合計を0で初期化
-    for (my $m_to_n_func_index = 0; $m_to_n_func_index < @$m_to_n_func_mini_batch_infos; $m_to_n_func_index++) {
-      my $m_to_n_func_info = $m_to_n_func_infos->[$m_to_n_func_index];
-      my $biases = $m_to_n_func_info->{biases};
-      my $weights_mat = $m_to_n_func_info->{weights_mat};
+    # Initialize the sum of the bias slopes of each conversion function in the mini-batch and the sum of the weight slopes of each conversion function in the mini-batch to 0.
+    for (my $ m_to_n_func_index = 0; $ m_to_n_func_index <@ $ m_to_n_func_mini_batch_infos; $ m_to_n_func_index ++) {
+      my $ m_to_n_func_info = $ m_to_n_func_infos-> [$ m_to_n_func_index];
+      my $ biases = $ m_to_n_func_info-> {biases};
+      my $ weights_mat = $ m_to_n_func_info-> {weights_mat};
       
-      # ミニバッチにおける各変換関数のバイアスの傾きの合計を0で初期化して作成
-      $m_to_n_func_mini_batch_infos->[$m_to_n_func_index]{biase_grad_totals} = array_new_zero(scalar @{$m_to_n_func_mini_batch_infos->[$m_to_n_func_index]{biase_grad_totals}});
+      # Created by initializing the sum of the bias slopes of each conversion function in a mini-batch to 0
+      $ m_to_n_func_mini_batch_infos-> [$ m_to_n_func_index] {biase_grad_totals} = array_new_zero (scalar @ {$ m_to_n_func_mini_batch_infos-> [$ m_to_n_func_index] {biase_grad_totals}})
 
-      # ミニバッチにおける各変換関数の重みの傾きの合計を0で初期化して作成
-      $m_to_n_func_mini_batch_infos->[$m_to_n_func_index]{weight_grad_totals_mat}{values} = array_new_zero(scalar @{$m_to_n_func_mini_batch_infos->[$m_to_n_func_index]{weight_grad_totals_mat}{values}});
+      # Created by initializing the sum of the slopes of the weights of each conversion function in the mini-batch to 0
+      $ m_to_n_func_mini_batch_infos-> [$ m_to_n_func_index] {weight_grad_totals_mat} {values} = array_new_zero (scalar @ {$ m_to_n_func_mini_batch_infos-> [$ m_to_n_func_index] {weight_grad_total
     }
     
-    for my $training_data_index (@indexed_for_mini_batch) {
-      # 逆誤伝播法を使って重みとバイアスの損失関数に関する傾きを取得
-      my $m_to_n_func_grad_infos = backprop($m_to_n_func_infos, $mnist_train_image_info, $mnist_train_label_info, $training_data_index);
+    for my $ training_data_index (@indexed_for_mini_batch) {
+      # Get the slope for the weight and bias loss function using the reverse mispropagation method
+      my $ m_to_n_func_grad_infos = backprop ($ m_to_n_func_infos, $ mnist_train_image_info, $ mnist_train_label_info, $ training_data_index);
       
-      # バイアスの損失関数に関する傾き
-      my $biase_grads = $m_to_n_func_grad_infos->{biases};
+      #Bias loss function slope
+      my $ bias_grads = $ m_to_n_func_grad_infos-> {biases};
       
-      # 重みの損失関数に関する傾き
-      my $weight_grads_mat = $m_to_n_func_grad_infos->{weights_mat};
+      # Slope with respect to weight loss function
+      my $ weight_grads_mat = $ m_to_n_func_grad_infos-> {weights_mat};
 
-      # ミニバッチにおける各変換関数のバイアスの傾きの合計とミニバッチにおける各変換関数の重みの傾きを加算
-      for (my $m_to_n_func_index = 0; $m_to_n_func_index < @$m_to_n_func_mini_batch_infos; $m_to_n_func_index++) {
-        my $m_to_n_func_info = $m_to_n_func_infos->[$m_to_n_func_index];
+      # Add the sum of the bias slopes of each conversion function in the mini-batch and the weight slope of each conversion function in the mini-batch.
+      for (my $ m_to_n_func_index = 0; $ m_to_n_func_index <@ $ m_to_n_func_mini_batch_infos; $ m_to_n_func_index ++) {
+        my $ m_to_n_func_info = $ m_to_n_func_infos-> [$ m_to_n_func_index];
         
-        # ミニバッチにおける各変換関数のバイアスの傾きを加算
-        array_add_inplace($m_to_n_func_mini_batch_infos->[$m_to_n_func_index]{biase_grad_totals}, $biase_grads->[$m_to_n_func_index]);
+        # Add the slope of the bias of each transmutation function in the mini-batch
+        array_add_inplace ($ m_to_n_func_mini_batch_infos-> [$ m_to_n_func_index] {biase_grad_totals}, $ biase_grads-> [$ m_to_n_func_index]);
 
-        # ミニバッチにおける各変換関数の重みの傾きを加算
-        array_add_inplace($m_to_n_func_mini_batch_infos->[$m_to_n_func_index]{weight_grad_totals_mat}{values}, $weight_grads_mat->[$m_to_n_func_index]{values});
+        # Add the slope of the weight of each transmutation function in the mini-batch
+        array_add_inplace ($ m_to_n_func_mini_batch_infos-> [$ m_to_n_func_index] {weight_grad_totals_mat} {values}, $ weight_grads_mat-> [$ m_to_n_func_index] {values});
       }
     }
 
-    # 各変換関数のバイアスと重みをミニバッチの傾きの合計を使って更新
-    for (my $m_to_n_func_index = 0; $m_to_n_func_index < @$m_to_n_func_infos; $m_to_n_func_index++) {
+    # Update the bias and weight of each transform function using the sum of the slopes of the mini-batch
+    for (my $ m_to_n_func_index = 0; $ m_to_n_func_index <@ $ m_to_n_func_infos; $ m_to_n_func_index ++) {
       
-      # 各変換関数のバイアスを更新(学習率を考慮し、ミニバッチ数で割る)
-      update_params($m_to_n_func_infos->[$m_to_n_func_index]{biases}, $m_to_n_func_mini_batch_infos->[$m_to_n_func_index]{biase_grad_totals}, $learning_rate, $mini_batch_size);
+      #Update the bias of each transmutation function (consider the learning rate and divide by the number of mini-batch)
+      update_params ($ m_to_n_func_infos-> [$ m_to_n_func_index] {biases}, $ m_to_n_func_mini_batch_infos-> [$ m_to_n_func_index] {biase_grad_totals}, $ learning_rate, $ mini_batch_size);
       
-      # 各変換関数の重みを更新(学習率を考慮し、傾きの合計をミニバッチ数で、ミニバッチ数で割る)
-      update_params($m_to_n_func_infos->[$m_to_n_func_index]{weights_mat}{values}, $m_to_n_func_mini_batch_infos->[$m_to_n_func_index]{weight_grad_totals_mat}{values}, $learning_rate, $mini_batch_size);
+      #Update the weight of each transmutation function (consider the learning rate, divide the total slope by the number of mini-batch, divide by the number of mini-batch)
+      update_params ($ m_to_n_func_infos-> [$ m_to_n_func_index] {weights_mat} {values}, $ m_to_n_func_mini_batch_infos-> [$ m_to_n_func_index] {weight_grad_totals_mat} {values}, $ learning_rate
     }
   }
 }
 
-# 配列の各要素の和を最初の引数に足す
+# Add the sum of each element of the array to the first argument
 sub array_add_inplace {
-  my ($nums1, $nums2) = @_;
+  my ($ nums1, $ nums2) = @_;
   
-  if (@$nums1 != @$nums2) {
+  if (@ $ nums1! = @ $ nums2) {
     die "Array length is diffent";
   }
   
-  for (my $i = 0; $i < @$nums1; $i++) {
-    $nums1->[$i] += $nums2->[$i];
+  for (my $ i = 0; $ i <@ $ nums1; $ i ++) {
+    $ nums1-> [$ i] + = $ nums2-> [$ i];
   }
 }
 
-# 学習率とミニバッチ数を考慮してパラメーターを更新
+#Update parameters considering learning rate and number of mini-batch
 sub update_params {
-  my ($params, $param_grads, $learning_rate, $mini_batch_size) = @_;
+  my ($ params, $ param_grads, $ learning_rate, $ mini_batch_size) = @_;
   
-  for (my $param_index = 0; $param_index < @$params; $param_index++) {
-    my $update_diff = ($learning_rate / $mini_batch_size) * $param_grads->[$param_index];
-    $params->[$param_index] -= $update_diff;
+  for (my $ param_index = 0; $ param_index <@ $ params; $ param_index ++) {
+    my $ update_diff = ($ learning_rate / $ mini_batch_size) * $ param_grads-> [$ param_index];
+    $ params-> [$ param_index]-= $ update_diff;
   }
 }
 
-# 配列を0で初期化して作成
+# Initialize the array with 0 and create
 sub array_new_zero {
-  my ($length) = @_;
+  my ($ length) = @_;
   
-  my $nums = [(0) x $length];
+  my $ nums = [(0) x $ length];
   
-  return $nums;
+  return $ nums;
 }
-</pre>
+</ pre>

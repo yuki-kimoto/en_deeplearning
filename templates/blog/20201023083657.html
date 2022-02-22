@@ -1,50 +1,50 @@
-<h2>パラメーター更新最適化アルゴリズムとは</h2>
+<h2> What is the parameter update optimization algorithm? </ H2>
 
-パラメーター更新最適化アルゴリズムとは、<a href="/blog/20201015143424.html">重み</a>と<a href="/blog/20201016143424.html">バイアス</a>のパラメーターを更新する場合に、高い正答率に速く到達し、また最終的な正答率が高くなるように考えられたアルゴリズムのことです。
-
-<ul>
-  <li><a href="/blog/20201017123741.html">確率的勾配降下法 - SGD</a></li>
-  <li><a href="/blog/20201022083657.html">Adam - SGDの改善</a></li>
-</ul>
-
-<h3>ミニバッチSGDとは何ですか?</h3>
-
-このサイトの解説では、確率的勾配降下法に、ミニバッチSGDを含んでいますが、本来的な意味は、バッチサイズが1のものをSGDとよび、バッチサイズが複数のものを、ミニバッチSGDと呼びます。
-
-<h3>勾配降下法とは何ですか?</h3>
-
-勾配降下法とは、確率的勾配降下法において、訓練データをランダムに並べ替えることを行わない方法です。
-
-確率的の意味は、訓練データをランダムに並べかえるという意味です。
-
-<h3>最急降下法とは何ですか?</h3>
-
-最急降下法とは、勾配降下法において、バッチサイズを、訓練数と同じにしたものです。
-
-「最急降下」の意味は、誤差の指標である損失関数に対して大きな変化をもたらす(傾きが大きい)パラメーターは、その大きさに学習率を考慮した値を減算して更新するという意味です。
-
-<h3>理解の仕方</h3>
-
-パラメーター更新最適化アルゴリズムの理解の仕方。
-
-<h4>訓練データをランダムに並べ替えるか</h4>
-
-「確率的」という言葉で表現されます。
-
-<h4>バッチサイズはいくつか</h4>
-
-バッチサイズが訓練数と同じであれば、最急降下法、バッチサイズが一つであれば、勾配降下法(SDG)、バッチサイズが複数であれば、ミニバッチSGDです。
-
-<h3>バッチサイズと並列化</h3>
-
-ミニバッチSDGが優れているのは、スレッドなどを使って並列化を行うことができることです。これによって、パフォーマンスを向上させることができます。
-
-1回の学習は、それぞれ独立しているので、傾き(勾配)の計算も独立して行うことができます。
-
-<h3>ミニバッチSDGをさらに改善したパラメーター更新最適化アルゴリズム</h3>
-
-ミニバッチSDGをさらに改善したパラメータ最適化アルゴリズムがあります。
+The parameter update optimization algorithm updates the parameters of <a href="/blog/20201015143424.html"> weight </a> and <a href="/blog/20201016143424.html"> bias </a>. In some cases, it is an algorithm designed to reach a high percentage of correct answers quickly and also to have a high final percentage of correct answers.
 
 <ul>
-  <li><a href="/blog/20201022083657.html">Adam - SGDの改善</a></li>
-</ul>
+  <li> <a href="/blog/20201017123741.html"> Stochastic Gradient Descent Method --SGD </a> </ li>
+  <li> <a href="/blog/20201022083657.html"> Adam --Improved SGD </a> </ li>
+</ ul>
+
+<h3> What is Mini Batch SGD? </ H3>
+
+In the explanation of this site, the stochastic gradient descent method includes mini-batch SGD, but the original meaning is that one with a batch size of 1 is called SGD, and one with multiple batch sizes is called mini-batch SGD. I call.
+
+<h3> What is the gradient descent method? </ H3>
+
+Gradient descent is a stochastic gradient descent that does not randomly sort the training data.
+
+Probabilistic means that the training data is randomly rearranged.
+
+<h3> What is the steepest descent method? </ H3>
+
+The steepest descent method is a gradient descent method in which the batch size is the same as the number of trainings.
+
+"Sudden descent" means that a parameter that causes a large change (large slope) to the loss function, which is an index of error, is updated by subtracting the value considering the learning rate from its magnitude.
+
+<h3> How to understand </ h3>
+
+How to understand the parameter update optimization algorithm.
+
+<h4> Randomly sort the training data </ ​​h4>
+
+It is expressed by the word "stochastic".
+
+<h4> Several batch sizes </ h4>
+
+If the batch size is the same as the number of trainings, it is the steepest descent method, if there is one batch size, it is the gradient descent method (SDG), and if there are multiple batch sizes, it is the mini-batch SGD.
+
+<h3> Batch size and parallelization </ h3>
+
+The great thing about the mini-batch SDG is that it can be parallelized using threads and so on. This can improve performance.
+
+Since each learning is independent, the slope can be calculated independently.
+
+<h3> Parameter update optimization algorithm that further improves the mini-batch SDG </ h3>
+
+There is a parameter optimization algorithm that is an improvement over the mini-batch SDG.
+
+<ul>
+  <li> <a href="/blog/20201022083657.html"> Adam --Improved SGD </a> </ li>
+</ ul>

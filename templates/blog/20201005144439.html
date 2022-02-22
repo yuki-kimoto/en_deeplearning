@@ -1,8 +1,8 @@
-<h2>正規分布に従う乱数を求める</h2>
+<h2> Find random numbers that follow a normal distribution </ h2>
 
-正規分布に従う乱数をPerlで求めてみましょう。重みのパラメーターの初期値として、<a href="/blog/20201007144439.html">Xavierの初期値</a>や<a href="/blog/20201006144439.html">Heの初期値</a>がありますが、この二つは、どちらも正規分布に従う乱数です。
+Let's find a random number that follows a normal distribution in Perl. <a href="/blog/20201007144439.html"> Initial value of Xavier </a> and <a href="/blog/20201006144439.html"> Initial value of He </a> as the initial value of the weight parameter. >, But both are random numbers that follow a normal distribution.
 
-正規分布は中心が高く、右と左に行けば行くほど、低くなるような分布です。左右は対象でなめらかなグラフです。(x, y)座標でひとつの正規分布を表現すると以下のようになります。
+The normal distribution has a high center, and the more you go to the right and left, the lower the distribution. The left and right are targets and smooth graphs. Expressing one normal distribution with (x, y) coordinates is as follows.
 
 <pre>
 (-4, 0.00001)
@@ -14,38 +14,38 @@
 (2, 0.05)
 (3, 0.001)
 (4, 0.00001)
-</pre>
+</ pre>
 
-正規分布は、平均と標準偏差を指定すると形が決まります。
+The normal distribution is shaped by specifying the mean and standard deviation.
 
-平均は、最も高いy座標におけるx座標に一致します。上の例の場合は0です。標準偏差と呼ばれる値が小さいほど、とがった形になります。
+The mean matches the x coordinate at the highest y coordinate. In the case of the above example, it is 0. The smaller the value, called the standard deviation, the sharper the shape.
 
-正規分布に従う乱数とは、その名のとおりです。中心付近の値が登場する確率が高くなります。randnの計算式については、計算方法の内容は私にはよくわかっておりません。
+Random numbers that follow a normal distribution are, as the name implies. The probability that a value near the center will appear is high. Regarding the calculation formula of randn, I do not know the contents of the calculation method well.
 
 <pre>
 use strict;
 use warnings;
 
-# 正規分布に従う乱数を求める関数
-# $ave は平均, $sigma は標準偏差、
+# Function to find random numbers that follow a normal distribution
+# $ ave is mean, $ sigma is standard deviation,
 sub randn {
-  my ($ave, $sigma) = @_;
-  my ($r1, $r2) = (rand(), rand());
-  while ($r1 == 0) { $r1 = rand(); }
-  return ($sigma * sqrt(-2 * log($r1)) * sin(2 * 3.14159265359 * $r2)) + $ave;
+  my ($ ave, $ sigma) = @_;
+  my ($ r1, $ r2) = (rand (), rand ());
+  while ($ r1 == 0) {$ r1 = rand ();}
+  return ($ sigma * sqrt (-2 * log ($ r1)) * sin (2 * 3.14159265359 * $ r2)) + $ ave;
 }
 
-my $ave = 0;
-my $sigma = 1;
+my $ ave = 0;
+my $ sigma = 1;
 
-# 正規分布に従う乱数を発生させる
+# Generate a random number that follows a normal distribution
 for (0 .. 100) {
-  my $randn = randn($ave, $sigma);
-  print "$randn\n";
+  my $ randn = randn ($ ave, $ sigma);
+  print "$ randn \ n";
 }
-</pre>
+</ pre>
 
-出力結果のサンプルです。
+This is a sample output result.
 
 <pre>
 -0.312900844794695
@@ -149,4 +149,4 @@ for (0 .. 100) {
 0.456481012707392
 -0.713494905933569
 -1.10745100942014
-</pre>
+</ pre>

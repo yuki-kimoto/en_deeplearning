@@ -1,12 +1,12 @@
-<h2>中間層における計算 - m個の入力をn個の出力に変換する</h2>
+<h2> Computations in the middle layer-convert m inputs to n outputs </ h2>
 
-ディープラーニングにおける中間層における計算として、m個の入力をn個の出力に変換する方法を解説します。
+As a calculation in the middle layer in deep learning, we will explain how to convert m inputs to n outputs.
 
-ディープラーニングでは、複数の入力と複数の出力を、多段階に連続的につなぎ、最終的な出力を得ることをします。
+In deep learning, multiple inputs and multiple outputs are continuously connected in multiple stages to obtain the final output.
 
-このとき、m個の入力から、n個の出力を得る必要があります。
+At this time, it is necessary to obtain n outputs from m inputs.
 
-たとえば、4つの入力に対して、5つの出力を得る。5つの入力から、3つの出力を得るということを行います。
+For example, for 4 inputs, you get 5 outputs. We will get 3 outputs from 5 inputs.
 
 <pre>
 (x0, x1, x2, x3)
@@ -14,263 +14,263 @@
 (y0, y1, y2, y3, y4)
 ↓
 (z0, z1, z2)
-</pre>
+</ pre>
 
-<h3>二つの入力から三つの出力を得る</h3>
+<h3> Get 3 outputs from 2 inputs </ h3>
 
-では、簡単な例として、二つの入力から三つの出力を得る方法を記述してみましょう。まずPerlのコードで書きます。
+Now, as a simple example, let's describe how to get three outputs from two inputs. First, write it in Perl code.
 
 <pre>
 use strict;
 use warnings;
 
-my $x0 = 0.5;
-my $x1 = 0.8;
+my $ x0 = 0.5;
+my $ x1 = 0.8;
 
-my $w00 = 0.1;
-my $w01 = -0.4;
-my $w10 = 0.2;
-my $w11 = -0.5;
-my $w20 = 0.3;
-my $w21 = 1.3;
+my $ w00 = 0.1;
+my $ w01 = -0.4;
+my $ w10 = 0.2;
+my $ w11 = -0.5;
+my $ w20 = 0.3;
+my $ w21 = 1.3;
 
-my $b0 = 0.3;
-my $b1 = -0.9;
-my $b2 = 0.5;
+my $ b0 = 0.3;
+my $ b1 = -0.9;
+my $ b2 = 0.5;
 
-my $y0 = ($w00 * $x0) + ($w01 * $x1) + $b0;
-my $y1 = ($w10 * $x0) + ($w11 * $x1) + $b1;
-my $y2 = ($w20 * $x0) + ($w21 * $x1) + $b2;
+my $ y0 = ($ w00 * $ x0) + ($ w01 * $ x1) + $ b0;
+my $ y1 = ($ w10 * $ x0) + ($ w11 * $ x1) + $ b1;
+my $ y2 = ($ w20 * $ x0) + ($ w21 * $ x1) + $ b2;
 
-print "($y0, $y1, $y2)\n";
-</pre>
+print "($ y0, $ y1, $ y2) \ n";
+</ pre>
 
-出力結果は以下のようになります。
+The output result is as follows.
 
 <pre>
 (0.0299999999999999, -1.2, 1.69)
-</pre>
+</ pre>
 
-このような計算を行うことで、($x1, $x2)という二つの入力値から($y0, $y1, $y2)という三つの出力を得ることができました。
+By performing such a calculation, we were able to obtain three outputs ($ y0, $ y1, $ y2) from two input values ​​($ x1, $ x2).
 
-<h3>活性化関数で出力を変換する</h3>
+<h3> Convert the output with the activation function </ h3>
 
-ディープラーニングでは、次の入力に渡す前に、出力を、ある規則によって変換する必要があります。この変換が必要な理由は、この変換を行わないと学習が進まないためです。
+Deep learning requires that the output be transformed by some rule before passing it to the next input. The reason this conversion is necessary is that learning will not proceed without this conversion.
 
-このような関数は活性化関数と呼ばれ、活性化関数の一つとして、ReLUと呼ばれる関数があります。
+Such a function is called an activation function, and one of the activation functions is a function called ReLU.
 
 <pre>
-# ReLU関数
+#ReLU function
 sub relu {
-  my ($num) = @_;
+  my ($ num) = @_;
   
-  return $num > 0 : $num : 0;
+  return $ num> 0: $ num: 0;
 }
-</pre>
+</ pre>
 
-この関数は、入力が0より大きければ、その値を返し、0以下の場合は、0を返します。
+This function returns its value if the input is greater than or equal to 0, and 0 if it is less than or equal to 0.
 
-先のサンプルに活性化関数を適用してみましょう。関数で書く必要はないので、ソースコードにべた書きします。
+Let's apply the activation function to the previous sample. You don't have to write it as a function, so write it in the source code.
 
 <pre>
 use strict;
 use warnings;
 
-my $x0 = 0.5;
-my $x1 = 0.8;
+my $ x0 = 0.5;
+my $ x1 = 0.8;
 
-my $w00 = 0.1;
-my $w01 = -0.4;
-my $w10 = 0.2;
-my $w11 = -0.5;
-my $w20 = 0.3;
-my $w21 = 1.3;
+my $ w00 = 0.1;
+my $ w01 = -0.4;
+my $ w10 = 0.2;
+my $ w11 = -0.5;
+my $ w20 = 0.3;
+my $ w21 = 1.3;
 
-my $b0 = 0.3;
-my $b1 = -0.9;
-my $b2 = 0.5;
+my $ b0 = 0.3;
+my $ b1 = -0.9;
+my $ b2 = 0.5;
 
-my $y0 = ($w00 * $x0) + ($w01 * $x1) + $b0;
-my $y1 = ($w10 * $x0) + ($w11 * $x1) + $b1;
-my $y2 = ($w20 * $x0) + ($w21 * $x1) + $b2;
+my $ y0 = ($ w00 * $ x0) + ($ w01 * $ x1) + $ b0;
+my $ y1 = ($ w10 * $ x0) + ($ w11 * $ x1) + $ b1;
+my $ y2 = ($ w20 * $ x0) + ($ w21 * $ x1) + $ b2;
 
-$y0 = $y0 > 0 ? $y0 : 0;
-$y1 = $y1 > 0 ? $y1 : 0;
-$y2 = $y2 > 0 ? $y2 : 0;
+$ y0 = $ y0> 0? $ y0: 0;
+$ y1 = $ y1> 0? $ y1: 0;
+$ y2 = $ y2> 0? $ y2: 0;
 
-print "($y0, $y1, $y2)\n";
-</pre>
+print "($ y0, $ y1, $ y2) \ n";
+</ pre>
 
-出力結果は以下のようになります。値がマイナスの場合は、0に変わっています。
+The output result is as follows. If the value is negative, it has changed to 0.
 
 <pre>
 (0.0299999999999999, 0, 1.69)
-</pre>
+</ pre>
 
-<h3>m個の入力をn個の出力に変換する処理の一般化</h3>
+<h3> Generalization of the process of converting m inputs to n outputs </ h3>
 
-m個の入力をn個の出力に変換する処理を一般化してみましょう。もう一度、下の処理をじっくりみてください。
-
-<pre>
-use strict;
-use warnings;
-
-my $x0 = 0.5;
-my $x1 = 0.8;
-
-my $w00 = 0.1;
-my $w01 = -0.4;
-my $w10 = 0.2;
-my $w11 = -0.5;
-my $w20 = 0.3;
-my $w21 = 1.3;
-
-my $b0 = 0.3;
-my $b1 = -0.9;
-my $b2 = 0.5;
-
-my $y0 = ($w00 * $x0) + ($w01 * $x1) + $b0;
-my $y1 = ($w10 * $x0) + ($w11 * $x1) + $b1;
-my $y2 = ($w20 * $x0) + ($w21 * $x1) + $b2;
-
-$y0 = $y0 > 0 ? $y0 : 0;
-$y1 = $y1 > 0 ? $y1 : 0;
-$y2 = $y2 > 0 ? $y2 : 0;
-
-print "($y0, $y1, $y2)\n";
-</pre>
-
-必要な情報を、漏れなく書き出してみましょう。
-
-入力の個数は、2個。
-
-出力の個数は、3個。
-
-必要な$wパラメーターの個数はいくつでしょうか。これは「入力個数「2」 * 出力個数「3」 = 6」です。
-
-必要な$bパラメーターの個数はいくつでしょうか? 出力個数「3」と同じです。
-
-入力は
-
-<pre>
-[$x0, $x1]
-</pre>
-
-パラメーター$wは、
-
-<pre>
-[
-  $w00, $w01,
-  $w10, $w11,
-  $w20, $w21,
-]
-</pre>
-
-パラメーター$bは、
-
-<pre>
-[
-  $b0,
-  $b1,
-  $b2,
-]
-</pre>
-
-受け取る出力は
-
-<pre>
-[$y0, $y1, $y2]
-</pre>
-
-です。
-
-<h4>配列化</h4>
-
-では、コーディングしてみます。最初は、配列化です。最初の例と、と同じ出力を得ることができれば、正解ですね。
-
-目を凝らして、法則性を眺めてください。
+Let's generalize the process of converting m inputs to n outputs. Please take a closer look at the process below.
 
 <pre>
 use strict;
 use warnings;
 
-my $x = [0.5, 0.8];
-my $y = [0, 0, 0];
-my $x_len = @$x;
-my $y_len = @$y;
+my $ x0 = 0.5;
+my $ x1 = 0.8;
 
-my $w = [
+my $ w00 = 0.1;
+my $ w01 = -0.4;
+my $ w10 = 0.2;
+my $ w11 = -0.5;
+my $ w20 = 0.3;
+my $ w21 = 1.3;
+
+my $ b0 = 0.3;
+my $ b1 = -0.9;
+my $ b2 = 0.5;
+
+my $ y0 = ($ w00 * $ x0) + ($ w01 * $ x1) + $ b0;
+my $ y1 = ($ w10 * $ x0) + ($ w11 * $ x1) + $ b1;
+my $ y2 = ($ w20 * $ x0) + ($ w21 * $ x1) + $ b2;
+
+$ y0 = $ y0> 0? $ y0: 0;
+$ y1 = $ y1> 0? $ y1: 0;
+$ y2 = $ y2> 0? $ y2: 0;
+
+print "($ y0, $ y1, $ y2) \ n";
+</ pre>
+
+Let's write out all the necessary information.
+
+The number of inputs is two.
+
+The number of outputs is three.
+
+How many $ w parameters do you need? This is "number of inputs" 2 "* number of outputs" 3 "= 6".
+
+How many $ b parameters do you need? Same as the number of outputs "3".
+
+Input is
+
+<pre>
+[$ x0, $ x1]
+</ pre>
+
+The parameter $ w is
+
+<pre>
+[
+  $ w00, $ w01,
+  $ w10, $ w11,
+  $ w20, $ w21,
+]
+</ pre>
+
+The parameter $ b is
+
+<pre>
+[
+  $ b0,
+  $ b1,
+  $ b2,
+]
+</ pre>
+
+The output you receive is
+
+<pre>
+[$ y0, $ y1, $ y2]
+</ pre>
+
+am.
+
+<h4> Arrangement </ h4>
+
+Let's code it. The first is arraying. If you can get the same output as the first example, that's the correct answer.
+
+Keep an eye out and look at the law.
+
+<pre>
+use strict;
+use warnings;
+
+my $ x = [0.5, 0.8];
+my $ y = [0, 0, 0];
+my $ x_len = @ $ x;
+my $ y_len = @ $ y;
+
+my $ w = [
   0.1, -0.4,
   0.2, -0.5,
   0.3, 1.3,
-];
+];;
 
-my $b = [
+my $ b = [
   0.3,
   -0.9,
   0.5,
-];
+];;
 
-$y->[0] = ($w->[$x_len * 0 + 0] * $x->[0]) + ($w->[$x_len * 0 + 1] * $x->[1]) + $b->[0];
-$y->[1] = ($w->[$x_len * 1 + 0] * $x->[0]) + ($w->[$x_len * 1 + 1] * $x->[1]) + $b->[1];
-$y->[2] = ($w->[$x_len * 2 + 0] * $x->[0]) + ($w->[$x_len * 2 + 1] * $x->[1]) + $b->[2];
+$ y-> [0] = ($ w-> [$ x_len * 0 + 0] * $ x-> [0]) + ($ w-> [$ x_len * 0 + 1] * $ x-> [ 1]) + $ b-> [0];
+$ y-> [1] = ($ w-> [$ x_len * 1 + 0] * $ x-> [0]) + ($ w-> [$ x_len * 1 + 1] * $ x-> [ 1]) + $ b-> [1];
+$ y-> [2] = ($ w-> [$ x_len * 2 + 0] * $ x-> [0]) + ($ w-> [$ x_len * 2 + 1] * $ x-> [ 1]) + $ b-> [2];
 
-$y->[0] = $y->[0] > 0 ? $y->[0] : 0;
-$y->[1] = $y->[1] > 0 ? $y->[1] : 0;
-$y->[2] = $y->[2] > 0 ? $y->[2] : 0;
+$ y-> [0] = $ y-> [0]> 0? $ y-> [0]: 0;
+$ y-> [1] = $ y-> [1]> 0? $ y-> [1]: 0;
+$ y-> [2] = $ y-> [2]> 0? $ y-> [2]: 0;
 
-print "($y->[0], $y->[1], $y->[2])\n";
-</pre>
+print "($ y-> [0], $ y-> [1], $ y-> [2]) \ n";
+</ pre>
 
-出力結果は以下で、同じになりました。
+The output results are the same below.
 
 <pre>
 (0.661503159202952, 0.802183888558582, 0.755838899094797)
-</pre>
+</ pre>
 
-<h4>ループ化</h4>
+<h4> Looping </ h4>
 
-配列化が終わったら、次はループ化です。配列というデータ構造にすることで、ループのアルゴリズムを適用できます。二重ループで処理を書き直してみます。最初の例と、と同じ出力を得ることができれば、正解ですね。
+After the array is finished, the next step is looping. You can apply the loop algorithm by using a data structure called an array. Let's rewrite the process in a double loop. If you can get the same output as the first example, that's the correct answer.
 
 <pre>
 use strict;
 use warnings;
 
-my $x = [0.5, 0.8];
-my $y = [0, 0, 0];
-my $x_len = @$x;
-my $y_len = @$y;
+my $ x = [0.5, 0.8];
+my $ y = [0, 0, 0];
+my $ x_len = @ $ x;
+my $ y_len = @ $ y;
 
-my $w = [
+my $ w = [
   0.1, -0.4,
   0.2, -0.5,
   0.3, 1.3,
-];
+];;
 
-my $b = [
+my $ b = [
   0.3,
   -0.9,
   0.5,
-];
+];;
 
-for (my $y_index = 0; $y_index < $y_len; $y_index++) {
-  my $total = 0;
-  for (my $x_index = 0; $x_index < $x_len; $x_index++) {
-    $total += ($w->[$x_len * $y_index + $x_index] * $x->[$x_index]);
+for (my $ y_index = 0; $ y_index <$ y_len; $ y_index ++) {
+  my $ total = 0;
+  for (my $ x_index = 0; $ x_index <$ x_len; $ x_index ++) {
+    $ total + = ($ w-> [$ x_len * $ y_index + $ x_index] * $ x-> [$ x_index]);
   }
-  $total +=  $b->[$y_index];
-  $y->[$y_index] = $total > 0 ? $total : 0;
+  $ total + = $ b-> [$ y_index];
+  $ y-> [$ y_index] = $ total> 0? $ Total: 0;
 }
 
-print "($y->[0], $y->[1], $y->[2])\n";
-</pre>
+print "($ y-> [0], $ y-> [1], $ y-> [2]) \ n";
+</ pre>
 
-出力結果は以下で、同じになりました。
+The output results are the same below.
 
 <pre>
 (0.0299999999999999, 0, 1.69)
-</pre>
+</ pre>
 
-これで、mが2以外の数になったり、nが3以外の数になっても、対応できるようになりました。
+Now, even if m is a number other than 2, or n is a number other than 3, it can be handled.
 
-ディープラーニングに必要な技術の中の、m個の入力をn個の出力に変換する方法、活性化関数の適用の学習を終えました。
+We have finished learning how to convert m inputs to n outputs and apply the activation function among the techniques required for deep learning.

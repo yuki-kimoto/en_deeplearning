@@ -1,29 +1,29 @@
-<h2>シグモイド関数の導関数</h2>
+<h2> Derivative of sigmoid function </ h2>
 
-<a href="/blog/20200903120907.html">シグモイド関数</a>の導関数をPerlで書いてみます。導関数とは、関数を微分したものを意味します。シグモイド関数の導関数は、逆誤伝播法に利用します。
+Let's write the derivative of <a href="/blog/20200903120907.html"> sigmoid function </a> in Perl. A derivative is a derivative of a function. The derivative of the sigmoid function is used for the inverse mispropagation method.
 
 <pre>
-# シグモイド関数の導関数
+#Derivative of sigmoid function
 sub sigmoid_derivative {
-  my ($x) = @_;
+   my ($ x) = @_;
   
-  my $sigmoid_derivative = sigmoid($x) * (1 - sigmoid($x));
+   my $ sigmoid_derivative = sigmoid ($ x) * (1 --sigmoid ($ x));
   
-  return $sigmoid_derivative;
+   return $ sigmoid_derivative;
 }
 
-# シグモイド関数
+#Sigmoid function
 sub sigmoid {
-  my ($x) = @_;
+   my ($ x) = @_;
   
-  my $sigmoid = 1.0 / (1.0 + exp(-$x));
+   my $ sigmoid = 1.0 / (1.0 + exp (-$ x));
   
-  return $sigmoid;
+   return $ sigmoid;
 }
 
-my $x = 0.5;
-my $sigmoid_derivative = sigmoid_derivative($x);
+my $ x = 0.5;
+my $ sigmoid_derivative = sigmoid_derivative ($ x);
 
 # 0.2350037122015944890693
-print "$sigmoid_derivative\n";
-</pre>
+print "$ sigmoid_derivative \ n";
+</ pre>

@@ -1,56 +1,56 @@
-<h2>MNISTラベル情報を読み込む</h2>
+<h2> Read MNIST label information </ h2>
 
-MNISTラベル情報をPerlで読み込むサンプルプログラムです。MNISTは、ディープラーニングで利用できる画像のサンプルです。
+This is a sample program that reads MNIST label information in Perl. MNIST is a sample image that can be used in deep learning.
 
-<a href="http://yann.lecun.com/exdb/mnist/">THE MNIST DATABASE of handwritten digits</a>を読み込むサンプルです。
+This is a sample to read <a href="http://yann.lecun.com/exdb/mnist/"> THE MNIST DATABASE of handwritten digits </a>.
 
 <pre>
 use strict;
 use warnings;
 use FindBin;
 
-# MNISTラベル情報を読み込む
-my $mnist_label_file = "$FindBin::Bin/data/train-labels-idx1-ubyte";
+# MNIST Read label information
+my $ mnist_label_file = "$ FindBin :: Bin / data / train-labels-idx1-ubyte";
 
-open my $mnist_label_fh, '<', $mnist_label_file
-  or die "Can't open file $mnist_label_file: $!";
+open my $ mnist_label_fh,'<', $ mnist_label_file
+  or die "Can't open file $ mnist_label_file: $!";
 
-# マジックナンバー
-my $label_buffer;
-read($mnist_label_fh, $label_buffer, 4);
-my $magic_number = unpack('N1', $label_buffer);
-if ($magic_number != 0x00000801) {
-  die "Invalid magic number expected " . 0x00000801 . "actual $magic_number";
+#Magic number
+my $ label_buffer;
+read ($ mnist_label_fh, $ label_buffer, 4);
+my $ magic_number = unpack ('N1', $ label_buffer);
+if ($ magic_number! = 0x00000801) {
+  die "Invalid magic number expected". 0x00000801. "actual $ magic_number";
 }
 
-# ラベル数
-read($mnist_label_fh, $label_buffer, 4);
-my $items_count = unpack('N1', $label_buffer);
+# Number of labels
+read ($ mnist_label_fh, $ label_buffer, 4);
+my $ items_count = unpack ('N1', $ label_buffer);
 
-# ラベルの読み込み
-my $label_numbers = [];
-for (my $i = 0; $i < $items_count; $i++) {
-  read $mnist_label_fh, $label_buffer, 1;
-  my $label_number = unpack('C1', $label_buffer);
-  push @$label_numbers, $label_number;
+#Read label
+my $ label_numbers = [];
+for (my $ i = 0; $ i <$ items_count; $ i ++) {
+  read $ mnist_label_fh, $ label_buffer, 1;
+  my $ label_number = unpack ('C1', $ label_buffer);
+  push @ $ label_numbers, $ label_number;
 }
 
-# ラベル情報
-my $label_info = {};
-$label_info->{items_count} = $items_count;
-$label_info->{label_numbers} = $label_numbers;
-</pre>
+# Label information
+my $ label_info = {};
+$ label_info-> {items_count} = $ items_count;
+$ label_info-> {label_numbers} = $ label_numbers;
+</ pre>
 
-<h3>MNISTラベル情報を読み込むプログラムの簡易解説</h3>
+<h3> A brief explanation of the program that reads MNIST label information </ h3>
 
-「data」以下に「train-labels-idx1-ubyte」を配置します。
+Place "train-labels-idx1-ubyte" under "data".
 
-ファイルをオープンしてread関数で読み込んでいきます。
+Open the file and read it with the read function.
 
-マジックナンバーのチェックを行います。ビッグエンディアンの32bit整数なので、unpackに「N1」を指定します。
+Check the magic number. Since it is a big endian 32-bit integer, specify "N1" for unpack.
 
-ラベル数を取得します。ビッグエンディアンの32bit整数なので、unpackに「N1」を指定します。
+Get the number of labels. Since it is a big endian 32-bit integer, specify "N1" for unpack.
 
-ラベルを読み込んでいきます。ラベルの一つの情報は符号なし8bit整数なので「C1」を指定します。
+I will read the label. Since one piece of information on the label is an unsigned 8-bit integer, specify "C1".
 
-訓練用のラベル情報である「train-labels-idx1-ubyte」を読み込んでいますが、検証用のラベル情報「t10k-labels-idx1-ubyte」も同様の方法で読み込めます。
+The label information for training "train-labels-idx1-ubyte" is read, but the label information for verification "t10k-labels-idx1-ubyte" can also be read in the same way.

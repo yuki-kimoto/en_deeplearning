@@ -1,34 +1,34 @@
-<h2>ベクトルの差を求める</h2>
+<h2> Find the difference between the vectors </ h2>
 
-ディープラーニングの計算で必要なベクトルの差をPerlで求めましょう。
+Let's use Perl to find the vector difference required for deep learning calculations.
 
-Perlでは、ベクトルは配列で表現します。ベクトルと聞くと、ソフトウェアエンジニアは頭が痛くなるんじゃないかと思いますが、配列と言ってもらえると「なんだぁ～」ってなりますよね。
+In Perl, vectors are represented as arrays. I think that software engineers will have a headache when they hear the word "vector", but when they say "array", it means "what?".
 
-ベクトルの差を求めるPerlのプログラムです。
+A Perl program that finds vector differences.
 
 <pre>
 use strict;
 use warnings;
 
-# ベクトルの差
+#Vector difference
 sub vec_sub {
-  my ($vec1, $vec2) = @_;
+   my ($ vec1, $ vec2) = @_;
 
-  my $vec_sub = [];
+   my $ vec_sub = [];
 
-  for (my $i = 0; $i < @$vec1; $i++) {
-    $vec_sub->[$i] = $vec1->[$i] - $vec2->[$i];
-  }
+   for (my $ i = 0; $ i <@ $ vec1; $ i ++) {
+     $ vec_sub-> [$ i] = $ vec1-> [$ i]-$ vec2-> [$ i];
+   }
   
-  return $vec_sub;
+   return $ vec_sub;
 }
 
-my $vec1 = [1, 2, 3];
-my $vec2 = [4, 5, 6];
+my $ vec1 = [1, 2, 3];
+my $ vec2 = [4, 5, 6];
 
-# ベクトルの差
-my $vec_sub = vec_sub($vec1, $vec2);
+#Vector difference
+my $ vec_sub = vec_sub ($ vec1, $ vec2);
 
 # -3 -3 -3
-print "@$vec_sub\n";
-</pre>
+print "@ $ vec_sub \ n";
+</ pre>

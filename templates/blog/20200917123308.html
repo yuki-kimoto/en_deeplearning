@@ -1,82 +1,82 @@
-<h2>転置行列を求める</h2>
+<h2> Find the transposed matrix </ h2>
 
-転置行列をPerlで求めてみましょう。転置行列とは、行と列が入れ替わった行列のことです。転置行列の計算は、逆誤伝播法で必要になります。
+Let's find the transposed matrix in Perl. A transposed matrix is ​​a matrix with rows and columns swapped. The calculation of the transposed matrix is ​​required by the inverse mispropagation method.
 
-行列は<a href="/blog/20200914103640.html">列優先の行列</a>だと考えてください。
+Think of the matrix as a <a href="/blog/20200914103640.html"> column-first matrix </a>.
 
 <pre>
-# 数学の行列表現
-# 3行2列の行列
-# 1 4
-# 2 5
+# Matrix representation of mathematics
+# 3 rows and 2 columns matrix
+# 14
+# twenty five
 # 3 6
 
-# 列優先でのデータのもちかた
-my $mat = {
-  values => [1, 2, 3, 4, 5, 6],
+#How to use data with column priority
+my $ mat = {
+  values ​​=> [1, 2, 3, 4, 5, 6],
   rows_length => 3,
   columns_length => 2,
-};
-</pre>
+};;
+</ pre>
 
-この行列を転置するとすると以下のようになります。行と列が入れ替わります。
+Transposing this matrix gives: The rows and columns are swapped.
 
 <pre>
-# 転置行列
+#Transpose matrix
 
-# 数学の行列表現
-# 2行3列の行列
-# 1 2 3
+# Matrix representation of mathematics
+# 2 rows and 3 columns matrix
+# one two Three
 # 4 5 6
 
-# 列優先でのデータのもちかた
-my $mat_transpose = {
-  values => [1, 4, 2, 5, 3, 6],
+#How to use data with column priority
+my $ mat_transpose = {
+  values ​​=> [1, 4, 2, 5, 3, 6],
   rows_length => 2,
   columns_length => 3,
-};
-</pre>
+};;
+</ pre>
 
-<h3>転置行列を求めるPerlプログラム</h3>
+<h3> Perl program for transposed matrix </ h3>
 
-転置行列を求めるPerlプログラムを書いてみます。
+Let's write a Perl program that finds the transposed matrix.
 
 <pre>
 use strict;
 use warnings;
 
 sub mat_transpose {
-  my ($mat) = @_;
+  my ($ mat) = @_;
   
-  my $rows_length = $mat->{rows_length};
-  my $columns_length = $mat->{columns_length};
-  my $length = $rows_length * $columns_length;
+  my $ rows_length = $ mat-> {rows_length};
+  my $ columns_length = $ mat-> {columns_length};
+  my $ length = $ rows_length * $ columns_length;
   
-  my $mat_trans ={};
-  $mat_trans->{rows_length} = $columns_length;
-  $mat_trans->{columns_length} = $rows_length;
+  my $ mat_trans = {};
+  $ mat_trans-> {rows_length} = $ columns_length;
+  $ mat_trans-> {columns_length} = $ rows_length;
   
-  my $values = $mat->{values};
-  my $mat_trans_values = [];
+  my $ values ​​= $ mat-> {values};
+  my $ mat_trans_values ​​= [];
   
-  for (my $row_index = 0; $row_index < $rows_length; $row_index++) {
-    for (my $column_index = 0; $column_index < $columns_length; $column_index++) {
-      $mat_trans_values->[$row_index * $columns_length + $column_index] = $values->[$column_index * $rows_length+ $row_index];
+  for (my $ row_index = 0; $ row_index <$ rows_length; $ row_index ++) {
+    for (my $ column_index = 0; $ column_index <$ columns_length; $ column_index ++) {
+      $ mat_trans_values-> [$ row_index * $ columns_length + $ column_index] = $ values-> [$ column_index * $ rows_length + $ row_index];
     }
   }
-  $mat_trans->{values} = $mat_trans_values;
+  $ mat_trans-> {values} = $ mat_trans_values;
   
-  return $mat_trans;
+  return $ mat_trans;
 }
 
-my $mat = {
-  values => [1, 2, 3, 4, 5, 6],
+my $ mat = {
+  values ​​=> [1, 2, 3, 4, 5, 6],
   rows_length => 3,
   columns_length => 2,
-};
+};;
 
-my $mat_trans = mat_transpose($mat);
+my $ mat_trans = mat_transpose ($ mat);
 
-# Row:2, Column:3, Values:1 4 2 5 3 6
-print "Row:$mat_trans->{rows_length}, Column:$mat_trans->{columns_length}, Values:@{$mat_trans->{values}}\n";
-</pre>
+#Row: 2, Column: 3, Values: 1 4 2 5 3 6
+print "Row: $ mat_trans-> {rows_length}, Column: $ mat_trans-> {columns_length}, Values: @ {$ mat_trans-> {values}} \ n";
+</ pre>

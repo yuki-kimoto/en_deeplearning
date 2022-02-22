@@ -1,27 +1,27 @@
-<h2>導関数とは</h2>
+<h2> What is a derivative? </ H2>
 
-導関数とは、関数の微分のことです。関数の微分とは、入力の微小な変化量に対する、出力の変化量の比をとり、微小変化を極限まで0に近づけたときの値です。
+The derivative is the derivative of a function. The differential of a function is the value when the ratio of the amount of change in the output to the amount of small change in the input is taken and the minute change is brought close to 0 to the limit.
 
 <pre>
-微分 = 出力の変化量 / 入力の微小な変化量(極限まで0に近づける)
-</pre>
+Derivative = output change / input minute change (close to 0 to the limit)
+</ pre>
 
-たとえば、0.5という入力を考えます。
+For example, consider the input 0.5.
 
-0.5から、微少量0.001を増やします。0.5に対する出力はfunc(0.5)です。「0.5 + 0.001」に対する出力はfunc(0.5 + 0.001)です。
+From 0.5, increase a small amount 0.001. The output for 0.5 is func (0.5). The output for "0.5 + 0.001" is func (0.5 + 0.001).
 
-入力の微小変化は「0.001」です。これに対する出力の変化は「func(0.5 + 0.001) - func(0.5)」です。
+The small change in input is "0.001". The change in output for this is "func (0.5 + 0.001) --func (0.5)".
 
-微分は「func(0.5 + 0.001) - func(0.5) / 0.001」で、0.001を極限まで0に近づけた値です。
+The derivative is "func (0.5 + 0.001) --func (0.5) / 0.001", which is the value obtained by bringing 0.001 close to 0 to the limit.
 
-特定の入力に対する微分は、傾きとも呼ばれます。入力の微小変化に対して、出力の変化量が大きい場合は、傾きは大きくなります。
+The derivative for a particular input is also called the slope. If the amount of change in the output is large for a small change in the input, the slope will be large.
 
-<h3>ディープラーニングにおける導関数が使用される場所</h3>
+<h3> Where derivatives are used in deep learning </ h3>
 
-ディープラーニングにおいては、導関数がでてきた場合は、傾きを表すものだと考えください。
+In deep learning, when a derivative appears, think of it as a slope.
 
-隠れ層の重みとバイアスのパラメーターが、入力となり、<a href="/blog/20200901120907.html">損失関数</a>が出力となります。
+The hidden layer weight and bias parameters are the inputs, and the <a href="/blog/20200901120907.html"> loss function </a> is the output.
 
-損失関数は誤差の指標となっており、誤差を小さくするように、重みとバイアスのパラメーターを調整します。
+The loss function is an indicator of the error and adjusts the weight and bias parameters to reduce the error.
 
-<a href="/blog/20200922123308.html">逆誤伝播法</a>と呼ばれるアルゴリズムを使い「損失関数の値を減少させる向きの重みの傾きの組」と「損失関数の値を減少させる向きのバイアスの傾きの組」を求め、<a href="/blog/20200923123308.html">学習率</a>を考慮して、「現在の重みの組」と「現在のバイアスの組」から引き算します。正規化という手法を使う場合は、正規化も考慮にいれて引き算します。
+Using an algorithm called <a href="/blog/20200922123308.html"> reverse mispropagation method </a>, "a set of weight slopes that decrease the value of the loss function" and "decrease the value of the loss function". Find the "set of bias slopes" and consider the <a href="/blog/20200923123308.html"> learning rate </a>, the "set of current weights" and the "set of current biases". Subtract from. When using a technique called normalization, the normalization is also taken into consideration when subtracting.

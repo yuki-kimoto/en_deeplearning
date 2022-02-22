@@ -1,63 +1,63 @@
-<h2>Adam - SGDを改善したパラメーター更新最適化アルゴリズム</h2>
+<h2> Adam --Parameter update optimization algorithm with improved SGD </ h2>
 
-AdamはSGDを改善したパラメーター更新最適化アルゴリズムです。<a href="/blog/20201017123741.html">SGD</a>における学習率の部分が、訓練を行う毎に更新されていくことが特徴です。ひとつ前で行った更新量を、考慮にいれるというところも特徴です。
+Adam is a parameter update optimization algorithm that improves SGD. The feature is that the learning rate part in <a href="/blog/20201017123741.html"> SGD </a> is updated every time you train. Another feature is that it takes into account the amount of updates made the previous time.
 
-ひとつのパラメーターを更新する場合におけるAdamのアルゴリズムをPerlで書いてみます。<a href="/blog/20201016143424.html">バイアス</a>を更新する場合のサンプルです。<a href="/blog/20201015143424.html">重み</a>の場合も同じです。
+Let's write Adam's algorithm for updating one parameter in Perl. This is a sample for updating <a href="/blog/20201016143424.html"> bias </a>. The same is true for <a href="/blog/20201015143424.html"> weights </a>.
 
-AdamをPerlのコードで書いてみました。
+I wrote Adam in Perl code.
 
 <pre>
-# Adam
+#Adam
 
 use strict;
 use warnings;
 
-# ハイパーパラメーター
-my $biase = 0.14;
-my $learning_rate = 0.001;
-my $much_small_value = 1e-8;
-my $before_moment_weight = 0.9;
-my $before_velocity_weight = 0.999;
+#Hyperparameters
+my $ biase = 0.14;
+my $ learning_rate = 0.001;
+my $ much_small_value = 1e-8;
+my $ before_moment_weight = 0.9;
+my $ before_velocity_weight = 0.999;
 
-# モーメントの値
-my $moment = 0;
+# Moment value
+my $ moment = 0;
 
-# ヴェロシティの値
-my $velocity = 0;
-for (my $i = 0; $i < 10; $i++) {
-  my $grad = calc_grad();
-  $moment = $before_moment_weight * $moment + (1 - $before_moment_weight) * $grad;
-  $velocity = $before_velocity_weight * $velocity + (1 - $before_velocity_weight) * $grad * $grad;
+#Velocity value
+my $ velocity = 0;
+for (my $ i = 0; $ i <10; $ i ++) {
+  my $ grad = calc_grad ();
+  $ moment = $ before_moment_weight * $ moment + (1-$ before_moment_weight) * $ grad;
+  $ velocity = $ before_velocity_weight * $ velocity + (1-$ before_velocity_weight) * $ grad * $ grad;
   
-  my $cur_moment = $moment / (1 - $before_moment_weight);
-  my $cur_velocity = $velocity / (1 - $before_velocity_weight);
+  my $ cur_moment = $ moment / (1-$ before_moment_weight);
+  my $ cur_velocity = $ velocity / (1-$ before_velocity_weight);
   
-  $biase -= ($learning_rate / (sqrt($cur_velocity) + $much_small_value)) * $cur_moment;
+  $ bias-= ($ learning_rate / (sqrt ($ cur_velocity) + $ much_small_value)) * $ cur_moment;
 }
 
-# 傾きを求める
+# Find the slope
 sub calc_grad {
   
-  # 便宜的な値を返す
-  my $grad = rand;
+  #Returns a convenient value
+  my $ grad = rand;
   
-  return $grad;
+  return $ grad;
 }
-</pre>
+</ pre>
 
-初期値の推奨と呼ばれているものは以下です。ただしこれは、初期値であって、正答率が速く上昇し、最終的な正答率を高くするためには、最適に設定する必要があります。
+The so-called default recommendations are: However, this is an initial value and needs to be set optimally in order for the correct answer rate to rise quickly and the final correct answer rate to be high.
 
 <pre>
-my $learning_rate = 0.001;
-my $much_small_value = 1e-8;
-my $before_moment_weight = 0.9;
-my $before_velocity_weight = 0.999;
-</pre>
+my $ learning_rate = 0.001;
+my $ much_small_value = 1e-8;
+my $ before_moment_weight = 0.9;
+my $ before_velocity_weight = 0.999;
+</ pre>
 
-<h3>Adamの式にはどのような意味があるのですか?</h3>
+<h3> What does Adam's formula mean? </ H3>
 
-僕には、よくわかりません。Adamによる最適化という記事がわかりやすいと感じました。
+I'm not sure. I found the article "Optimization by Adam" easy to understand.
 
 <ul>
-  <li><a href="https://www.renom.jp/ja/notebooks/tutorial/basic_algorithm/adam/notebook.html">Adamによる最適化</a></li>
-</ul>
+  <li> <a href="https://www.renom.jp/ja/notebooks/tutorial/basic_algorithm/adam/notebook.html"> Optimization by Adam </a> </ li>
+</ ul>

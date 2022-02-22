@@ -1,80 +1,80 @@
-<h2>各層の重みとバイアスのパラメーターの初期値の設定方法</h2>
+<h2> How to set the initial values ​​of the weight and bias parameters of each layer </ h2>
 
-各層の重みとバイアスのパラメーターの初期値の設定方法方法です。
+How to set the initial values ​​of the weight and bias parameters of each layer.
 
-<a href="/blog/20200302113052.html">中間層における計算 - m個の入力をn個の出力に変換する</a>では、各層のパラメータに適当な値を使いました。
+<a href="/blog/20200302113052.html"> Calculations in the middle layer-Converting m inputs to n outputs </a> used appropriate values ​​for the parameters of each layer.
 
-実際は、学習が進みやすいパラメータの初期値の設定方法が発見されています。
+In fact, we have discovered how to set the initial values ​​of parameters that are easy to learn.
 
-<h3>学習が進みやすいパラメータの初期値の設定方法</h3>
+<h3> How to set initial values ​​of parameters that are easy to learn </ h3>
 
-<h4>定数項であるバイアスの初期値</h4>
+<h4> Initial value of bias, which is a constant term </ h4>
 
-定数項であるバイアス「$b」の初期値は0にします。
-
-<pre>
-my $b = [
-  0,
-  0,
-  0,
-];
-</pre>
-
-<h4>重みの初期値 - Heの初期値</h4>
-
-重みの初期値について解説します。
-
-まず重みの初期値は、ランダムに決めるということをイメージしておいてください。残るは、どのようなランダム値を使うかです。
-
-まず入力の個数が、m個であるとします。この場合に、平均0、標準偏差「√(2/m)」とする正規分布に従ったランダム値を使用します。これはHeの初期値と呼ばれています。
-
-数学の言葉が出てきても、驚かないでください。ソフトウェアエンジニアにとっては、必要なことは、正規分布に従ったランダム値を返す関数を知ることだけです。
-
-正規分布が何かということは、数学者や統計学者にゆだねればよいのです。
+The initial value of the bias "$ b", which is a constant term, is set to 0.
 
 <pre>
-# 正規分布に従う乱数を求める関数
-# $sigma は標準偏差、$m は平均
+my $ b = [
+  0,
+  0,
+  0,
+];;
+</ pre>
+
+<h4> Initial value of weight --Initial value of He </ h4>
+
+I will explain the initial value of the weight.
+
+First, imagine that the initial value of the weight is randomly determined. What remains is what random value to use.
+
+First, assume that the number of inputs is m. In this case, use a random value according to a normal distribution with a mean of 0 and a standard deviation of "√ (2 / m)". This is called the initial value of He.
+
+Don't be surprised when the words of math come up. For software engineers, all they need to know is a function that returns a random value according to a normal distribution.
+
+It's up to the mathematician or statistician to decide what the normal distribution is.
+
+<pre>
+# Function to find random numbers that follow a normal distribution
+# $ sigma is standard deviation, $ m is mean
 sub randn {
-  my ($m, $sigma) = @_;
-  my ($r1, $r2) = (rand(), rand());
-  while ($r1 == 0) { $r1 = rand(); }
-  return ($sigma * sqrt(-2 * log($r1)) * sin(2 * 3.14159265359 * $r2)) + $m;
+  my ($ m, $ sigma) = @_;
+  my ($ r1, $ r2) = (rand (), rand ());
+  while ($ r1 == 0) {$ r1 = rand ();}
+  return ($ sigma * sqrt (-2 * log ($ r1)) * sin (2 * 3.14159265359 * $ r2)) + $ m;
 }
 
-# 入力数
-my $m = 3;
+#Number of inputs
+my $ m = 3;
 
-# 重みの初期値
-my $w_init_value = randn(0, sqrt(2/$m));
-</pre>
+#Initial value of weight
+my $ w_init_value = randn (0, sqrt (2 / $ m));
+</ pre>
 
-上記の関数を繰り返して100回出力してみましょう。どんな値がでてくるでしょうか?
+Let's repeat the above function and output 100 times. What value will come out?
 
 <pre>
 use strict;
 use warnings;
 
-# 正規分布に従う乱数を求める関数
-# $sigma は標準偏差、$m は平均
+# Function to find random numbers that follow a normal distribution
+# $ sigma is standard deviation, $ m is mean
 sub randn {
-  my ($m, $sigma) = @_;
-  my ($r1, $r2) = (rand(), rand());
-  while ($r1 == 0) { $r1 = rand(); }
-  return ($sigma * sqrt(-2 * log($r1)) * sin(2 * 3.14159265359 * $r2)) + $m;
+  my ($ m, $ sigma) = @_;
+  my ($ r1, $ r2) = (rand (), rand ());
+  while ($ r1 == 0) {$ r1 = rand ();}
+  return ($ sigma * sqrt (-2 * log ($ r1)) * sin (2 * 3.14159265359 * $ r2)) + $ m;
 }
 
-# 入力数
-my $m = 3;
+#Number of inputs
+my $ m = 3;
 
-for (my $i = 0; $i < 100; $i++) {
-  # 重みの初期値
-  my $w_init_value = randn(0, sqrt(2/$m));
-  print "$w_init_value\n";
+for (my $ i = 0; $ i <100; $ i ++) {
+  #Initial value of weight
+  my $ w_init_value = randn (0, sqrt (2 / $ m));
+  print "$ w_init_value \ n";
 }
-</pre>
+</ pre>
 
-出力結果のサンプル。
+Sample output result.
 
 <pre>
 0.374333645619917
@@ -177,150 +177,150 @@ for (my $i = 0; $i < 100; $i++) {
 -1.13516745715629
 0.612636896807322
 0.99369257431466
-</pre>
+</ pre>
 
-感じ取ってください。-1を少し超えるくらいから、1くらいまでの数が出力されています。
+Please feel it. Numbers from a little over -1 to about 1 are output.
 
-次は、0.1刻みで、個数を数えてみましょう。
+Next, let's count the number in increments of 0.1.
 
 <pre>
 use strict;
 use warnings;
 
-# 正規分布に従う乱数を求める関数
-# $sigma は標準偏差、$m は平均
+# Function to find random numbers that follow a normal distribution
+# $ sigma is standard deviation, $ m is mean
 sub randn {
-  my ($m, $sigma) = @_;
-  my ($r1, $r2) = (rand(), rand());
-  while ($r1 == 0) { $r1 = rand(); }
-  return ($sigma * sqrt(-2 * log($r1)) * sin(2 * 3.14159265359 * $r2)) + $m;
+  my ($ m, $ sigma) = @_;
+  my ($ r1, $ r2) = (rand (), rand ());
+  while ($ r1 == 0) {$ r1 = rand ();}
+  return ($ sigma * sqrt (-2 * log ($ r1)) * sin (2 * 3.14159265359 * $ r2)) + $ m;
 }
 
-# 入力数
-my $m = 3;
+#Number of inputs
+my $ m = 3;
 
-my $count = {};
-for (my $i = 0; $i < 100; $i++) {
-  # 重みの初期値
-  my $w_init_value = randn(0, sqrt(2/$m));
+my $ count = {};
+for (my $ i = 0; $ i <100; $ i ++) {
+  #Initial value of weight
+  my $ w_init_value = randn (0, sqrt (2 / $ m));
   
-  my $range = int($w_init_value * 10) / 10;
+  my $ range = int ($ w_init_value * 10) / 10;
   
-  $count->{$range}++;
+  $ count-> {$ range} ++;
 }
 
-for my $range (sort { $a <=> $b } keys %$count) {
-  print "Range: $range, Count:$count->{$range}\n";
+for my $ range (sort {$ a <=> $ b} keys% $ count) {
+  print "Range: $ range, Count: $ count-> {$ range} \ n";
 }
 
-</pre>
+</ pre>
 
-出力結果。
+Output result.
 
 <pre>
-Range: -2, Count:3
-Range: -1.6, Count:2
-Range: -1.4, Count:1
-Range: -1.3, Count:1
-Range: -1.2, Count:3
-Range: -1.1, Count:2
-Range: -1, Count:2
-Range: -0.9, Count:3
-Range: -0.8, Count:1
-Range: -0.7, Count:2
-Range: -0.6, Count:6
-Range: -0.5, Count:3
-Range: -0.4, Count:3
-Range: -0.3, Count:1
-Range: -0.2, Count:7
-Range: -0.1, Count:3
-Range: 0, Count:8
-Range: 0.1, Count:4
-Range: 0.2, Count:3
-Range: 0.3, Count:8
-Range: 0.4, Count:6
-Range: 0.5, Count:5
-Range: 0.6, Count:2
-Range: 0.7, Count:3
-Range: 0.8, Count:2
-Range: 0.9, Count:4
-Range: 1, Count:1
-Range: 1.1, Count:3
-Range: 1.3, Count:3
-Range: 1.4, Count:3
-Range: 1.5, Count:1
-Range: 1.8, Count:1
-</pre>
+Range: -2, Count: 3
+Range: -1.6, Count: 2
+Range: -1.4, Count: 1
+Range: -1.3, Count: 1
+Range: -1.2, Count: 3
+Range: -1.1, Count: 2
+Range: -1, Count: 2
+Range: -0.9, Count: 3
+Range: -0.8, Count: 1
+Range: -0.7, Count: 2
+Range: -0.6, Count: 6
+Range: -0.5, Count: 3
+Range: -0.4, Count: 3
+Range: -0.3, Count: 1
+Range: -0.2, Count: 7
+Range: -0.1, Count: 3
+Range: 0, Count: 8
+Range: 0.1, Count: 4
+Range: 0.2, Count: 3
+Range: 0.3, Count: 8
+Range: 0.4, Count: 6
+Range: 0.5, Count: 5
+Range: 0.6, Count: 2
+Range: 0.7, Count: 3
+Range: 0.8, Count: 2
+Range: 0.9, Count: 4
+Range: 1, Count: 1
+Range: 1.1, Count: 3
+Range: 1.3, Count: 3
+Range: 1.4, Count: 3
+Range: 1.5, Count: 1
+Range: 1.8, Count: 1
+</ pre>
 
-0付近の個数がなんとなく多い感じですね。値の絶対値が大きくなるにしたがって、件数が0に近づいていく感じですね。これが正規分布のイメージです。
+It seems that the number around 0 is somewhat large. It feels like the number of cases approaches 0 as the absolute value of the value increases. This is an image of the normal distribution.
 
-正規分布の理論はわからなくっても、分布のばらつき具合は、イメージできましたね。
+Even if you don't understand the theory of the normal distribution, you can imagine how the distribution varies.
 
-<h3>重みを設定するサンプル</h3>
+<h3> Sample to set weights </ h3>
 
-重みを設定して、複数の入力から複数の出力を得るサンプルを書いてみます。
+Let's write a sample that sets weights and gets multiple outputs from multiple inputs.
 
-<a href="/blog/20200302113052.html">中間層における計算 - m個の入力をn個の出力に変換する</a>のループ化のサンプルを、適切な初期値を使って書いてみます。Data::Dumperで、標準エラー出力に、重みの初期値も出力しています。
+<a href="/blog/20200302113052.html"> Computations in the middle layer-Convert m inputs to n outputs </a> Write a looping sample with appropriate initial values to watch. Data :: Dumper also outputs the initial value of the weight to the standard error output.
 
 <pre>
 use strict;
 use warnings;
-use Data::Dumper;
+use Data :: Dumper;
 
-my $x = [0.5, 0.8];
-my $y = [0, 0, 0];
-my $x_len = @$x;
-my $y_len = @$y;
+my $ x = [0.5, 0.8];
+my $ y = [0, 0, 0];
+my $ x_len = @ $ x;
+my $ y_len = @ $ y;
 
-my $w = [];
-for (my $i = 0; $i < $x_len * $y_len; $i++) {
-  my $w_init_value = randn(0, sqrt(2/$x_len));
-  push @$w, $w_init_value;
+my $ w = [];
+for (my $ i = 0; $ i <$ x_len * $ y_len; $ i ++) {
+  my $ w_init_value = randn (0, sqrt (2 / $ x_len));
+  push @ $ w, $ w_init_value;
 }
 
-print STDERR Dumper($w);
+print STDERR Dumper ($ w);
 
-my $b = [
+my $ b = [
   0,
   0,
   0
-];
+];;
 
-for (my $y_index = 0; $y_index < $y_len; $y_index++) {
-  my $total = 0;
-  for (my $x_index = 0; $x_index < $x_len; $x_index++) {
-    $total += ($w->[$x_len * $y_index + $x_index] * $x->[$x_index]);
+for (my $ y_index = 0; $ y_index <$ y_len; $ y_index ++) {
+  my $ total = 0;
+  for (my $ x_index = 0; $ x_index <$ x_len; $ x_index ++) {
+    $ total + = ($ w-> [$ x_len * $ y_index + $ x_index] * $ x-> [$ x_index]);
   }
-  $total +=  $b->[$y_index];
-  $y->[$y_index] = $total > 0 ? $total : 0;
+  $ total + = $ b-> [$ y_index];
+  $ y-> [$ y_index] = $ total> 0? $ Total: 0;
 }
 
-print "($y->[0], $y->[1], $y->[2])\n";
+print "($ y-> [0], $ y-> [1], $ y-> [2]) \ n";
 
 sub randn {
-  my ($m, $sigma) = @_;
-  my ($r1, $r2) = (rand(), rand());
-  while ($r1 == 0) { $r1 = rand(); }
-  return ($sigma * sqrt(-2 * log($r1)) * sin(2 * 3.14159265359 * $r2)) + $m;
+  my ($ m, $ sigma) = @_;
+  my ($ r1, $ r2) = (rand (), rand ());
+  while ($ r1 == 0) {$ r1 = rand ();}
+  return ($ sigma * sqrt (-2 * log ($ r1)) * sin (2 * 3.14159265359 * $ r2)) + $ m;
 }
-</pre>
+</ pre>
 
-出力結果の例。
+An example of the output result.
 
 <pre>
-$VAR1 = [
+$ VAR1 = [
           '0.152110884289137',
           '2.40437412125725',
           '1.47474871999698',
           '0.30283258213298',
           '-0.274498796676187',
           '-1.27516026508991'
-        ];
+        ];;
 (1.99955473915037, 0.979640425704874, 0)
-</pre>
+</ pre>
 
-<h4>重みの初期値 - Xivierの初期値</h4>
+<h4> Initial value of weight --Initial value of Xivier </ h4>
 
-Heの初期値以外に、Xivierの初期値と呼ばれる、平均0、標準偏差「1/sqrt(n)」である正規分布から重みをランダムに生成する方法があります。
+In addition to the initial value of He, there is a method called the initial value of Xivier that randomly generates weights from a normal distribution with a mean of 0 and a standard deviation of "1 / sqrt (n)".
 
-活性化関数がReLU以外の場合に、利用されるようです。
+It seems to be used when the activation function is other than ReLU.
