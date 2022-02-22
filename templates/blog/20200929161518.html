@@ -1,6 +1,6 @@
-<h2> Create a column-first matrix </ h2>
+<h2> Create a column-first matrix </h2>
 
-Let's create a column-first <a href="/blog/20200928161518.html"> matrix </a>.
+Let's create a column-first <a href="/blog/20200928161518.html"> matrix</a>.
 
 <pre>
 use strict;
@@ -8,15 +8,15 @@ use warnings;
 
 #Creating a column-first matrix
 sub mat_new {
-   my ($ values, $ rows_length, $ columns_length) = @_;
+   my ($values, $rows_length, $columns_length) = @_;
   
-   my $ mat = {
-     rows_length => $ rows_length,
-     columns_length => $ columns_length,
-     values => $ values,
+   my $mat = {
+     rows_length => $rows_length,
+     columns_length => $columns_length,
+     values => $values,
    };;
   
-   return $ mat;
+   return $mat;
 }
 
 # Create a 3 row 2 column priority matrix
@@ -24,8 +24,8 @@ sub mat_new {
 # twenty five
 # 3 6
 
-my $ mat = mat_new ([1, 2, 3, 4, 5, 6], 3, 2);
+my $mat = mat_new ([1, 2, 3, 4, 5, 6], 3, 2);
 
-use Data :: Dumper;
-print Dumper $ mat;
-</ pre>
+use Data::Dumper;
+print Dumper $mat;
+</pre>

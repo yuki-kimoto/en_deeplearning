@@ -1,4 +1,4 @@
-<h2> Calculation of vector inner product </ h2>
+<h2> Calculation of vector inner product </h2>
 
 I will explain how to calculate the inner product of vectors. The vector inner product is used in the reverse mispropagation method to determine the slope of the bias of the middle layer.
 
@@ -6,9 +6,9 @@ The vector inner product is the following calculation. The size of the vectors s
 
 <pre>
 Inner product = element of vector 0 0 * element of vector 1 0 + element of vector 0 1 * element of vector 1 1 + ... + element of vector 0 n * element of vector 1 n
-</ pre>
+</pre>
 
-<h3> Perl program to find the inner product of vectors </ h3>
+<h3> Perl program to find the inner product of vectors </h3>
 
 A Perl program that finds the inner product of vectors.
 
@@ -16,14 +16,14 @@ A Perl program that finds the inner product of vectors.
 use strict;
 use warnings;
 
-my $ vec1 = [1, 2, 3];
-my $ vec2 = [4, 5, 6];
+my $vec1 = [1, 2, 3];
+my $vec2 = [4, 5, 6];
 
-my $ vec_inmul = 0;
-for (my $ i = 0; $ i <@ $ vec1; $ i ++) {
-   $ vec_inmul + = $ vec1-> [$ i] * $ vec2-> [$ i];
+my $vec_inmul = 0;
+for (my $i = 0; $i <@$vec1; $i ++) {
+   $vec_inmul + = $vec1->[$i] * $vec2->[$i];
 }
 
 # 32
-print "$ vec_inmul \ n";
-</ pre>
+print "$vec_inmul\n";
+</pre>

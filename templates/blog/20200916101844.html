@@ -1,4 +1,4 @@
-<h2> Express the expected output with probability </ h2>
+<h2> Express the expected output with probability </h2>
 
 Let's express the expected output of deep learning with probability. Expressing with probability seems to improve the accuracy of deep learning.
 
@@ -8,17 +8,17 @@ This is expressed by probability. Think of "1" in the array as "100%" and 0 as "
 
 <pre>
 #Probability expression
-0-> [1, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-1-> [0, 1, 0, 0, 0, 0, 0, 0, 0, 0]
-2-> [0, 0, 1, 0, 0, 0, 0, 0, 0, 0]
-3-> [0, 0, 0, 1, 0, 0, 0, 0, 0, 0]
-4-> [0, 0, 0, 0, 1, 0, 0, 0, 0, 0]
-5-> [0, 0, 0, 0, 0, 1, 0, 0, 0, 0]
-6-> [0, 0, 0, 0, 0, 0, 1, 0, 0, 0]
-7-> [0, 0, 0, 0, 0, 0, 0, 1, 0, 0]
-8-> [0, 0, 0, 0, 0, 0, 0, 0, 1, 0]
-9-> [0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
-</ pre>
+0->[1, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+1->[0, 1, 0, 0, 0, 0, 0, 0, 0, 0]
+2->[0, 0, 1, 0, 0, 0, 0, 0, 0, 0]
+3->[0, 0, 0, 1, 0, 0, 0, 0, 0, 0]
+4->[0, 0, 0, 0, 1, 0, 0, 0, 0, 0]
+5->[0, 0, 0, 0, 0, 1, 0, 0, 0, 0]
+6->[0, 0, 0, 0, 0, 0, 1, 0, 0, 0]
+7->[0, 0, 0, 0, 0, 0, 0, 1, 0, 0]
+8->[0, 0, 0, 0, 0, 0, 0, 0, 1, 0]
+9->[0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
+</pre>
 
 The values ​​of the elements of the array represent the probability of being the expected value. For example, in the case of 4, the fourth value of the array subscript is 100%, and the others are 0%, which is the expected output expressed by probability.
 
@@ -26,7 +26,7 @@ This operation is commonly referred to as vectorization, but the simple meaning 
 
 For general pattern recognition, you can do the same by assigning "dog", "cat", and "mouse" to "0", "1", and "2".
 
-<h3> Express the expected output with probability </ h3>
+<h3> Express the expected output with probability </h3>
 
 Let's write a program that converts the expected output into a probability.
 
@@ -35,21 +35,21 @@ use strict;
 use warnings;
 
 sub probabilize_output {
-  my ($ outputs_length, $ desired_value) = @_;
+  my ($outputs_length, $desired_value) = @_;
   
-  my $ probabilized_outputs = [];
-  for (my $ i = 0; $ i <$ outputs_length; $ i ++) {
-    $ probabilized_outputs-> [$ i] = $ desired_value == $ i? 1: 0;
+  my $probabilized_outputs = [];
+  for (my $i = 0; $i <$outputs_length; $i ++) {
+    $probabilized_outputs->[$i] = $desired_value == $i? 1: 0;
   }
   
-  return $ probabilized_outputs;
+  return $probabilized_outputs;
 }
 
-my $ outputs_length = 10;
-my $ desired_value = 4;
+my $outputs_length = 10;
+my $desired_value = 4;
 
-my $ probabilized_outputs = probabilize_output ($ outputs_length, $ desired_value);
+my $probabilized_outputs = probabilize_output ($outputs_length, $desired_value);
 
 # 0 0 0 0 1 0 0 0 0 0
-print "@ $ probabilized_outputs \ n";
-</ pre>
+print "@$probabilized_outputs\n";
+</pre>

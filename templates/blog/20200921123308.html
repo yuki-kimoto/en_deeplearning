@@ -1,8 +1,8 @@
-<h2> What is a gradient? </ H2>
+<h2> What is a gradient? </H2>
 
 In deep learning, the slope is the slope of the loss function for each parameter of the bias, which is combined into one as a vector. Alternatively, the slope of the loss function for each parameter of each weight column is calculated and combined into one as a vector.
 
-<h3> For bias parameters </ h3>
+<h3> For bias parameters </h3>
 
 If the value of the loss function increases by 0.002 when b1 of layer n is increased by 0.01, the slope is "2 = 0.002 / 0.001".
 
@@ -14,9 +14,9 @@ The slope is "[2, 5, 3]" because the slope is calculated and combined into one a
 
 When considering it as an algorithm, it is sufficient to consider only the individual slopes.
 
-<h3> For weight parameters </ h3>
+<h3> For weight parameters </h3>
 
-<b> First column </ b>
+<b> First column </b>
 
 If the value of the loss function increases by 0.002 when w11 of layer n is increased by 0.01, the slope is "2 = 0.002 / 0.001".
 
@@ -26,7 +26,7 @@ If the value of the loss function increases by 0.003 when w31 of n layers is inc
 
 The slope is "[2, 5, 3]" because the slope is calculated and combined into one as a vector.
 
-<b> Second row </ b>
+<b> Second row </b>
 
 If the value of the loss function increases by 0.006 when w12 of the n layer is increased by 0.01, the slope is "6 = 0.006 / 0.001".
 
@@ -42,6 +42,6 @@ As an additional knowledge, the matrix in which each gradient is arranged vertic
 2 6
 5 4
 3 2
-</ pre>
+</pre>
 
 When considering it as an algorithm, it is sufficient to consider only the individual slopes. There is no need to be aware of the gradient or Jacobian determinant in the algorithm. Just be aware of it as an array.

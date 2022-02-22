@@ -1,26 +1,26 @@
-<h2> How to set the initial values ​​of the weight and bias parameters of each layer </ h2>
+<h2> How to set the initial values ​​of the weight and bias parameters of each layer </h2>
 
 How to set the initial values ​​of the weight and bias parameters of each layer.
 
-<a href="/blog/20200302113052.html"> Calculations in the middle layer-Converting m inputs to n outputs </a> used appropriate values ​​for the parameters of each layer.
+<a href="/blog/20200302113052.html"> Calculations in the middle layer-Converting m inputs to n outputs</a> used appropriate values ​​for the parameters of each layer.
 
 In fact, we have discovered how to set the initial values ​​of parameters that are easy to learn.
 
-<h3> How to set initial values ​​of parameters that are easy to learn </ h3>
+<h3> How to set initial values ​​of parameters that are easy to learn </h3>
 
-<h4> Initial value of bias, which is a constant term </ h4>
+<h4> Initial value of bias, which is a constant term </h4>
 
-The initial value of the bias "$ b", which is a constant term, is set to 0.
+The initial value of the bias "$b", which is a constant term, is set to 0.
 
 <pre>
-my $ b = [
+my $b = [
   0,
   0,
   0,
 ];;
-</ pre>
+</pre>
 
-<h4> Initial value of weight --Initial value of He </ h4>
+<h4> Initial value of weight --Initial value of He </h4>
 
 I will explain the initial value of the weight.
 
@@ -34,20 +34,20 @@ It's up to the mathematician or statistician to decide what the normal distribut
 
 <pre>
 # Function to find random numbers that follow a normal distribution
-# $ sigma is standard deviation, $ m is mean
+# $sigma is standard deviation, $m is mean
 sub randn {
-  my ($ m, $ sigma) = @_;
-  my ($ r1, $ r2) = (rand (), rand ());
-  while ($ r1 == 0) {$ r1 = rand ();}
-  return ($ sigma * sqrt (-2 * log ($ r1)) * sin (2 * 3.14159265359 * $ r2)) + $ m;
+  my ($m, $sigma) = @_;
+  my ($r1, $r2) = (rand(), rand());
+  while ($r1 == 0) {$r1 = rand();}
+  return($sigma * sqrt(-2 * log($r1)) * sin(2 * 3.14159265359 * $r2)) + $m;
 }
 
 #Number of inputs
-my $ m = 3;
+my $m = 3;
 
 #Initial value of weight
-my $ w_init_value = randn (0, sqrt (2 / $ m));
-</ pre>
+my $w_init_value = randn (0, sqrt(2 / $m));
+</pre>
 
 Let's repeat the above function and output 100 times. What value will come out?
 
@@ -56,23 +56,23 @@ use strict;
 use warnings;
 
 # Function to find random numbers that follow a normal distribution
-# $ sigma is standard deviation, $ m is mean
+# $sigma is standard deviation, $m is mean
 sub randn {
-  my ($ m, $ sigma) = @_;
-  my ($ r1, $ r2) = (rand (), rand ());
-  while ($ r1 == 0) {$ r1 = rand ();}
-  return ($ sigma * sqrt (-2 * log ($ r1)) * sin (2 * 3.14159265359 * $ r2)) + $ m;
+  my ($m, $sigma) = @_;
+  my ($r1, $r2) = (rand(), rand());
+  while ($r1 == 0) {$r1 = rand();}
+  return($sigma * sqrt(-2 * log($r1)) * sin(2 * 3.14159265359 * $r2)) + $m;
 }
 
 #Number of inputs
-my $ m = 3;
+my $m = 3;
 
-for (my $ i = 0; $ i <100; $ i ++) {
+for (my $i = 0; $i <100; $i ++) {
   #Initial value of weight
-  my $ w_init_value = randn (0, sqrt (2 / $ m));
-  print "$ w_init_value \ n";
+  my $w_init_value = randn (0, sqrt(2 / $m));
+  print "$w_init_value\n";
 }
-</ pre>
+</pre>
 
 Sample output result.
 
@@ -177,7 +177,7 @@ Sample output result.
 -1.13516745715629
 0.612636896807322
 0.99369257431466
-</ pre>
+</pre>
 
 Please feel it. Numbers from a little over -1 to about 1 are output.
 
@@ -188,32 +188,32 @@ use strict;
 use warnings;
 
 # Function to find random numbers that follow a normal distribution
-# $ sigma is standard deviation, $ m is mean
+# $sigma is standard deviation, $m is mean
 sub randn {
-  my ($ m, $ sigma) = @_;
-  my ($ r1, $ r2) = (rand (), rand ());
-  while ($ r1 == 0) {$ r1 = rand ();}
-  return ($ sigma * sqrt (-2 * log ($ r1)) * sin (2 * 3.14159265359 * $ r2)) + $ m;
+  my ($m, $sigma) = @_;
+  my ($r1, $r2) = (rand(), rand());
+  while ($r1 == 0) {$r1 = rand();}
+  return($sigma * sqrt(-2 * log($r1)) * sin(2 * 3.14159265359 * $r2)) + $m;
 }
 
 #Number of inputs
-my $ m = 3;
+my $m = 3;
 
-my $ count = {};
-for (my $ i = 0; $ i <100; $ i ++) {
+my $count = {};
+for (my $i = 0; $i <100; $i ++) {
   #Initial value of weight
-  my $ w_init_value = randn (0, sqrt (2 / $ m));
+  my $w_init_value = randn (0, sqrt(2 / $m));
   
-  my $ range = int ($ w_init_value * 10) / 10;
+  my $range = int($w_init_value * 10) / 10;
   
-  $ count-> {$ range} ++;
+  $count->{$range} ++;
 }
 
-for my $ range (sort {$ a <=> $ b} keys% $ count) {
-  print "Range: $ range, Count: $ count-> {$ range} \ n";
+for my $range (sort {$a <=> $b} keys%$count) {
+  print "Range: $range, Count: $count->{$range}\n";
 }
 
-</ pre>
+</pre>
 
 Output result.
 
@@ -250,65 +250,65 @@ Range: 1.3, Count: 3
 Range: 1.4, Count: 3
 Range: 1.5, Count: 1
 Range: 1.8, Count: 1
-</ pre>
+</pre>
 
 It seems that the number around 0 is somewhat large. It feels like the number of cases approaches 0 as the absolute value of the value increases. This is an image of the normal distribution.
 
 Even if you don't understand the theory of the normal distribution, you can imagine how the distribution varies.
 
-<h3> Sample to set weights </ h3>
+<h3> Sample to set weights </h3>
 
 Let's write a sample that sets weights and gets multiple outputs from multiple inputs.
 
-<a href="/blog/20200302113052.html"> Computations in the middle layer-Convert m inputs to n outputs </a> Write a looping sample with appropriate initial values to watch. Data :: Dumper also outputs the initial value of the weight to the standard error output.
+<a href="/blog/20200302113052.html"> Computations in the middle layer-Convert m inputs to n outputs</a> Write a looping sample with appropriate initial values to watch. Data::Dumper also outputs the initial value of the weight to the standard error output.
 
 <pre>
 use strict;
 use warnings;
-use Data :: Dumper;
+use Data::Dumper;
 
-my $ x = [0.5, 0.8];
-my $ y = [0, 0, 0];
-my $ x_len = @ $ x;
-my $ y_len = @ $ y;
+my $x = [0.5, 0.8];
+my $y = [0, 0, 0];
+my $x_len = @$x;
+my $y_len = @$y;
 
-my $ w = [];
-for (my $ i = 0; $ i <$ x_len * $ y_len; $ i ++) {
-  my $ w_init_value = randn (0, sqrt (2 / $ x_len));
-  push @ $ w, $ w_init_value;
+my $w = [];
+for (my $i = 0; $i <$x_len * $y_len; $i ++) {
+  my $w_init_value = randn (0, sqrt(2 / $x_len));
+  push @$w, $w_init_value;
 }
 
-print STDERR Dumper ($ w);
+print STDERR Dumper ($w);
 
-my $ b = [
+my $b = [
   0,
   0,
   0
 ];;
 
-for (my $ y_index = 0; $ y_index <$ y_len; $ y_index ++) {
-  my $ total = 0;
-  for (my $ x_index = 0; $ x_index <$ x_len; $ x_index ++) {
-    $ total + = ($ w-> [$ x_len * $ y_index + $ x_index] * $ x-> [$ x_index]);
+for (my $y_index = 0; $y_index <$y_len; $y_index ++) {
+  my $total = 0;
+  for (my $x_index = 0; $x_index <$x_len; $x_index ++) {
+    $total + = ($w->[$x_len * $y_index + $x_index] * $x->[$x_index]);
   }
-  $ total + = $ b-> [$ y_index];
-  $ y-> [$ y_index] = $ total> 0? $ Total: 0;
+  $total + = $b->[$y_index];
+  $y->[$y_index] = $total> 0? $Total: 0;
 }
 
-print "($ y-> [0], $ y-> [1], $ y-> [2]) \ n";
+print "($y->[0], $y->[1], $y->[2])\n";
 
 sub randn {
-  my ($ m, $ sigma) = @_;
-  my ($ r1, $ r2) = (rand (), rand ());
-  while ($ r1 == 0) {$ r1 = rand ();}
-  return ($ sigma * sqrt (-2 * log ($ r1)) * sin (2 * 3.14159265359 * $ r2)) + $ m;
+  my ($m, $sigma) = @_;
+  my ($r1, $r2) = (rand(), rand());
+  while ($r1 == 0) {$r1 = rand();}
+  return($sigma * sqrt(-2 * log($r1)) * sin(2 * 3.14159265359 * $r2)) + $m;
 }
-</ pre>
+</pre>
 
 An example of the output result.
 
 <pre>
-$ VAR1 = [
+$VAR1 = [
           '0.152110884289137',
           '2.40437412125725',
           '1.47474871999698',
@@ -317,10 +317,10 @@ $ VAR1 = [
           '-1.27516026508991'
         ];;
 (1.99955473915037, 0.979640425704874, 0)
-</ pre>
+</pre>
 
-<h4> Initial value of weight --Initial value of Xivier </ h4>
+<h4> Initial value of weight --Initial value of Xivier </h4>
 
-In addition to the initial value of He, there is a method called the initial value of Xivier that randomly generates weights from a normal distribution with a mean of 0 and a standard deviation of "1 / sqrt (n)".
+In addition to the initial value of He, there is a method called the initial value of Xivier that randomly generates weights from a normal distribution with a mean of 0 and a standard deviation of "1 / sqrt(n)".
 
 It seems to be used when the activation function is other than ReLU.

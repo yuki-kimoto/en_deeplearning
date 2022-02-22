@@ -1,4 +1,4 @@
-<h2> Find the sum of vectors </ h2>
+<h2> Find the sum of vectors </h2>
 
 Let's use Perl to find the sum of the vectors required for deep learning calculations.
 
@@ -12,28 +12,28 @@ use warnings;
 
 #Sum of vectors
 sub vec_add {
-  my ($ vec1, $ vec2) = @_;
+  my ($vec1, $vec2) = @_;
 
-  my $ vec_add = [];
+  my $vec_add = [];
 
-  for (my $ i = 0; $ i <@ $ vec1; $ i ++) {
-    $ vec_add-> [$ i] = $ vec1-> [$ i] + $ vec2-> [$ i];
+  for (my $i = 0; $i <@$vec1; $i ++) {
+    $vec_add->[$i] = $vec1->[$i] + $vec2->[$i];
   }
   
-  return $ vec_add;
+  return $vec_add;
 }
 
-my $ vec1 = [1, 2, 3];
-my $ vec2 = [4, 5, 6];
+my $vec1 = [1, 2, 3];
+my $vec2 = [4, 5, 6];
 
 #Sum of vectors
-my $ vec_add = vec_add ($ vec1, $ vec2);
+my $vec_add = vec_add ($vec1, $vec2);
 
 # 5 7 9
-print "@ $ vec_add \ n";
-</ pre>
+print "@$vec_add\n";
+</pre>
 
-<h2> Where do you use the sum of vectors in deep learning calculations? </ H2>
+<h2> Where do you use the sum of vectors in deep learning calculations? </H2>
 
 In deep learning calculations, the matrix product of the weight matrix and the input vector is calculated. The calculated value is a vector (partial calculation 1).
 
@@ -44,7 +44,7 @@ Finding the sum of the vector of partial calculation 1 and the bias vector gives
 <pre>
 #Calculation formula for each layer of deep learning
 Output vector = weight matrix x input vector + bias vector
-</ pre>
+</pre>
 
 Perform the following calculations.
 
@@ -53,17 +53,17 @@ use strict;
 use warnings;
 
 # Vector of the result of matrix product of weight matrix and input vector
-my $ mul_weight_inputs = [4, 5, 6, 7];
+my $mul_weight_inputs = [4, 5, 6, 7];
 
 #Bias vector
-my $ biases = [3, 6, 9, 2];
+my $biases = [3, 6, 9, 2];
 
 #Output vector
-my $ outputs = [];
+my $outputs = [];
 
-for (my $ i = 0; $ i <@ $ mul_weight_inputs; $ i ++) {
-  $ outputs-> [$ i] = $ mul_weight_inputs-> [$ i] + $ biases-> [$ i];
+for (my $i = 0; $i <@$mul_weight_inputs; $i ++) {
+  $outputs->[$i] = $mul_weight_inputs->[$i] + $biases->[$i];
 }
 
-print "@ $ outputs \ n";
-</ pre>
+print "@$outputs\n";
+</pre>

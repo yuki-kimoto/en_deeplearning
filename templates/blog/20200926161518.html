@@ -1,10 +1,10 @@
-<h2> MNIST handwriting recognition deep learning written in pure Perl </ h2>
+<h2> MNIST handwriting recognition deep learning written in pure Perl </h2>
 
 We will publish MNIST handwriting recognition deep learning written in pure Perl.
 
-The MNIST handwritten data obtained from <a href="http://yann.lecun.com/exdb/mnist/"> THE MNIST DATABASE of handwritten digits </a> is placed under the data directory.
+The MNIST handwritten data obtained from <a href="http://yann.lecun.com/exdb/mnist/"> THE MNIST DATABASE of handwritten digits</a> is placed under the data directory.
 
-This deep learning Perl code is based on the source code of <a href="https://nnadl-ja.github.io/nnadl_site_ja/index.html"> Neural Networks and Deep Learning </a>.
+This deep learning Perl code is based on the source code of <a href="https://nnadl-ja.github.io/nnadl_site_ja/index.html"> Neural Networks and Deep Learning</a>.
 
 As it is pure Perl code, it can be useful for Perl users to get an overview of deep learning algorithms.
 
@@ -12,7 +12,7 @@ It doesn't use any special libraries, so if you have knowledge of if and for sta
 
 Currently, this code does not have the performance of Perl's numerical calculation, so performance improvement is required.
 
-Partial rewrite to the C language transpiler <a href="https://metacpan.org/pod/SPVM/"> SPVM </a>, through trial and error to a realistic speed level It will be faster.
+Partial rewrite to the C language transpiler <a href="https://metacpan.org/pod/SPVM/"> SPVM</a>, through trial and error to a realistic speed level It will be faster.
 
 <pre>
 # network.pl
@@ -20,254 +20,254 @@ Partial rewrite to the C language transpiler <a href="https://metacpan.org/pod/S
 use strict;
 use warnings;
 use FindBin;
-use List :: Util'shuffle';
+use List::Util'shuffle';
 
 # Learning rate
-my $ learning_rate = 3;
+my $learning_rate = 3;
 
 #Epoch Count-Number of Training Set Executions
-my $ epoch_count = 30;
+my $epoch_count = 30;
 
 # Mini batch size
-my $ mini_batch_size = 10;
+my $mini_batch_size = 10;
 
 #Number of neurons in each layer
 # 28 * 28 = 728 monochrome image (input)
 # Through 30 intermediate outputs (intermediate output)
 Classify into 10 items from # 0 to 9 (output)
-my $ neurons_count_in_layers = [728, 30, 10];
+my $neurons_count_in_layers = [728, 30, 10];
 
 #Information about the function that converts m inputs in each layer to n outputs. Number of inputs, number of outputs, bias, weight
-my $ m_to_n_func_infos = [];
+my $m_to_n_func_infos = [];
 
 #Create information on the conversion function from the number of neurons in each layer to m to n
-for (my $ i = 0; $ i <@ $ neurons_count_in_layers --1; $ i ++) {
-  my $ inputs_length = $ neurons_count_in_layers-> [$ i];
-  my $ outputs_length = $ neurons_count_in_layers-> [$ i + 1];
+for (my $i = 0; $i <@$neurons_count_in_layers --1; $i ++) {
+  my $inputs_length = $neurons_count_in_layers->[$i];
+  my $outputs_length = $neurons_count_in_layers->[$i + 1];
   
   #Initialize bias with 0
-  my $ biases = array_new_zero ($ outputs_length);
+  my $biases = array_new_zero ($outputs_length);
   
   Initialize the weight with the initial value of #Xivier. Weight is column priority matrix
-  my $ weights_mat = mat_new_zero ($ outputs_length, $ inputs_length);
-  my $ weights_length = $ weights_mat-> {rows_length} * $ weights_mat-> {columns_length};
-  $ weights_mat-> {values} = array_create_he_init_value ($ weights_length, $ inputs_length);
+  my $weights_mat = mat_new_zero ($outputs_length, $inputs_length);
+  my $weights_length = $weights_mat->{rows_length} * $weights_mat->{columns_length};
+  $weights_mat->{values} = array_create_he_init_value ($weights_length, $inputs_length);
 
   # Set conversion function information
-  $ m_to_n_func_infos-> [$ i] = {
-    inputs_length => $ inputs_length,
-    outputs_length => $ outputs_length,
-    biases => $ biases,
-    weights_mat => $ weights_mat,
+  $m_to_n_func_infos->[$i] = {
+    inputs_length => $inputs_length,
+    outputs_length => $outputs_length,
+    biases => $biases,
+    weights_mat => $weights_mat,
   };;
 }
 
 #MNIEST Read image information-Handwritten training data used for input
-my $ mnist_train_image_file = "$ FindBin :: Bin / data / train-images-idx3-ubyte";
-my $ mnist_train_image_info = load_mnist_train_image_file ($ mnist_train_image_file);
+my $mnist_train_image_file = "$FindBin::Bin / data / train-images-idx3-ubyte";
+my $mnist_train_image_info = load_mnist_train_image_file ($mnist_train_image_file);
 
 #Read MNIEST Label Information-Expected Output of Handwritten Training Data
-my $ mnist_train_label_file = "$ FindBin :: Bin / data / train-labels-idx1-ubyte";
-my $ mnist_train_label_info = load_mnist_train_label_file ($ mnist_train_label_file);
+my $mnist_train_label_file = "$FindBin::Bin / data / train-labels-idx1-ubyte";
+my $mnist_train_label_info = load_mnist_train_label_file ($mnist_train_label_file);
 
-#Training data index (only the first 40,000 are used as training data, and the remaining 10,000 are used as verification data)
+#Training data index(only the first 40,000 are used as training data, and the remaining 10,000 are used as verification data)
 my @training_data_indexes = (0 .. 40000);
 
 # Information on each conversion function in mini-batch units
-my $ m_to_n_func_mini_batch_infos = [];
+my $m_to_n_func_mini_batch_infos = [];
 
 # Created by initializing the total of the bias slopes of each conversion function in the mini-batch and the weight slope of each conversion function in the mini-batch to 0.
 #Initialize here to use memory area repeatedly
-for (my $ m_to_n_func_index = 0; $ m_to_n_func_index <@ $ m_to_n_func_infos; $ m_to_n_func_index ++) {
-  my $ m_to_n_func_info = $ m_to_n_func_infos-> [$ m_to_n_func_index];
-  my $ biases = $ m_to_n_func_info-> {biases};
-  my $ weights_mat = $ m_to_n_func_info-> {weights_mat};
+for (my $m_to_n_func_index = 0; $m_to_n_func_index <@$m_to_n_func_infos; $m_to_n_func_index ++) {
+  my $m_to_n_func_info = $m_to_n_func_infos->[$m_to_n_func_index];
+  my $biases = $m_to_n_func_info->{biases};
+  my $weights_mat = $m_to_n_func_info->{weights_mat};
   
   #Bias length
-  my $ biases_length = @ $ biases;
+  my $biases_length = @$biases;
   
   # Created by initializing the sum of the bias slopes of each conversion function in a mini-batch to 0
-  my $ bias_grad_totals = array_new_zero ($ biases_length);
-  $ m_to_n_func_mini_batch_infos-> [$ m_to_n_func_index] {biase_grad_totals} = $ biase_grad_totals;
+  my $bias_grad_totals = array_new_zero ($biases_length);
+  $m_to_n_func_mini_batch_infos->[$m_to_n_func_index] {biase_grad_totals} = $biase_grad_totals;
 
   # Created by initializing the sum of the slopes of the weights of each conversion function in the mini-batch to 0
-  my $ weight_grad_totals_mat = mat_new_zero ($ weights_mat-> {rows_length}, $ weights_mat-> {columns_length});
-  $ m_to_n_func_mini_batch_infos-> [$ m_to_n_func_index] {weight_grad_totals_mat} = $ weight_grad_totals_mat;
+  my $weight_grad_totals_mat = mat_new_zero ($weights_mat->{rows_length}, $weights_mat->{columns_length});
+  $m_to_n_func_mini_batch_infos->[$m_to_n_func_index] {weight_grad_totals_mat} = $weight_grad_totals_mat;
 }
 
 # Total number of executions
-my $ total_count = 0;
+my $total_count = 0;
 
 # The number of correct answers
-my $ answer_match_count = 0;
+my $answer_match_count = 0;
 
 #Run the training set as many times as you epoch
-for (my $ epoch_index = 0; $ epoch_index <$ epoch_count; $ epoch_index ++) {
+for (my $epoch_index = 0; $epoch_index <$epoch_count; $epoch_index ++) {
   
   # Shuffle the index of training data (It seems that it is more generalized to train randomly)
   my @training_data_indexes_shuffle = shuffle @training_data_indexes;
   
-  my $ count = 0;
+  my $count = 0;
   
   #Learning in mini-batch size units
-  my $ backprop_count = 0;
+  my $backprop_count = 0;
 
-  while (my @indexed_for_mini_batch = splice (@training_data_indexes_shuffle, 0, $ mini_batch_size)) {
+  while (my @indexed_for_mini_batch = splice(@training_data_indexes_shuffle, 0, $mini_batch_size)) {
     
     # Initialize the sum of the bias slopes of each conversion function in the mini-batch and the sum of the weight slopes of each conversion function in the mini-batch to 0.
-    for (my $ m_to_n_func_index = 0; $ m_to_n_func_index <@ $ m_to_n_func_mini_batch_infos; $ m_to_n_func_index ++) {
-      my $ m_to_n_func_info = $ m_to_n_func_infos-> [$ m_to_n_func_index];
-      my $ biases = $ m_to_n_func_info-> {biases};
-      my $ weights_mat = $ m_to_n_func_info-> {weights_mat};
+    for (my $m_to_n_func_index = 0; $m_to_n_func_index <@$m_to_n_func_mini_batch_infos; $m_to_n_func_index ++) {
+      my $m_to_n_func_info = $m_to_n_func_infos->[$m_to_n_func_index];
+      my $biases = $m_to_n_func_info->{biases};
+      my $weights_mat = $m_to_n_func_info->{weights_mat};
       
       # Created by initializing the sum of the bias slopes of each conversion function in a mini-batch to 0
-      $ m_to_n_func_mini_batch_infos-> [$ m_to_n_func_index] {biase_grad_totals} = array_new_zero (scalar @ {$ m_to_n_func_mini_batch_infos-> [$ m_to_n_func_index] {biase_grad_totals}})
+      $m_to_n_func_mini_batch_infos->[$m_to_n_func_index] {biase_grad_totals} = array_new_zero (scalar @{$m_to_n_func_mini_batch_infos->[$m_to_n_func_index] {biase_grad_totals}})
 
       # Created by initializing the sum of the slopes of the weights of each conversion function in the mini-batch to 0
-      $ m_to_n_func_mini_batch_infos-> [$ m_to_n_func_index] {weight_grad_totals_mat} {values} = array_new_zero (scalar @ {$ m_to_n_func_mini_batch_infos-> [$ m_to_n_func_index] {weight_grad_total
+      $m_to_n_func_mini_batch_infos->[$m_to_n_func_index] {weight_grad_totals_mat} {values} = array_new_zero (scalar @{$m_to_n_func_mini_batch_infos->[$m_to_n_func_index] {weight_grad_total
     }
     
-    for my $ training_data_index (@indexed_for_mini_batch) {
+    for my $training_data_index (@indexed_for_mini_batch) {
       # Get the slope for the weight and bias loss function using the reverse mispropagation method
-      my $ m_to_n_func_grad_infos = backprop ($ m_to_n_func_infos, $ mnist_train_image_info, $ mnist_train_label_info, $ training_data_index);
+      my $m_to_n_func_grad_infos = backprop ($m_to_n_func_infos, $mnist_train_image_info, $mnist_train_label_info, $training_data_index);
       
       #Bias loss function slope
-      my $ bias_grads = $ m_to_n_func_grad_infos-> {biases};
+      my $bias_grads = $m_to_n_func_grad_infos->{biases};
       
       # Slope with respect to weight loss function
-      my $ weight_grads_mat = $ m_to_n_func_grad_infos-> {weights_mat};
+      my $weight_grads_mat = $m_to_n_func_grad_infos->{weights_mat};
 
-      # Add the sum of the bias slopes of each conversion function in the mini-batch and the weight slope of each conversion function in the mini-batch.for (my $ m_to_n_func_index = 0; $ m_to_n_func_index <@ $ m_to_n_func_mini_batch_infos; $ m_to_n_func_index ++) {
-        my $ m_to_n_func_info = $ m_to_n_func_infos-> [$ m_to_n_func_index];
+      # Add the sum of the bias slopes of each conversion function in the mini-batch and the weight slope of each conversion function in the mini-batch.for (my $m_to_n_func_index = 0; $m_to_n_func_index <@$m_to_n_func_mini_batch_infos; $m_to_n_func_index ++) {
+        my $m_to_n_func_info = $m_to_n_func_infos->[$m_to_n_func_index];
         
         # Add the slope of the bias of each transmutation function in the mini-batch
-        array_add_inplace ($ m_to_n_func_mini_batch_infos-> [$ m_to_n_func_index] {biase_grad_totals}, $ biase_grads-> [$ m_to_n_func_index]);
+        array_add_inplace ($m_to_n_func_mini_batch_infos->[$m_to_n_func_index] {biase_grad_totals}, $biase_grads->[$m_to_n_func_index]);
 
         # Add the slope of the weight of each transmutation function in the mini-batch
-        array_add_inplace ($ m_to_n_func_mini_batch_infos-> [$ m_to_n_func_index] {weight_grad_totals_mat} {values}, $ weight_grads_mat-> [$ m_to_n_func_index] {values});
+        array_add_inplace ($m_to_n_func_mini_batch_infos->[$m_to_n_func_index] {weight_grad_totals_mat} {values}, $weight_grads_mat->[$m_to_n_func_index] {values});
       }
     }
 
     # Update the bias and weight of each transform function using the sum of the slopes of the mini-batch
-    for (my $ m_to_n_func_index = 0; $ m_to_n_func_index <@ $ m_to_n_func_infos; $ m_to_n_func_index ++) {
+    for (my $m_to_n_func_index = 0; $m_to_n_func_index <@$m_to_n_func_infos; $m_to_n_func_index ++) {
       
       #Update the bias of each transmutation function (consider the learning rate and divide by the number of mini-batch)
-      update_params ($ m_to_n_func_infos-> [$ m_to_n_func_index] {biases}, $ m_to_n_func_mini_batch_infos-> [$ m_to_n_func_index] {biase_grad_totals}, $ learning_rate, $ mini_batch_size);
+      update_params ($m_to_n_func_infos->[$m_to_n_func_index] {biases}, $m_to_n_func_mini_batch_infos->[$m_to_n_func_index] {biase_grad_totals}, $learning_rate, $mini_batch_size);
       
       #Update the weight of each transmutation function (consider the learning rate, divide the total slope by the number of mini-batch, divide by the number of mini-batch)
-      update_params ($ m_to_n_func_infos-> [$ m_to_n_func_index] {weights_mat} {values}, $ m_to_n_func_mini_batch_infos-> [$ m_to_n_func_index] {weight_grad_totals_mat} {values}, $ learning_rate
+      update_params ($m_to_n_func_infos->[$m_to_n_func_index] {weights_mat} {values}, $m_to_n_func_mini_batch_infos->[$m_to_n_func_index] {weight_grad_totals_mat} {values}, $learning_rate
     }
   }
 }
 
 #Update parameters considering learning rate and number of mini-batch
 sub update_params {
-  my ($ params, $ param_grads, $ learning_rate, $ mini_batch_size) = @_;
+  my ($params, $param_grads, $learning_rate, $mini_batch_size) = @_;
   
-  for (my $ param_index = 0; $ param_index <@ $ params; $ param_index ++) {
-    my $ update_diff = ($ learning_rate / $ mini_batch_size) * $ param_grads-> [$ param_index];
-    $ params-> [$ param_index]-= $ update_diff;
+  for (my $param_index = 0; $param_index <@$params; $param_index ++) {
+    my $update_diff = ($learning_rate / $mini_batch_size) * $param_grads->[$param_index];
+    $params->[$param_index]-= $update_diff;
   }
 }
 
-my $ count = 0;
+my $count = 0;
 
 # Reverse mispropagation method
 sub backprop {
-  my ($ m_to_n_func_infos, $ mnist_train_image_info, $ mnist_train_label_info, $ training_data_index) = @_;
+  my ($m_to_n_func_infos, $mnist_train_image_info, $mnist_train_label_info, $training_data_index) = @_;
   
-  my $ first_inputs_length = $ m_to_n_func_infos-> [0] {inputs_length};
+  my $first_inputs_length = $m_to_n_func_infos->[0] {inputs_length};
   
   # Input (convert 0 to 255 values ​​to 0 to 1)
-  my $ image_unit_length = $ mnist_train_image_info-> {rows_count} * $ mnist_train_image_info-> {columns_count};
-  my $ mnist_train_image_data = $ mnist_train_image_info-> {data};
-  my $ first_inputs_packed = substr ($ mnist_train_image_data, $ image_unit_length * $ training_data_index, $ image_unit_length);
-  my $ first_inputs_raw = [unpack ("C $ first_inputs_length", $ first_inputs_packed)];
-  my $ first_inputs = array_div_scalar ($ first_inputs_raw, 255);
+  my $image_unit_length = $mnist_train_image_info->{rows_count} * $mnist_train_image_info->{columns_count};
+  my $mnist_train_image_data = $mnist_train_image_info->{data};
+  my $first_inputs_packed = substr($mnist_train_image_data, $image_unit_length * $training_data_index, $image_unit_length);
+  my $first_inputs_raw = [unpack("C $first_inputs_length", $first_inputs_packed)];
+  my $first_inputs = array_div_scalar ($first_inputs_raw, 255);
   
   # Probability distribution of expected output
-  my $ label_number = $ mnist_train_label_info-> {label_numbers} [$ training_data_index];
+  my $label_number = $mnist_train_label_info->{label_numbers} [$training_data_index];
   
-  my $ desired_outputs = probabilize_desired_outputs ($ label_number);
+  my $desired_outputs = probabilize_desired_outputs ($label_number);
   
   #Bias slope of each transmutation function
-  my $ bias_grads_in_m_to_n_funcs = [];
+  my $bias_grads_in_m_to_n_funcs = [];
   
   # Slope of weight of each transmutation function
-  my $ weight_grads_mat_in_m_to_n_funcs = [];
+  my $weight_grads_mat_in_m_to_n_funcs = [];
   
   #Initialization of bias slope and weight slope
-  for (my $ m_to_n_func_index = 0; $ m_to_n_func_index <@ $ m_to_n_func_infos; $ m_to_n_func_index ++) {
-    my $ inputs_length = $ m_to_n_func_infos-> [$ m_to_n_func_index] {inputs_length};
-    my $ outputs_length = $ m_to_n_func_infos-> [$ m_to_n_func_index] {outputs_length};
+  for (my $m_to_n_func_index = 0; $m_to_n_func_index <@$m_to_n_func_infos; $m_to_n_func_index ++) {
+    my $inputs_length = $m_to_n_func_infos->[$m_to_n_func_index] {inputs_length};
+    my $outputs_length = $m_to_n_func_infos->[$m_to_n_func_index] {outputs_length};
 
     #Initialize bias slope to 0
-    $ bias_grads_in_m_to_n_funcs-> [$ m_to_n_func_index] = array_new_zero ($ outputs_length);
+    $bias_grads_in_m_to_n_funcs->[$m_to_n_func_index] = array_new_zero ($outputs_length);
 
     #Initialize the slope of the weight with 0
-    $ weight_grads_mat_in_m_to_n_funcs-> [$ m_to_n_func_index] = mat_new_zero ($ outputs_length, $ inputs_length);
+    $weight_grads_mat_in_m_to_n_funcs->[$m_to_n_func_index] = mat_new_zero ($outputs_length, $inputs_length);
   }
 
   # Input for each layer
-  my $ inputs_in_m_to_n_funcs = [$ first_inputs];
+  my $inputs_in_m_to_n_funcs = [$first_inputs];
   
   #Activated output of each layer
-  my $ outputs_in_m_to_n_funcs = [];
+  my $outputs_in_m_to_n_funcs = [];
   
   # Obtain the output of the output layer from the input of the input layer
   # Save the output of each layer and the activated output due to the reverse mispropagation method
-  for (my $ m_to_n_func_index = 0; $ m_to_n_func_index <@ $ m_to_n_func_infos; $ m_to_n_func_index ++) {
-    my $ cur_inputs = $ inputs_in_m_to_n_funcs-> [-1];
-    my $ inputs_length = $ m_to_n_func_infos-> [$ m_to_n_func_index] {inputs_length};
-    my $ outputs_length = $ m_to_n_func_infos-> [$ m_to_n_func_index] {outputs_length};
+  for (my $m_to_n_func_index = 0; $m_to_n_func_index <@$m_to_n_func_infos; $m_to_n_func_index ++) {
+    my $cur_inputs = $inputs_in_m_to_n_funcs->[-1];
+    my $inputs_length = $m_to_n_func_infos->[$m_to_n_func_index] {inputs_length};
+    my $outputs_length = $m_to_n_func_infos->[$m_to_n_func_index] {outputs_length};
     
     #Weight matrix
-    my $ weights_mat = $ m_to_n_func_infos-> [$ m_to_n_func_index] {weights_mat};
+    my $weights_mat = $m_to_n_func_infos->[$m_to_n_func_index] {weights_mat};
     
     #Input matrix
-    my $ cur_inputs_rows_length = $ outputs_length;
-    my $ cur_inputs_columns_length = 1;
-    my $ cur_inputs_mat = {
-      rows_length => $ cur_inputs_rows_length,
-      columns_length => $ cur_inputs_columns_length,
-      values ​​=> $ cur_inputs,
+    my $cur_inputs_rows_length = $outputs_length;
+    my $cur_inputs_columns_length = 1;
+    my $cur_inputs_mat = {
+      rows_length => $cur_inputs_rows_length,
+      columns_length => $cur_inputs_columns_length,
+      values ​​=> $cur_inputs,
     };;
     
     # Matrix product of weights and inputs
-    my $ mul_weights_inputs_mat = mat_mul ($ weights_mat, $ cur_inputs_mat);
-    my $ mul_weights_inputs = $ mul_weights_inputs_mat-> {values};
+    my $mul_weights_inputs_mat = mat_mul ($weights_mat, $cur_inputs_mat);
+    my $mul_weights_inputs = $mul_weights_inputs_mat->{values};
     
     #Bias
-    my $ biases = $ m_to_n_func_infos-> [$ m_to_n_func_index] {biases};
+    my $biases = $m_to_n_func_infos->[$m_to_n_func_index] {biases};
     
     #Output-The sum of the weight and input matrix product and bias
-    my $ outputs = array_add ($ mul_weights_inputs, $ biases);
+    my $outputs = array_add ($mul_weights_inputs, $biases);
     
     # Activated output-Apply activation function to output
-    my $ activate_outputs = array_sigmoid ($ outputs);
+    my $activate_outputs = array_sigmoid ($outputs);
     
     #Save output for reverse mispropagation
-    push @ $ outputs_in_m_to_n_funcs, $ outputs;
+    push @$outputs_in_m_to_n_funcs, $outputs;
     
     # Save the following input for backflip method
-    push @ $ inputs_in_m_to_n_funcs, $ activate_outputs;
+    push @$inputs_in_m_to_n_funcs, $activate_outputs;
   }
 
   
   #Last output
-  my $ last_outputs = $ outputs_in_m_to_n_funcs-> [-1];
+  my $last_outputs = $outputs_in_m_to_n_funcs->[-1];
   
   #Last activated output
-  my $ last_activate_outputs = pop @ $ inputs_in_m_to_n_funcs;
+  my $last_activate_outputs = pop @$inputs_in_m_to_n_funcs;
   
   #softmax function
-  # my $ softmax_outputs = softmax ($ last_activate_outputs);
+  # my $softmax_outputs = softmax ($last_activate_outputs);
   
   #Error
-  my $ cost = cross_entropy_cost ($ last_activate_outputs, $ desired_outputs);
-  print "Cost:". Sprintf ("% .3f", $ cost). "\ n";
+  my $cost = cross_entropy_cost ($last_activate_outputs, $desired_outputs);
+  print "Cost:". Sprintf ("%.3f", $cost). "\ n";
   
   # Whether you answered correctly
-  my $ answer = max_index ($ last_activate_outputs);
-  # my $ answer = max_index ($ softmax_outputs);
-  my $ desired_answer = max_index ($ desire
+  my $answer = max_index ($last_activate_outputs);
+  # my $answer = max_index ($softmax_outputs);
+  my $desired_answer = max_index ($desire

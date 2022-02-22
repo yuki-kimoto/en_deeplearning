@@ -1,4 +1,4 @@
-<h2> Find the difference between the vectors </ h2>
+<h2> Find the difference between the vectors </h2>
 
 Let's use Perl to find the vector difference required for deep learning calculations.
 
@@ -12,23 +12,23 @@ use warnings;
 
 #Vector difference
 sub vec_sub {
-   my ($ vec1, $ vec2) = @_;
+   my ($vec1, $vec2) = @_;
 
-   my $ vec_sub = [];
+   my $vec_sub = [];
 
-   for (my $ i = 0; $ i <@ $ vec1; $ i ++) {
-     $ vec_sub-> [$ i] = $ vec1-> [$ i]-$ vec2-> [$ i];
+   for (my $i = 0; $i <@$vec1; $i ++) {
+     $vec_sub->[$i] = $vec1->[$i]-$vec2->[$i];
    }
   
-   return $ vec_sub;
+   return $vec_sub;
 }
 
-my $ vec1 = [1, 2, 3];
-my $ vec2 = [4, 5, 6];
+my $vec1 = [1, 2, 3];
+my $vec2 = [4, 5, 6];
 
 #Vector difference
-my $ vec_sub = vec_sub ($ vec1, $ vec2);
+my $vec_sub = vec_sub ($vec1, $vec2);
 
 # -3 -3 -3
-print "@ $ vec_sub \ n";
-</ pre>
+print "@$vec_sub\n";
+</pre>

@@ -1,4 +1,4 @@
-<h2> What is bias? </ H2>
+<h2> What is bias? </H2>
 
 Bias in deep learning is the constant term of a function that transforms m inputs into n outputs.
 
@@ -9,19 +9,19 @@ use strict;
 use warnings;
 
 sub m_to_n_convert {
-  my ($ inputs) = @_;
+  my ($inputs) = @_;
   
-  my $ outputs = [];
+  my $outputs = [];
   
   #Bias
-  my $ biases = [
+  my $biases = [
     0.12,
     0.43,
     0.16,
   ];;
   
   # weight
-  my $ weights_mat = {
+  my $weights_mat = {
     rows_length => 3,
     columns_length => 2,
     values ​​=> [
@@ -33,19 +33,19 @@ sub m_to_n_convert {
       0.47,
     ]
   };;
-  my $ weights_mat_values ​​= $ weights_mat-> {values};
+  my $weights_mat_values ​​= $weights_mat->{values};
   
   #Bias is a constant term of a function that transforms m inputs into n outputs
-  $ outputs-> [0] = $ weights_mat_values-> [0] * $ inputs-> [0] + $ weights_mat_values-> [3] * $ inputs-> [1] + $ biases-> [0];
-  $ outputs-> [1] = $ weights_mat_values-> [1] * $ inputs-> [0] + $ weights_mat_values-> [4] * $ inputs-> [1] + $ biases-> [1];
-  $ outputs-> [2] = $ weights_mat_values-> [2] * $ inputs-> [0] + $ weights_mat_values-> [5] * $ inputs-> [1] + $ biases-> [2];
+  $outputs->[0] = $weights_mat_values->[0] * $inputs->[0] + $weights_mat_values->[3] * $inputs->[1] + $biases->[0];
+  $outputs->[1] = $weights_mat_values->[1] * $inputs->[0] + $weights_mat_values->[4] * $inputs->[1] + $biases->[1];
+  $outputs->[2] = $weights_mat_values->[2] * $inputs->[0] + $weights_mat_values->[5] * $inputs->[1] + $biases->[2];
   
-  return $ outputs;
+  return $outputs;
 }
-</ pre>
+</pre>
 
 The number of biases is the same as the number of outputs.
 
-<h3> Bias is a parameter that is automatically adjusted </ h3>
+<h3> Bias is a parameter that is automatically adjusted </h3>
 
-Bias is a parameter that is automatically adjusted using a learning algorithm. The value of <a href="/blog/20200901120907.html"> loss function </a>, which is an index of error, is updated to be smaller. Parameter update algorithms such as <a href="/blog/20201017123741.html"> gradient descent </a> are used for the update.
+Bias is a parameter that is automatically adjusted using a learning algorithm. The value of <a href="/blog/20200901120907.html"> loss function</a>, which is an index of error, is updated to be smaller. Parameter update algorithms such as <a href="/blog/20201017123741.html"> gradient descent</a> are used for the update.

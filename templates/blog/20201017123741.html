@@ -1,4 +1,4 @@
-<h2> Stochastic Gradient Descent (SGD)-Update Weight and Bias Parameters </ h2>
+<h2> Stochastic Gradient Descent (SGD)-Update Weight and Bias Parameters </h2>
 
 Stochastic Gradient Descent (SGD) is a technique for updating weight and bias parameters. <a href="https://en.deeplearning.perlzemi.com/blog/20200923123308.html"> Learning after finding the small change of the loss function for the small change of each weight and bias parameter. Subtract from the current weight and bias parameters, taking into account the rate. The feature is that the training data is rearranged at random.
 
@@ -24,106 +24,106 @@ Function to convert from 7 inputs to 4 outputs (weight parameter is a 4-by-7 mat
 Apply loss function (4 inputs to 1 error indicator)
 
 ●
-</ pre>
+</pre>
 
 Think of the value of the loss function as increasing a little when you increase a single weight or bias parameter a little. Using this value, the small change of the loss function for the small change of the parameter "small change of the loss function / small change of the parameter" can be obtained. This was calculated manually, but in deep learning, it is calculated using an algorithm called the reverse mispropagation method.
 
-Gradient descent method is how many updated parameters are updated together (<a href="https://en.deeplearning.perlzemi.com/blog/20200830120907.html"> batch size </a>). Also consider that. In gradient descent, training data is randomly shuffled to make it harder to stop training.
+Gradient descent method is how many updated parameters are updated together (<a href="https://en.deeplearning.perlzemi.com/blog/20200830120907.html"> batch size</a>). Also consider that. In gradient descent, training data is randomly shuffled to make it harder to stop training.
 
-<h3> Gradient descent source code </ h3>
+<h3> Gradient descent source code </h3>
 
 This is the Perl source code that extracts only the gradient descent part. In the mini-batch size, find the sum of the slopes of each weight and bias parameter and update the weight and bias taking into account the learning rate and mini-batch size.
 
 <pre>
 #Run the training set as many times as you epoch
-for (my $ epoch_index = 0; $ epoch_index <$ epoch_count; $ epoch_index ++) {
+for (my $epoch_index = 0; $epoch_index <$epoch_count; $epoch_index ++) {
   
   # Shuffle the index of training data (It seems that it is more generalized to train randomly)
   my @training_data_indexes_shuffle = shuffle @training_data_indexes;
   
-  my $ count = 0;
+  my $count = 0;
   
   #Learning in mini-batch size units
-  my $ backprop_count = 0;
+  my $backprop_count = 0;
 
-  while (my @indexed_for_mini_batch = splice (@training_data_indexes_shuffle, 0, $ mini_batch_size)) {
+  while (my @indexed_for_mini_batch = splice(@training_data_indexes_shuffle, 0, $mini_batch_size)) {
     
     # Initialize the sum of the bias slopes of each conversion function in the mini-batch and the sum of the weight slopes of each conversion function in the mini-batch to 0.
-    for (my $ m_to_n_func_index = 0; $ m_to_n_func_index <@ $ m_to_n_func_mini_batch_infos; $ m_to_n_func_index ++) {
-      my $ m_to_n_func_info = $ m_to_n_func_infos-> [$ m_to_n_func_index];
-      my $ biases = $ m_to_n_func_info-> {biases};
-      my $ weights_mat = $ m_to_n_func_info-> {weights_mat};
+    for (my $m_to_n_func_index = 0; $m_to_n_func_index <@$m_to_n_func_mini_batch_infos; $m_to_n_func_index ++) {
+      my $m_to_n_func_info = $m_to_n_func_infos->[$m_to_n_func_index];
+      my $biases = $m_to_n_func_info->{biases};
+      my $weights_mat = $m_to_n_func_info->{weights_mat};
       
       # Created by initializing the sum of the bias slopes of each conversion function in a mini-batch to 0
-      $ m_to_n_func_mini_batch_infos-> [$ m_to_n_func_index] {biase_grad_totals} = array_new_zero (scalar @ {$ m_to_n_func_mini_batch_infos-> [$ m_to_n_func_index] {biase_grad_totals}})
+      $m_to_n_func_mini_batch_infos->[$m_to_n_func_index] {biase_grad_totals} = array_new_zero (scalar @{$m_to_n_func_mini_batch_infos->[$m_to_n_func_index] {biase_grad_totals}})
 
       # Created by initializing the sum of the slopes of the weights of each conversion function in the mini-batch to 0
-      $ m_to_n_func_mini_batch_infos-> [$ m_to_n_func_index] {weight_grad_totals_mat} {values} = array_new_zero (scalar @ {$ m_to_n_func_mini_batch_infos-> [$ m_to_n_func_index] {weight_grad_total
+      $m_to_n_func_mini_batch_infos->[$m_to_n_func_index] {weight_grad_totals_mat} {values} = array_new_zero (scalar @{$m_to_n_func_mini_batch_infos->[$m_to_n_func_index] {weight_grad_total
     }
     
-    for my $ training_data_index (@indexed_for_mini_batch) {
+    for my $training_data_index (@indexed_for_mini_batch) {
       # Get the slope for the weight and bias loss function using the reverse mispropagation method
-      my $ m_to_n_func_grad_infos = backprop ($ m_to_n_func_infos, $ mnist_train_image_info, $ mnist_train_label_info, $ training_data_index);
+      my $m_to_n_func_grad_infos = backprop ($m_to_n_func_infos, $mnist_train_image_info, $mnist_train_label_info, $training_data_index);
       
       #Bias loss function slope
-      my $ bias_grads = $ m_to_n_func_grad_infos-> {biases};
+      my $bias_grads = $m_to_n_func_grad_infos->{biases};
       
       # Slope with respect to weight loss function
-      my $ weight_grads_mat = $ m_to_n_func_grad_infos-> {weights_mat};
+      my $weight_grads_mat = $m_to_n_func_grad_infos->{weights_mat};
 
       # Add the sum of the bias slopes of each conversion function in the mini-batch and the weight slope of each conversion function in the mini-batch.
-      for (my $ m_to_n_func_index = 0; $ m_to_n_func_index <@ $ m_to_n_func_mini_batch_infos; $ m_to_n_func_index ++) {
-        my $ m_to_n_func_info = $ m_to_n_func_infos-> [$ m_to_n_func_index];
+      for (my $m_to_n_func_index = 0; $m_to_n_func_index <@$m_to_n_func_mini_batch_infos; $m_to_n_func_index ++) {
+        my $m_to_n_func_info = $m_to_n_func_infos->[$m_to_n_func_index];
         
         # Add the slope of the bias of each transmutation function in the mini-batch
-        array_add_inplace ($ m_to_n_func_mini_batch_infos-> [$ m_to_n_func_index] {biase_grad_totals}, $ biase_grads-> [$ m_to_n_func_index]);
+        array_add_inplace ($m_to_n_func_mini_batch_infos->[$m_to_n_func_index] {biase_grad_totals}, $biase_grads->[$m_to_n_func_index]);
 
         # Add the slope of the weight of each transmutation function in the mini-batch
-        array_add_inplace ($ m_to_n_func_mini_batch_infos-> [$ m_to_n_func_index] {weight_grad_totals_mat} {values}, $ weight_grads_mat-> [$ m_to_n_func_index] {values});
+        array_add_inplace ($m_to_n_func_mini_batch_infos->[$m_to_n_func_index] {weight_grad_totals_mat} {values}, $weight_grads_mat->[$m_to_n_func_index] {values});
       }
     }
 
     # Update the bias and weight of each transform function using the sum of the slopes of the mini-batch
-    for (my $ m_to_n_func_index = 0; $ m_to_n_func_index <@ $ m_to_n_func_infos; $ m_to_n_func_index ++) {
+    for (my $m_to_n_func_index = 0; $m_to_n_func_index <@$m_to_n_func_infos; $m_to_n_func_index ++) {
       
       #Update the bias of each transmutation function (consider the learning rate and divide by the number of mini-batch)
-      update_params ($ m_to_n_func_infos-> [$ m_to_n_func_index] {biases}, $ m_to_n_func_mini_batch_infos-> [$ m_to_n_func_index] {biase_grad_totals}, $ learning_rate, $ mini_batch_size);
+      update_params ($m_to_n_func_infos->[$m_to_n_func_index] {biases}, $m_to_n_func_mini_batch_infos->[$m_to_n_func_index] {biase_grad_totals}, $learning_rate, $mini_batch_size);
       
       #Update the weight of each transmutation function (consider the learning rate, divide the total slope by the number of mini-batch, divide by the number of mini-batch)
-      update_params ($ m_to_n_func_infos-> [$ m_to_n_func_index] {weights_mat} {values}, $ m_to_n_func_mini_batch_infos-> [$ m_to_n_func_index] {weight_grad_totals_mat} {values}, $ learning_rate
+      update_params ($m_to_n_func_infos->[$m_to_n_func_index] {weights_mat} {values}, $m_to_n_func_mini_batch_infos->[$m_to_n_func_index] {weight_grad_totals_mat} {values}, $learning_rate
     }
   }
 }
 
 # Add the sum of each element of the array to the first argument
 sub array_add_inplace {
-  my ($ nums1, $ nums2) = @_;
+  my ($nums1, $nums2) = @_;
   
-  if (@ $ nums1! = @ $ nums2) {
+  if (@$nums1! = @$nums2) {
     die "Array length is diffent";
   }
   
-  for (my $ i = 0; $ i <@ $ nums1; $ i ++) {
-    $ nums1-> [$ i] + = $ nums2-> [$ i];
+  for (my $i = 0; $i <@$nums1; $i ++) {
+    $nums1->[$i] + = $nums2->[$i];
   }
 }
 
 #Update parameters considering learning rate and number of mini-batch
 sub update_params {
-  my ($ params, $ param_grads, $ learning_rate, $ mini_batch_size) = @_;
+  my ($params, $param_grads, $learning_rate, $mini_batch_size) = @_;
   
-  for (my $ param_index = 0; $ param_index <@ $ params; $ param_index ++) {
-    my $ update_diff = ($ learning_rate / $ mini_batch_size) * $ param_grads-> [$ param_index];
-    $ params-> [$ param_index]-= $ update_diff;
+  for (my $param_index = 0; $param_index <@$params; $param_index ++) {
+    my $update_diff = ($learning_rate / $mini_batch_size) * $param_grads->[$param_index];
+    $params->[$param_index]-= $update_diff;
   }
 }
 
 # Initialize the array with 0 and create
 sub array_new_zero {
-  my ($ length) = @_;
+  my ($length) = @_;
   
-  my $ nums = [(0) x $ length];
+  my $nums = [(0) x $length];
   
-  return $ nums;
+  return $nums;
 }
-</ pre>
+</pre>

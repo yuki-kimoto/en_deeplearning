@@ -1,4 +1,4 @@
-<h2> softmax function </ h2>
+<h2> softmax function </h2>
 
 The softmax function is a function that transforms the output into a probability distribution with a total of 100%.
 
@@ -8,48 +8,48 @@ use warnings;
 
 #softmax function
 sub softmax {
-  my ($ nums) = @_;
+  my ($nums) = @_;
   
-  my $ exp_total = 0;
-  for (my $ i = 0; $ i <@ $ nums; $ i ++) {
-    $ exp_total + = exp ($ nums-> [$ i]);
+  my $exp_total = 0;
+  for (my $i = 0; $i <@$nums; $i ++) {
+    $exp_total + = exp($nums->[$i]);
   }
   
-  my $ nums_out = [];
-  for (my $ i = 0; $ i <@ $ nums; $ i ++) {
-    $ nums_out-> [$ i] = exp ($ nums-> [$ i]) / $ exp_total;
+  my $nums_out = [];
+  for (my $i = 0; $i <@$nums; $i ++) {
+    $nums_out->[$i] = exp($nums->[$i]) / $exp_total;
   }
   
-  return $ nums_out;
+  return $nums_out;
 }
 
-my $ outputs = [0.07, 0.14, 0.24];
+my $outputs = [0.07, 0.14, 0.24];
 
-my $ softmax_outputs = softmax ($ outputs);
+my $softmax_outputs = softmax ($outputs);
 
 # 0.306954386271124 0.329211090547647 0.363834523181229
-print "@ $ softmax_outputs \ n";
-</ pre>
+print "@$softmax_outputs\n";
+</pre>
 
 The output of the softmax function is computable even if the output contains 0s.
 
 <pre>
-my $ outputs = [0, 0.14, 0.24];
+my $outputs = [0, 0.14, 0.24];
 
-my $ softmax_outputs = softmax ($ outputs);
+my $softmax_outputs = softmax ($outputs);
 
 # 0.292267512114761 0.336187661442797 0.371544826442441
-print "@ $ softmax_outputs \ n";
-</ pre>
+print "@$softmax_outputs\n";
+</pre>
 
-<a href="/blog/20200901120907.html"> loss function </a> <a href="/blog/20200831120907.html"> cross entropy error </a> contains 0 in the argument value If it is, it will be log (0), so it will be impossible to calculate, but it can be avoided by using the softmax function as the activation function of the output layer.
+<a href="/blog/20200901120907.html"> loss function</a> <a href="/blog/20200831120907.html"> cross entropy error</a> contains 0 in the argument value If it is, it will be log(0), so it will be impossible to calculate, but it can be avoided by using the softmax function as the activation function of the output layer.
 
-<h3> Derivative of softmax function </ h3>
+<h3> Derivative of softmax function </h3>
 
 The derivative of the softmax function is difficult to express.
 
 However, the derivative of the softmax function and the composite function of the cross entropy error is easy to express, so it can be used for the inverse mispropagation method.
 
 <ul>
-  <li> <a href="/blog/20200927161518.html"> Derivatives of the softmax function and the composite function of the cross entropy error </a> </ li>
-</ ul>
+  <li> <a href="/blog/20200927161518.html"> Derivatives of the softmax function and the composite function of the cross entropy error</a> </li>
+</ul>

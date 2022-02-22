@@ -1,63 +1,63 @@
-<h2> What is slope? --Differential coefficient </ h2>
+<h2> What is slope? --Differential coefficient </h2>
 
 I will explain about the tilt. In the introduction to deep learning learned in Perl, we will explain using the everyday word "slope" without using the mathematical word called differential coefficient as much as possible. Also, the word "gradient" is sometimes used, but it is used as a synonym for "tilt".
 
-<h3> Definition of tilt </ h3>
+<h3> Definition of tilt </h3>
 
 Define the "tilt" in a way that the software engineer can understand.
 
-<h4> Get output from one input </ h4>
+<h4> Get output from one input </h4>
 
-Suppose there is one input "$ input" for the function "func". And suppose that output is "$ output". "
+Suppose there is one input "$input" for the function "func". And suppose that output is "$output". "
 
 func is an example of a "squared function".
 
 <pre>
 # Get output for one input
-my $ input = 3;
-my $ output = func ($ input);
+my $input = 3;
+my $output = func ($input);
 
 sub func {
-  my ($ input) = @_;
+  my ($input) = @_;
   
-  my $ output = $ input ** 2;
+  my $output = $input ** 2;
   
-  return $ output;
+  return $output;
 }
-</ pre>
+</pre>
 
-<h4> Get the output from one input plus a small change </ h4>
+<h4> Get the output from one input plus a small change </h4>
 
-Suppose you add a small change "0.00000001" to $ input. Name this input "$ input_plus_delta". Name the output at that time "$ output_plus_delta".
+Suppose you add a small change "0.00000001" to $input. Name this input "$input_plus_delta". Name the output at that time "$output_plus_delta".
 
 <pre>
 # Make one input plus a small change and get the output
-my $ input = 3;
-my $ delta = 0.00000001;
-my $ input_plus_delta = $ input + $ delta;
-my $ output_plus_delta = func ($ input_plus_delta);
+my $input = 3;
+my $delta = 0.00000001;
+my $input_plus_delta = $input + $delta;
+my $output_plus_delta = func ($input_plus_delta);
 
 sub func {
-  my ($ input) = @_;
+  my ($input) = @_;
   
-  my $ output = $ input ** 2;
+  my $output = $input ** 2;
   
-  return $ output;
+  return $output;
 }
-</ pre>
+</pre>
 
 Since the input has changed slightly, the output will change accordingly.
 
-<h4> Definition of slope </ h4>
+<h4> Definition of slope </h4>
 
 The slope is a value that expresses the ratio of how much the output changes when the small change is brought close to 0 as much as possible with respect to the small change of a certain input. The denominator is a small change in the input. The numerator is the corresponding subtle change in output.
 
 <pre>
-#Definition of slope ($ input_plus_delta-makes the value of $ input as close to 0 as possible)
-my $ grad = ($ output_plus_delta-$ output) / ($ input_plus_delta-$ input);
-</ pre>
+#Definition of slope ($input_plus_delta-makes the value of $input as close to 0 as possible)
+my $grad = ($output_plus_delta-$output) / ($input_plus_delta-$input);
+</pre>
 
-<h3> Calculate the slope for some inputs </ h3>
+<h3> Calculate the slope for some inputs </h3>
 
 In fact, let's calculate the slope for some inputs.
 
@@ -66,56 +66,56 @@ use strict;
 use warnings;
 
 sub func {
-  my ($ input) = @_;
+  my ($input) = @_;
   
-  my $ output = $ input ** 2;
+  my $output = $input ** 2;
   
-  return $ output;
+  return $output;
 }
 
 {
   # Get output for one input "1"
-  my $ input = 1;
-  my $ output = func ($ input);
+  my $input = 1;
+  my $output = func ($input);
 
   # Make one input "1" plus a small change and get the output
-  my $ delta = 0.00000001;
-  my $ input_plus_delta = $ input + $ delta;
-  my $ output_plus_delta = func ($ input_plus_delta);
-  my $ grad = ($ output_plus_delta-$ output) / ($ input_plus_delta-$ input);
+  my $delta = 0.00000001;
+  my $input_plus_delta = $input + $delta;
+  my $output_plus_delta = func ($input_plus_delta);
+  my $grad = ($output_plus_delta-$output) / ($input_plus_delta-$input);
   
   # Grad: 2. Input is 1
-  print "Grad: $ grad. Input is 1 \ n";
+  print "Grad: $grad. Input is 1\n";
 }
 {
   # Get output for one input "2"
-  my $ input = 2;
-  my $ output = func ($ input);
+  my $input = 2;
+  my $output = func ($input);
 
   # Make one input "2" plus a small change and get the output
-  my $ delta = 0.00000001;
-  my $ input_plus_delta = $ input + $ delta;
-  my $ output_plus_delta = func ($ input_plus_delta);
-  my $ grad = ($ output_plus_delta-$ output) / ($ input_plus_delta-$ input);
+  my $delta = 0.00000001;
+  my $input_plus_delta = $input + $delta;
+  my $output_plus_delta = func ($input_plus_delta);
+  my $grad = ($output_plus_delta-$output) / ($input_plus_delta-$input);
 
   # Grad: 4. Input is 1
-  print "Grad: $ grad. Input is 2 \ n";
+  print "Grad: $grad. Input is 2\n";
 }
 {
   # Get output for one input "3"
-  my $ input = 3;
-  my $ output = func ($ input);
+  my $input = 3;
+  my $output = func ($input);
 
   # Make one input "3" plus a small change and get the output
-  my $ delta = 0.00000001;
-  my $ input_plus_delta = $ input + $ delta;
-  my $ output_plus_delta = func ($ input_plus_delta);
-  my $ grad = ($ output_plus_delta-$ output) / ($ input_plus_delta-$ input);
+  my $delta = 0.00000001;
+  my $input_plus_delta = $input + $delta;
+  my $output_plus_delta = func ($input_plus_delta);
+  my $grad = ($output_plus_delta-$output) / ($input_plus_delta-$input);
   
   # Grad: 6. Input is 3
-  print "Grad: $ grad. Input is 3 \ n";
+  print "Grad: $grad. Input is 3\n";
 }
-</ pre>
+</pre>
 
 I was able to calculate the slope. If the input is 2, the slope is 2, if the input is 2, the slope is 4, and if the input is 3, the slope is 6.
 
@@ -123,13 +123,13 @@ A large slope means that a small change in the output is large with respect to a
 
 Deep learning uses an algorithm called the reverse mispropagation method to determine the slope of the loss function for all weights and biases. It's a multi-stage function, but the idea is the same.
 
-<a href="/blog/20200923123308.html"> learning rate </a> and <a href="/blog/20200830120907.html"> batch size </a> for all the calculated weights and bias slopes. Is taken into account and updated by subtracting from the current weight and bias. This is called <a href="/blog/20201017123741.html"> gradient descent </a>.
+<a href="/blog/20200923123308.html"> learning rate</a> and <a href="/blog/20200830120907.html"> batch size</a> for all the calculated weights and bias slopes. Is taken into account and updated by subtracting from the current weight and bias. This is called <a href="/blog/20201017123741.html"> gradient descent</a>.
 
-<h3> The derivative is a function for finding the slope </ h3>
+<h3> The derivative is a function for finding the slope </h3>
 
 What a software engineer needs to know is how to find the slope given a function. The algorithm explained above is exactly the algorithm that finds the slope, but since Softair is a finite world, it is not possible to make minute changes to 0, and it is a little troublesome to find it.
 
-To find the slope, use a function called <a href="/blog/20200919123308.html"> derivative </a>. Given a function, the derivative is derived by excellent mathematicians and physicists in university research institutes and private research. thank you. (I hope you don't have any prejudice in software implementation. Isn't it a fair and win-win relationship?)
+To find the slope, use a function called <a href="/blog/20200919123308.html"> derivative</a>. Given a function, the derivative is derived by excellent mathematicians and physicists in university research institutes and private research. thank you. (I hope you don't have any prejudice in software implementation. Isn't it a fair and win-win relationship?)
 
 For example, the derivative of the squared function is: Let's check if the above result matches the result within a small error range.
 
@@ -138,39 +138,39 @@ use strict;
 use warnings;
 
 sub func {
-  my ($ input) = @_;
+  my ($input) = @_;
   
-  my $ output = $ input ** 2;
+  my $output = $input ** 2;
   
-  return $ output;
+  return $output;
 }
 
 sub func_derivative {
-  my ($ input) = @_;
+  my ($input) = @_;
   
-  my $ output = 2 * $ input;
+  my $output = 2 * $input;
   
-  return $ output;
+  return $output;
 }
 
 {
-  my $ input = 1;
-  my $ grad = func_derivative ($ input);
+  my $input = 1;
+  my $grad = func_derivative ($input);
   # Grad: 2. Input is 1
-  print "Grad: $ grad. Input is 1 \ n";
+  print "Grad: $grad. Input is 1\n";
 }
 {
-  my $ input = 2;
-  my $ grad = func_derivative ($ input);
+  my $input = 2;
+  my $grad = func_derivative ($input);
   # Grad: 4. Input is 2
-  print "Grad: $ grad. Input is 1 \ n";
+  print "Grad: $grad. Input is 1\n";
 }
 {
-  my $ input = 3;
-  my $ grad = func_derivative ($ input);
+  my $input = 3;
+  my $grad = func_derivative ($input);
   # Grad: 6. Input is 3
-  print "Grad: $ grad. Input is 1 \ n";
+  print "Grad: $grad. Input is 1\n";
 }
-</ pre>
+</pre>
 
 This time, there seems to be no error. If the input is 2, the slope is 2, if the input is 2, the slope is 4, and if the input is 3, the slope is 6.

@@ -1,68 +1,68 @@
-<h2> Initial value of He </ h2>
+<h2> Initial value of He </h2>
 
-Let's find the initial value of He. The initial value of He is <a href="/blog/20201005144439.html"> random number that follows a normal distribution </a>, with the mean specified as 0 and the standard deviation specified as "sqrt (2 / number of inputs)". ..
+Let's find the initial value of He. The initial value of He is <a href="/blog/20201005144439.html"> random number that follows a normal distribution</a>, with the mean specified as 0 and the standard deviation specified as "sqrt(2 / number of inputs)". ..
 
 The number of inputs is the value of m in the conversion from m to n.
 
-Initial value of weight when mainly using <a href="/blog/20200911102242.html"> ReLU function </a> as <a href="/blog/20200902120907.html"> activation function </a> It seems to be used for. By choosing a good initial value, the value to which the activation function is applied after the conversion from m to n in each layer will vary moderately.
+Initial value of weight when mainly using <a href="/blog/20200911102242.html"> ReLU function</a> as <a href="/blog/20200902120907.html"> activation function</a> It seems to be used for. By choosing a good initial value, the value to which the activation function is applied after the conversion from m to n in each layer will vary moderately.
 
 <pre>
 Get the initial value of #He
 sub he_init_value {
-  my ($ inputs_length) = @_;
+  my ($inputs_length) = @_;
   
-  return randn (0, sqrt (1 / $ inputs_length));
+  return randn (0, sqrt(1 / $inputs_length));
 }
-</ pre>
+</pre>
 
-<h3> Initialize an array of weights using the initial value of He </ h3>
+<h3> Initialize an array of weights using the initial value of He </h3>
 
 <pre>
 use strict;
 use warnings;
 
 # Function to find random numbers that follow a normal distribution
-# $ m is mean, $ sigma is standard deviation,
+# $m is mean, $sigma is standard deviation,
 sub randn {
-  my ($ m, $ sigma) = @_;
-  my ($ r1, $ r2) = (rand (), rand ());
-  while ($ r1 == 0) {$ r1 = rand ();}
-  return ($ sigma * sqrt (-2 * log ($ r1)) * sin (2 * 3.14159265359 * $ r2)) + $ m;
+  my ($m, $sigma) = @_;
+  my ($r1, $r2) = (rand(), rand());
+  while ($r1 == 0) {$r1 = rand();}
+  return($sigma * sqrt(-2 * log($r1)) * sin(2 * 3.14159265359 * $r2)) + $m;
 }
 
 # Create initial value of He
 sub create_he_init_value {
-  my ($ inputs_length) = @_;
+  my ($inputs_length) = @_;
   
-  return randn (0, sqrt (2 / $ inputs_length));
+  return randn (0, sqrt(2 / $inputs_length));
 }
 
 #Create an array with the default value of He
 sub array_create_he_init_value {
-  my ($ array_length, $ inputs_length) = @_;
+  my ($array_length, $inputs_length) = @_;
   
-  my $ nums_out = [];
-  for (my $ i = 0; $ i <$ array_length; $ i ++) {
-    $ nums_out-> [$ i] = create_he_init_value ($ inputs_length);
+  my $nums_out = [];
+  for (my $i = 0; $i <$array_length; $i ++) {
+    $nums_out->[$i] = create_he_init_value ($inputs_length);
   }
   
-  return $ nums_out;
+  return $nums_out;
 }
 
 # If the number of inputs is 728 and the number of outputs is 30, the length of the array of the matrix is ​​"728 * 30".
-my $ inputs_length = 728;
-my $ outputs_length = 30;
-my $ weights_mat = {
-  rows_length => $ outputs_length,
-  columns_length => $ inputs_length,
+my $inputs_length = 728;
+my $outputs_length = 30;
+my $weights_mat = {
+  rows_length => $outputs_length,
+  columns_length => $inputs_length,
 };;
-my $ weights_values_length = $ inputs_length * $ outputs_length;
-$ weights_mat-> {values} = array_create_he_init_value ($ weights_values_length, $ inputs_length);
+my $weights_values_length = $inputs_length * $outputs_length;
+$weights_mat->{values} = array_create_he_init_value ($weights_values_length, $inputs_length);
 
-use Data :: Dumper;
-print Dumper $ weights_mat;
-</ pre>
+use Data::Dumper;
+print Dumper $weights_mat;
+</pre>
 
-<h3> Initial values ​​other than the initial value of He </ h3>
+<h3> Initial values ​​other than the initial value of He </h3>
 
-When using the sigmoid function as the activation function, it is better to use <a href="/blog/20201007144439.html"> Xavier default value </a>.
+When using the sigmoid function as the activation function, it is better to use <a href="/blog/20201007144439.html"> Xavier default value</a>.

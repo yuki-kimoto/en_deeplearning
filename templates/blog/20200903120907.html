@@ -1,27 +1,27 @@
-<h2> Sigmoid function-activation function </ h2>
+<h2> Sigmoid function-activation function </h2>
 
-Let's write a sigmoid function in Perl. The sigmoid function is one of the <a href="/blog/20200902120907.html"> activation functions </a>.
+Let's write a sigmoid function in Perl. The sigmoid function is one of the <a href="/blog/20200902120907.html"> activation functions</a>.
 
 <pre>
 sub sigmoid {
-   my ($ x) = @_;
+   my ($x) = @_;
   
-   my $ sigmoid = 1.0 / (1.0 + exp (-$ x));
+   my $sigmoid = 1.0 / (1.0 + exp(-$x));
   
-   return $ sigmoid;
+   return $sigmoid;
 }
 
-my $ x = 0.5;
-my $ sigmoid = sigmoid ($ x);
+my $x = 0.5;
+my $sigmoid = sigmoid ($x);
 
 # 0.6224593312018545646389
-print "$ sigmoid \ n";
-</ pre>
+print "$sigmoid\n";
+</pre>
 
-<h3> Derivative of sigmoid function </ h3>
+<h3> Derivative of sigmoid function </h3>
 
 Please refer to the following article for the derivative of the sigmoid function.
 
 <ul>
-   <li> <a href="/blog/20200920123308.html"> Derivative of sigmoid function </a> </ li>
-</ ul>
+   <li> <a href="/blog/20200920123308.html"> Derivative of sigmoid function</a> </li>
+</ul>

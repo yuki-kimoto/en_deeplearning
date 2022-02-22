@@ -1,4 +1,4 @@
-<h2> Randomly shuffle training data </ ​​h2>
+<h2> Randomly shuffle training data </​​h2>
 
 I will explain how to shuffle the training data randomly.
 
@@ -7,7 +7,7 @@ Below is a Perl program that randomly shuffles and retrieves training data.
 <pre>
 use strict;
 use warnings;
-use List :: Util'shuffle';
+use List::Util'shuffle';
 
 #Index shuffle
 my @indexes = (0 .. 9);
@@ -15,15 +15,15 @@ my @shuffled_indexes = shuffle @indexes;
 
 #Get data assuming image information in random order
 my @training_datas = ('a','b','c','d','e','f','g','h','j','k');
-for my $ index (@shuffled_indexes) {
-  my $ training_data = $ training_datas [$ index];
-  print "$ training_data \ n";
+for my $index(@shuffled_indexes) {
+  my $training_data = $training_datas [$index];
+  print "$training_data\n";
 }
-</ pre>
+</pre>
 
-<h3> A brief explanation of the Perl program that randomly shuffles and acquires training data </ ​​h3>
+<h3> A brief explanation of the Perl program that randomly shuffles and acquires training data </​​h3>
 
-To shuffle the array randomly, use the Shuffle function of List :: Util.
+To shuffle the array randomly, use the Shuffle function of List::Util.
 
 First create an index and shuffle it randomly.
 

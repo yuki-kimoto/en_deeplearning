@@ -1,8 +1,8 @@
-<h2> Adam --Parameter update optimization algorithm with improved SGD </ h2>
+<h2> Adam --Parameter update optimization algorithm with improved SGD </h2>
 
-Adam is a parameter update optimization algorithm that improves SGD. The feature is that the learning rate part in <a href="/blog/20201017123741.html"> SGD </a> is updated every time you train. Another feature is that it takes into account the amount of updates made the previous time.
+Adam is a parameter update optimization algorithm that improves SGD. The feature is that the learning rate part in <a href="/blog/20201017123741.html"> SGD</a> is updated every time you train. Another feature is that it takes into account the amount of updates made the previous time.
 
-Let's write Adam's algorithm for updating one parameter in Perl. This is a sample for updating <a href="/blog/20201016143424.html"> bias </a>. The same is true for <a href="/blog/20201015143424.html"> weights </a>.
+Let's write Adam's algorithm for updating one parameter in Perl. This is a sample for updating <a href="/blog/20201016143424.html"> bias</a>. The same is true for <a href="/blog/20201015143424.html"> weights</a>.
 
 I wrote Adam in Perl code.
 
@@ -13,51 +13,51 @@ use strict;
 use warnings;
 
 #Hyperparameters
-my $ biase = 0.14;
-my $ learning_rate = 0.001;
-my $ much_small_value = 1e-8;
-my $ before_moment_weight = 0.9;
-my $ before_velocity_weight = 0.999;
+my $biase = 0.14;
+my $learning_rate = 0.001;
+my $much_small_value = 1e-8;
+my $before_moment_weight = 0.9;
+my $before_velocity_weight = 0.999;
 
 # Moment value
-my $ moment = 0;
+my $moment = 0;
 
 #Velocity value
-my $ velocity = 0;
-for (my $ i = 0; $ i <10; $ i ++) {
-  my $ grad = calc_grad ();
-  $ moment = $ before_moment_weight * $ moment + (1-$ before_moment_weight) * $ grad;
-  $ velocity = $ before_velocity_weight * $ velocity + (1-$ before_velocity_weight) * $ grad * $ grad;
+my $velocity = 0;
+for (my $i = 0; $i <10; $i ++) {
+  my $grad = calc_grad ();
+  $moment = $before_moment_weight * $moment + (1-$before_moment_weight) * $grad;
+  $velocity = $before_velocity_weight * $velocity + (1-$before_velocity_weight) * $grad * $grad;
   
-  my $ cur_moment = $ moment / (1-$ before_moment_weight);
-  my $ cur_velocity = $ velocity / (1-$ before_velocity_weight);
+  my $cur_moment = $moment / (1-$before_moment_weight);
+  my $cur_velocity = $velocity / (1-$before_velocity_weight);
   
-  $ bias-= ($ learning_rate / (sqrt ($ cur_velocity) + $ much_small_value)) * $ cur_moment;
+  $bias-= ($learning_rate / (sqrt($cur_velocity) + $much_small_value)) * $cur_moment;
 }
 
 # Find the slope
 sub calc_grad {
   
   #Returns a convenient value
-  my $ grad = rand;
+  my $grad = rand;
   
-  return $ grad;
+  return $grad;
 }
-</ pre>
+</pre>
 
 The so-called default recommendations are: However, this is an initial value and needs to be set optimally in order for the correct answer rate to rise quickly and the final correct answer rate to be high.
 
 <pre>
-my $ learning_rate = 0.001;
-my $ much_small_value = 1e-8;
-my $ before_moment_weight = 0.9;
-my $ before_velocity_weight = 0.999;
-</ pre>
+my $learning_rate = 0.001;
+my $much_small_value = 1e-8;
+my $before_moment_weight = 0.9;
+my $before_velocity_weight = 0.999;
+</pre>
 
-<h3> What does Adam's formula mean? </ H3>
+<h3> What does Adam's formula mean? </H3>
 
 I'm not sure. I found the article "Optimization by Adam" easy to understand.
 
 <ul>
-  <li> <a href="https://www.renom.jp/ja/notebooks/tutorial/basic_algorithm/adam/notebook.html"> Optimization by Adam </a> </ li>
-</ ul>
+  <li> <a href="https://www.renom.jp/ja/notebooks/tutorial/basic_algorithm/adam/notebook.html"> Optimization by Adam</a> </li>
+</ul>

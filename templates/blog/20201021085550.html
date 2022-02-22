@@ -1,10 +1,10 @@
-<h2> How to find the slope in the case of a multi-stage function --Differentiation of the composite function </ h2>
+<h2> How to find the slope in the case of a multi-stage function --Differentiation of the composite function </h2>
 
-I will explain how to find the slope in the case of a multi-stage function. How to find the slope is explained in <a href="/blog/20201020085300.html"> What is the slope </a>, so it is assumed that you understand this.
+I will explain how to find the slope in the case of a multi-stage function. How to find the slope is explained in <a href="/blog/20201020085300.html"> What is the slope</a>, so it is assumed that you understand this.
 
 When using a multi-stage function to find the slope, the terminology of mathematics describes it as the derivative of a composite function. Here, we will explain in easy-to-understand words that software engineers can understand.
 
-<h3> Apply functions in multiple stages </ h3>
+<h3> Apply functions in multiple stages </h3>
 
 First, consider a sample in which a squared function and a doubled function are applied in succession.
 
@@ -13,31 +13,31 @@ use strict;
 use warnings;
 
 sub pow2 {
-  my ($ input) = @_;
+  my ($input) = @_;
   
-  my $ output = $ input ** 2;
+  my $output = $input ** 2;
   
-  return $ output;
+  return $output;
 }
 
 sub mul2 {
-  my ($ input) = @_;
+  my ($input) = @_;
   
-  my $ output = $ input * 2;
+  my $output = $input * 2;
   
-  return $ output;
+  return $output;
 }
 
-my $ input = 3;
-my $ output_pow2 = pow2 ($ input);
-my $ output_mul2_pow2 = mul2 ($ output_pow2);
+my $input = 3;
+my $output_pow2 = pow2 ($input);
+my $output_mul2_pow2 = mul2 ($output_pow2);
 
-print "$ output_mul2_pow2 \ n";
-</ pre>
+print "$output_mul2_pow2\n";
+</pre>
 
 We squared 3 and doubled it, so the result is 18.
 
-<h3> Find the value based on the definition of slope </ h3>
+<h3> Find the value based on the definition of slope </h3>
 
 Let's find the value based on the definition of slope. The function is multi-stage, but it's not difficult because you only see the ratio of the small change of the first input to the small change of the last output (the denominator is the small change of the input).
 
@@ -46,46 +46,46 @@ use strict;
 use warnings;
 
 sub pow2 {
-  my ($ input) = @_;
+  my ($input) = @_;
   
-  my $ output = $ input ** 2;
+  my $output = $input ** 2;
   
-  return $ output;
+  return $output;
 }
 
 sub mul2 {
-  my ($ input) = @_;
+  my ($input) = @_;
   
-  my $ output = $ input * 2;
+  my $output = $input * 2;
   
-  return $ output;
+  return $output;
 }
 
-my $ input = 3;
-my $ output_pow2 = pow2 ($ input);
-my $ output_mul2_pow2 = mul2 ($ output_pow2);
+my $input = 3;
+my $output_pow2 = pow2 ($input);
+my $output_mul2_pow2 = mul2 ($output_pow2);
 
-my $ delta = 0.00000001;
-my $ input_plus_delta = $ input + $ delta;
-my $ output_pow2_plus_delta = pow2 ($ input_plus_delta);
-my $ output_mul2_pow2_plus_delta = mul2 ($ output_pow2_plus_delta);
+my $delta = 0.00000001;
+my $input_plus_delta = $input + $delta;
+my $output_pow2_plus_delta = pow2 ($input_plus_delta);
+my $output_mul2_pow2_plus_delta = mul2 ($output_pow2_plus_delta);
 
-my $ grad = ($ output_mul2_pow2_plus_delta-$ output_mul2_pow2) / ($ input_plus_delta-$ input);
+my $grad = ($output_mul2_pow2_plus_delta-$output_mul2_pow2) / ($input_plus_delta-$input);
 
 # 12
-print "$ grad \ n";
-</ pre>
+print "$grad\n";
+</pre>
 
 The slope is now 12.
 
-<h3> Formula for finding the slope of a multi-stage function </ h3>
+<h3> Formula for finding the slope of a multi-stage function </h3>
 
 In fact, there is a formula for finding the slope of a multi-stage function. All you have to do is multiply the result of the slope obtained using the derivative of each function.
 
 <pre>
 # Formula for finding the slope of a multi-stage function
-my $ grad = pow2_derivative ($ input) * mul2_derivative ($ input_plus_delta);
-</ pre>
+my $grad = pow2_derivative ($input) * mul2_derivative ($input_plus_delta);
+</pre>
 
 Now, let's see if the results match, excluding the error, given the derivatives of each function.
 
@@ -94,56 +94,56 @@ use strict;
 use warnings;
 
 sub pow2 {
-  my ($ input) = @_;
+  my ($input) = @_;
   
-  my $ output = $ input ** 2;
+  my $output = $input ** 2;
   
-  return $ output;
+  return $output;
 }
 
 sub pow2_derivative {
-  my ($ input) = @_;
+  my ($input) = @_;
   
-  my $ output = $ input * 2;
+  my $output = $input * 2;
   
-  return $ output;
+  return $output;
 }
 
 
 sub mul2 {
-  my ($ input) = @_;
+  my ($input) = @_;
   
-  my $ output = $ input * 2;
+  my $output = $input * 2;
   
-  return $ output;
+  return $output;
 }
 
 sub mul2_derivative {
-  my ($ input) = @_;
+  my ($input) = @_;
   
-  my $ output = 2;
+  my $output = 2;
   
-  return $ output;
+  return $output;
 }
 
-my $ input = 3;
-my $ output_pow2 = pow2 ($ input);
-my $ output_mul2_pow2 = mul2 ($ output_pow2);
+my $input = 3;
+my $output_pow2 = pow2 ($input);
+my $output_mul2_pow2 = mul2 ($output_pow2);
 
-my $ delta = 0.00000001;
-my $ input_plus_delta = $ input + $ delta;
-my $ output_pow2_plus_delta = pow2 ($ input_plus_delta);
-my $ output_mul2_pow2_plus_delta = mul2 ($ output_pow2_plus_delta);
+my $delta = 0.00000001;
+my $input_plus_delta = $input + $delta;
+my $output_pow2_plus_delta = pow2 ($input_plus_delta);
+my $output_mul2_pow2_plus_delta = mul2 ($output_pow2_plus_delta);
 
 #Slope obtained using the definition
-my $ grad = ($ output_mul2_pow2_plus_delta-$ output_mul2_pow2) / ($ input_plus_delta-$ input);
+my $grad = ($output_mul2_pow2_plus_delta-$output_mul2_pow2) / ($input_plus_delta-$input);
 
 # Slope obtained using the formula
-my $ grad_formula = pow2_derivative ($ input) * mul2_derivative ($ output_pow2_plus_delta);
+my $grad_formula = pow2_derivative ($input) * mul2_derivative ($output_pow2_plus_delta);
 
 # 12
-print "$ grad_formula \ n";
-</ pre>
+print "$grad_formula\n";
+</pre>
 
 The result was 12. It suits you. This time, there seems to be no error.
 

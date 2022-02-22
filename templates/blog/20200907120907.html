@@ -1,8 +1,8 @@
-<h2> Read MNIST image information </ h2>
+<h2> Read MNIST image information </h2>
 
 This is a sample program that reads MNIST image information in Perl. MNIST is a sample image that can be used in deep learning.
 
-This is a sample to read <a href="http://yann.lecun.com/exdb/mnist/"> THE MNIST DATABASE of handwritten digits </a>.
+This is a sample to read <a href="http://yann.lecun.com/exdb/mnist/"> THE MNIST DATABASE of handwritten digits</a>.
 
 <pre>
 use strict;
@@ -10,49 +10,49 @@ use warnings;
 use FindBin;
 
 # MNIST Read image information
-my $ mnist_image_file = "$ FindBin :: Bin / data / train-images-idx3-ubyte";
+my $mnist_image_file = "$FindBin::Bin / data / train-images-idx3-ubyte";
 
-open my $ mnist_image_fh,'<', $ mnist_image_file
-  or die "Can't open file $ mnist_image_file: $!";
+open my $mnist_image_fh,'<', $mnist_image_file
+  or die "Can't open file $mnist_image_file: $!";
 
 #Magic number
-my $ image_buffer;
-read ($ mnist_image_fh, $ image_buffer, 4);
-my $ magic_number = unpack ('N1', $ image_buffer);
-if ($ magic_number! = 0x00000803) {
-  die "Invalid magic number expected". 0x00000803. "actual $ magic_number";
+my $image_buffer;
+read($mnist_image_fh, $image_buffer, 4);
+my $magic_number = unpack('N1', $image_buffer);
+if ($magic_number! = 0x00000803) {
+  die "Invalid magic number expected". 0x00000803. "actual $magic_number";
 }
 
 #Number of images
-read ($ mnist_image_fh, $ image_buffer, 4);
-my $ items_count = unpack ('N1', $ image_buffer);
+read($mnist_image_fh, $image_buffer, 4);
+my $items_count = unpack('N1', $image_buffer);
 
 # Image row pixel count
-read ($ mnist_image_fh, $ image_buffer, 4);
-my $ rows_count = unpack ('N1', $ image_buffer);
+read($mnist_image_fh, $image_buffer, 4);
+my $rows_count = unpack('N1', $image_buffer);
 
 #Image column pixel count
-read ($ mnist_image_fh, $ image_buffer, 4);
-my $ columns_count = unpack ('N1', $ image_buffer);
+read($mnist_image_fh, $image_buffer, 4);
+my $columns_count = unpack('N1', $image_buffer);
 
 #Load image
-my $ image_data;
-my $ all_images_length = $ items_count * $ rows_count * $ columns_count;
-my $ read_length = read $ mnist_image_fh, $ image_data, $ all_images_length;
-unless ($ read_length == $ all_images_length) {
+my $image_data;
+my $all_images_length = $items_count * $rows_count * $columns_count;
+my $read_length = read $mnist_image_fh, $image_data, $all_images_length;
+unless ($read_length == $all_images_length) {
   die "Can't read all images";
 }
 
 #Image information
-my $ image_info = {};
-$ image_info-> {items_count} = $ items_count;
-$ image_info-> {rows_count} = $ rows_count;
-$ image_info-> {columns_count} = $ columns_count;
-$ image_info-> {data} = $ image_data;
+my $image_info = {};
+$image_info->{items_count} = $items_count;
+$image_info->{rows_count} = $rows_count;
+$image_info->{columns_count} = $columns_count;
+$image_info->{data} = $image_data;
 
-</ pre>
+</pre>
 
-<h3> A brief explanation of the program that reads MNIST image information </ h3>
+<h3> A brief explanation of the program that reads MNIST image information </h3>
 
 Place "train-images-idx3-ubyte" under "data".
 
@@ -72,11 +72,11 @@ Load all images.
 
 The image information for training "train-images-idx3-ubyte" is read, but the image information for verification "t10k-images-idx3-ubyte" can also be read in the same way.
 
-<h3> How to output MNIST image information </ h3>
+<h3> How to output MNIST image information </h3>
 
 I read the MNIST image information in memory, but I will explain how to check this. You can check the contents by outputting it as a bitmap image.
 
-Use the module <a href="https://perlzemi.com/blog/20110820131832.html"> Imager </a>. It's a CPAN module, so install it with cpanm or cpan.
+Use the module <a href="https://perlzemi.com/blog/20110820131832.html"> Imager</a>. It's a CPAN module, so install it with cpanm or cpan.
 
 Below is a sample that outputs the first 5 images as bitmap images.
 
@@ -87,82 +87,82 @@ use FindBin;
 use Imager;
 
 # MNIST Read image information
-my $ mnist_image_file = "$ FindBin :: Bin / data / train-images-idx3-ubyte";
+my $mnist_image_file = "$FindBin::Bin / data / train-images-idx3-ubyte";
 
-open my $ mnist_image_fh,'<', $ mnist_image_file
-  or die "Can't open file $ mnist_image_file: $!";
+open my $mnist_image_fh,'<', $mnist_image_file
+  or die "Can't open file $mnist_image_file: $!";
 
 #Magic number
-my $ image_buffer;
-read ($ mnist_image_fh, $ image_buffer, 4);
-my $ magic_number = unpack ('N1', $ image_buffer);
-if ($ magic_number! = 0x00000803) {
-  die "Invalid magic number expected". 0x00000803. "actual $ magic_number";
+my $image_buffer;
+read($mnist_image_fh, $image_buffer, 4);
+my $magic_number = unpack('N1', $image_buffer);
+if ($magic_number! = 0x00000803) {
+  die "Invalid magic number expected". 0x00000803. "actual $magic_number";
 }
 
 #Number of images
-read ($ mnist_image_fh, $ image_buffer, 4);
-my $ items_count = unpack ('N1', $ image_buffer);
+read($mnist_image_fh, $image_buffer, 4);
+my $items_count = unpack('N1', $image_buffer);
 
 # Image row pixel count
-read ($ mnist_image_fh, $ image_buffer, 4);
-my $ rows_count = unpack ('N1', $ image_buffer);
+read($mnist_image_fh, $image_buffer, 4);
+my $rows_count = unpack('N1', $image_buffer);
 
 #Image column pixel count
-read ($ mnist_image_fh, $ image_buffer, 4);
-my $ columns_count = unpack ('N1', $ image_buffer);
+read($mnist_image_fh, $image_buffer, 4);
+my $columns_count = unpack('N1', $image_buffer);
 
 #Load image
-my $ image_data;
-my $ all_images_length = $ items_count * $ rows_count * $ columns_count;
-my $ read_length = read $ mnist_image_fh, $ image_data, $ all_images_length;
-unless ($ read_length == $ all_images_length) {
+my $image_data;
+my $all_images_length = $items_count * $rows_count * $columns_count;
+my $read_length = read $mnist_image_fh, $image_data, $all_images_length;
+unless ($read_length == $all_images_length) {
   die "Can't read all images";
 }
 
 #Image information
-my $ image_info = {};
-$ image_info-> {items_count} = $ items_count;
-$ image_info-> {rows_count} = $ rows_count;
-$ image_info-> {columns_count} = $ columns_count;
-$ image_info-> {data} = $ image_data;
+my $image_info = {};
+$image_info->{items_count} = $items_count;
+$image_info->{rows_count} = $rows_count;
+$image_info->{columns_count} = $columns_count;
+$image_info->{data} = $image_data;
 
 #Image information output
-for (my $ i = 0; $ i <5; $ i ++) {
+for (my $i = 0; $i <5; $i ++) {
 
   #Image offset
-  my $ offset = $ i * $ rows_count * $ columns_count;
+  my $offset = $i * $rows_count * $columns_count;
 
   #Canvas (monochrome)
-  my $ img = Imager-> new (xsize => $ rows_count, ysize => $ columns_count, channels => 1);
+  my $img = Imager->new(xsize => $rows_count, ysize => $columns_count, channels => 1);
   
   # Output image information in order
-  for (my $ row = 0; $ row <$ rows_count; $ row ++) {
-    for (my $ column = 0; $ column <$ columns_count; $ column ++) {
+  for (my $row = 0; $row <$rows_count; $row ++) {
+    for (my $column = 0; $column <$columns_count; $column ++) {
       
       #Color (Inverted because black and white is the opposite of RGB)
-      my $ pos = $ offset + ($ column * $ rows_count) + $ row;
-      my $ color_bin = substr ($ image_data, $ pos, 1);
-      my $ color_value = unpack ('C1', $ color_bin);
-      my $ color_value_neg = $ color_value ^ 0xFF;
-      my $ color = Imager :: Color-> new ($ color_value_neg, $ color_value_neg, $ color_value_neg);
+      my $pos = $offset + ($column * $rows_count) + $row;
+      my $color_bin = substr($image_data, $pos, 1);
+      my $color_value = unpack('C1', $color_bin);
+      my $color_value_neg = $color_value ^ 0xFF;
+      my $color = Imager::Color->new($color_value_neg, $color_value_neg, $color_value_neg);
       
       # Pixel drawing
-      $ img-> setpixel (x => $ row, y => $ column, color => $ color);
+      $img->setpixel(x => $row, y => $column, color => $color);
     }
   }
   #Save as PNG for web viewing
-  my $ bitmap_file = "$ FindBin :: Bin / tmp_images / number $ i.png";
-  $ img-> write (file => $ bitmap_file);
+  my $bitmap_file = "$FindBin::Bin / tmp_images / number $i.png";
+  $img->write(file => $bitmap_file);
 }
 
-</ pre>
+</pre>
 
 This is the output image.
 
 <img src = "/ images / mnist / handwritten_digits / number0.png"> <img src = "/ images / mnist / handwritten_digits / number1.png"> <img src = "/ images / mnist / handwritten_digits / number2.png" > <img src = "/ images / mnist / handwritten_digits / number3.png"> <img src = "/ images / mnist / handwritten_digits / number4.png">
 
-<h3> A brief explanation of the program that outputs MNIST image information </ h3>
+<h3> A brief explanation of the program that outputs MNIST image information </h3>
 
 Create an Imager object with width, height and number of channels. Since it is monochrome, 1 is specified.
 
@@ -170,10 +170,10 @@ I will read the image information. The color depths are arranged in the order of
 
 The color depth of MNIST is the opposite of RGB, so it is inverted.
 
-I am creating an Imager :: Color object.
+I am creating an Imager::Color object.
 
 Draw on pixels.
 
 Finally, it is saved as png so that it can be displayed on the Web. It is automatically determined from the extension.
 
-You may need the C language libpng library installed on your OS and Imager :: File :: PNG.
+You may need the C language libpng library installed on your OS and Imager::File::PNG.

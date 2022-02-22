@@ -1,4 +1,4 @@
-<h2> What is a matrix? </ H2>
+<h2> What is a matrix? </H2>
 
 A matrix is ​​data that is lined up in rows and columns.
 
@@ -7,28 +7,28 @@ A matrix is ​​data that is lined up in rows and columns.
 14
 twenty five
 3 6
-</ pre>
+</pre>
 
 The above is a 3-by-2 matrix.
 
-<h3> Column priority matrix and row priority matrix </ h3>
+<h3> Column priority matrix and row priority matrix </h3>
 
 When you programmatically represent a matrix, you have the data as an array. The method of expressing a matrix that arranges data in the column direction is called a column-priority matrix, and the method of expressing a matrix that arranges data in the row direction is called a row-priority matrix.
 
 <pre>
 #Column-first matrix representation
-my $ mat_column_major = {
+my $mat_column_major = {
   rows_length => 3,
   columns_length => 2,
   values ​​=> [1, 2, 3, 4, 5, 6],
 };;
 
 # Row-first matrix representation
-my $ mat_row_major = {
+my $mat_row_major = {
   rows_length => 3,
   columns_length => 2,
   values ​​=> [1, 4, 2, 5, 3, 6],
 };;
-</ pre>
+</pre>
 
 An introduction to deep learning uses column-first matrix representations. This is to make it easier to call the BLAS library for matrix calculations later when using C or cuda / GPU to speed up matrix calculations.

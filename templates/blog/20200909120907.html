@@ -1,8 +1,8 @@
-<h2> Read MNIST label information </ h2>
+<h2> Read MNIST label information </h2>
 
 This is a sample program that reads MNIST label information in Perl. MNIST is a sample image that can be used in deep learning.
 
-This is a sample to read <a href="http://yann.lecun.com/exdb/mnist/"> THE MNIST DATABASE of handwritten digits </a>.
+This is a sample to read <a href="http://yann.lecun.com/exdb/mnist/"> THE MNIST DATABASE of handwritten digits</a>.
 
 <pre>
 use strict;
@@ -10,38 +10,38 @@ use warnings;
 use FindBin;
 
 # MNIST Read label information
-my $ mnist_label_file = "$ FindBin :: Bin / data / train-labels-idx1-ubyte";
+my $mnist_label_file = "$FindBin::Bin / data / train-labels-idx1-ubyte";
 
-open my $ mnist_label_fh,'<', $ mnist_label_file
-  or die "Can't open file $ mnist_label_file: $!";
+open my $mnist_label_fh,'<', $mnist_label_file
+  or die "Can't open file $mnist_label_file: $!";
 
 #Magic number
-my $ label_buffer;
-read ($ mnist_label_fh, $ label_buffer, 4);
-my $ magic_number = unpack ('N1', $ label_buffer);
-if ($ magic_number! = 0x00000801) {
-  die "Invalid magic number expected". 0x00000801. "actual $ magic_number";
+my $label_buffer;
+read($mnist_label_fh, $label_buffer, 4);
+my $magic_number = unpack('N1', $label_buffer);
+if ($magic_number! = 0x00000801) {
+  die "Invalid magic number expected". 0x00000801. "actual $magic_number";
 }
 
 # Number of labels
-read ($ mnist_label_fh, $ label_buffer, 4);
-my $ items_count = unpack ('N1', $ label_buffer);
+read($mnist_label_fh, $label_buffer, 4);
+my $items_count = unpack('N1', $label_buffer);
 
 #Read label
-my $ label_numbers = [];
-for (my $ i = 0; $ i <$ items_count; $ i ++) {
-  read $ mnist_label_fh, $ label_buffer, 1;
-  my $ label_number = unpack ('C1', $ label_buffer);
-  push @ $ label_numbers, $ label_number;
+my $label_numbers = [];
+for (my $i = 0; $i <$items_count; $i ++) {
+  read $mnist_label_fh, $label_buffer, 1;
+  my $label_number = unpack('C1', $label_buffer);
+  push @$label_numbers, $label_number;
 }
 
 # Label information
-my $ label_info = {};
-$ label_info-> {items_count} = $ items_count;
-$ label_info-> {label_numbers} = $ label_numbers;
-</ pre>
+my $label_info = {};
+$label_info->{items_count} = $items_count;
+$label_info->{label_numbers} = $label_numbers;
+</pre>
 
-<h3> A brief explanation of the program that reads MNIST label information </ h3>
+<h3> A brief explanation of the program that reads MNIST label information </h3>
 
 Place "train-labels-idx1-ubyte" under "data".
 

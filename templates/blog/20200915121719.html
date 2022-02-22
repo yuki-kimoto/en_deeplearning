@@ -1,10 +1,10 @@
-<h2> Calculation process to get the final output from the initial input by deep learning </ h2>
+<h2> Calculation process to get the final output from the initial input by deep learning </h2>
 
 I will explain the calculation process to obtain the final output from the initial input by deep learning.
 
-As a premise, <a href="/blog/20200913103640.html"> calculation to find the sum of vectors </a> and <a href="/blog/20200914103640.html"> calculation to find the product of matrices </a> Please understand.
+As a premise, <a href="/blog/20200913103640.html"> calculation to find the sum of vectors</a> and <a href="/blog/20200914103640.html"> calculation to find the product of matrices</a> Please understand.
 
-<h3> Relationship between input layer, hidden layer, and output layer </ h3>
+<h3> Relationship between input layer, hidden layer, and output layer </h3>
 
 In the explanation of deep learning, the figures of the input layer, the hidden layer, and the output layer are always shown. However, this diagram is a conceptual diagram and does not adequately represent the data structure in an actual program.
 
@@ -26,21 +26,21 @@ Hidden layer 1
 Hidden layer 2
 
 * * (Hidden layer 2 output. Two. This is the final output.)
-</ pre>
+</pre>
 
 All individual data is represented by 32-bit floating point. It is a float type in C language.
 
-<h4> Number of inputs </ h4>
+<h4> Number of inputs </h4>
 
 For a 28-pixel x 28-pixel monochrome image, there are 784 float-type inputs. Since the color depth can be expressed from 0 to 255, it can be expressed as a float type value. The float type is a floating point type, but you can also represent an integer by not using a decimal point.
 
-<h4> Number of hidden layer outputs </ h4>
+<h4> Number of hidden layer outputs </h4>
 
 You decide the number of hidden layer outputs yourself. If there are 3 layers, the 0th layer is 100, the 1st layer is 150, the 2nd layer is 120, and so on.
 
 The number of neurons in the neural network corresponds to this number.
 
-<h4> Number of outputs </ h4>
+<h4> Number of outputs </h4>
 
 For example, in the case of pattern recognition, the number of outputs is 3 when A, B, and C are judged.
 
@@ -48,13 +48,13 @@ The final number of outputs in the hidden layer is the final number of outputs. 
 
 So, if you decide the number of outputs of the last hidden layer, it will be the number of outputs.
 
-<h3> Information on each layer of the hidden layer </ h3>
+<h3> Information on each layer of the hidden layer </h3>
 
-Next, I will write about the information of each layer of the hidden layer. Each layer of the hidden layer has parameters called weights and biases. This is to <a href="/blog/20200302113052.html"> convert m inputs to n outputs </a>.
+Next, I will write about the information of each layer of the hidden layer. Each layer of the hidden layer has parameters called weights and biases. This is to <a href="/blog/20200302113052.html"> convert m inputs to n outputs</a>.
 
 The weights are expressed as a matrix. Bias is expressed as a vector.
 
-<h4> Calculation to obtain output from input using weight and bias </ h4>
+<h4> Calculation to obtain output from input using weight and bias </h4>
 
 Perl code that converts two inputs into three outputs using weights and biases. This is succinctly calculated using a matrix. Think of add_vec as a matrix sum and mul_mut as a matrix multiplication function.
 
@@ -62,17 +62,17 @@ Think of the weights as a 3-by-2 column-major matrix.
 
 <pre>
 #Details of actual processing
-$ outputs-> [0] = $ weights-> [0] * $ inputs-> [0] + $ weights-> [3] * $ inputs-> [1] + $ biases-> [0];
-$ outputs-> [1] = $ weights-> [1] * $ inputs-> [0] + $ weights-> [4] * $ inputs-> [1] + $ biases-> [1];
-$ outputs-> [2] = $ weights-> [2] * $ inputs-> [0] + $ weights-> [5] * $ inputs-> [1] + $ biases-> [2];
+$outputs->[0] = $weights->[0] * $inputs->[0] + $weights->[3] * $inputs->[1] + $biases->[0];
+$outputs->[1] = $weights->[1] * $inputs->[0] + $weights->[4] * $inputs->[1] + $biases->[1];
+$outputs->[2] = $weights->[2] * $inputs->[0] + $weights->[5] * $inputs->[1] + $biases->[2];
 
 # Matrix representation
-$ outputs = add_vec (mul_mut ($ weights, $ inputs), $ biases);
-</ pre>
+$outputs = add_vec (mul_mut ($weights, $inputs), $biases);
+</pre>
 
 Looking at mathematical formulas can be confusing, but it's easy to think of them as simple multiplication, addition, and function calls.
 
-<h3> How to determine the shape of the weight and bias parameters for each layer </ h3>
+<h3> How to determine the shape of the weight and bias parameters for each layer </h3>
 
 Write what determines the weight and bias parameters for each layer.
 
@@ -85,24 +85,24 @@ With 784 inputs and 100 outputs, the weight is a 100-by-784 matrix and the bias 
 Weights and biases are dynamic, updated after learning is complete. Please refer to the following articles for the initial values ​​with good weight and bias.
 
 <ul>
-  <li> <a href="/blog/20200311113241.html"> How to set the initial values ​​of the parameters of each layer </a> </ li>
-</ ul>
+  <li> <a href="/blog/20200311113241.html"> How to set the initial values ​​of the parameters of each layer</a> </li>
+</ul>
 
-<h3> The position where the activation function is applied </ h3>
+<h3> The position where the activation function is applied </h3>
 
-The <a href="/blog/20200902120907.html"> activation function </a> is applied to the output of each layer. The output to which the activation function is applied becomes the input of the next layer.
+The <a href="/blog/20200902120907.html"> activation function</a> is applied to the output of each layer. The output to which the activation function is applied becomes the input of the next layer.
 
 <pre>
 # Apply activation function
-my $ new_inputs = [];
-for (my $ i = 0; $ i <@ $ outputs; $ i ++) {
-  $ new_inputs-> [$ i] = activate_func ($ outputs-> [$ i]);
+my $new_inputs = [];
+for (my $i = 0; $i <@$outputs; $i ++) {
+  $new_inputs->[$i] = activate_func ($outputs->[$i]);
 }
-</ pre>
+</pre>
 
-<h3> Get the final output from the initial input with deep learning </ h3>
+<h3> Get the final output from the initial input with deep learning </h3>
 
-Now, let's write a program in Perl that gets the final output from the initial input in deep learning. Use <a href="/blog/20200911102242.html"> ReLU </a> for the activation function.
+Now, let's write a program in Perl that gets the final output from the initial input in deep learning. Use <a href="/blog/20200911102242.html"> ReLU</a> for the activation function.
 
 Weights and biases can be calculated automatically, but for the sake of convenience, they are written in solid.
 
@@ -112,10 +112,10 @@ The number of inputs is 2, and the number of outputs of each hidden layer is "3,
 use strict;
 use warnings;
 
-my $ first_inputs = [0.1, 0.2];
+my $first_inputs = [0.1, 0.2];
 
 #Hidden layer weights and biases
-my $ layers = [
+my $layers = [
   #Hidden layer 0 layer (2 inputs to 3 outputs)
   {
     weights => [
@@ -139,76 +139,76 @@ my $ layers = [
 ];;
 
 # Get the final output from the initial input
-my $ inputs = $ first_inputs;
-my $ outputs;
-for (my $ i = 0; $ i <@ $ layers; $ i ++) {
-  my $ layer = $ layers-> [$ i];
+my $inputs = $first_inputs;
+my $outputs;
+for (my $i = 0; $i <@$layers; $i ++) {
+  my $layer = $layers->[$i];
   
   # weight
-  my $ weights = $ layer-> {weights};
-  my $ weights_rows_length = $ layer-> {weights_rows_length};
-  my $ weights_columns_length = $ layer-> {weights_columns_length};
+  my $weights = $layer->{weights};
+  my $weights_rows_length = $layer->{weights_rows_length};
+  my $weights_columns_length = $layer->{weights_columns_length};
   
   #Bias
-  my $ biases = $ layer-> {biases};
+  my $biases = $layer->{biases};
   
   # Output = Weight Matrix * Input + Bias
-  my $ mul_weight_inputs = mul_mat ($ weights, $ weights_rows_length, $ weights_columns_length, $ inputs);
-  $ outputs = add_vec ($ mul_weight_inputs, $ biases);
+  my $mul_weight_inputs = mul_mat ($weights, $weights_rows_length, $weights_columns_length, $inputs);
+  $outputs = add_vec ($mul_weight_inputs, $biases);
   
   # Apply activation function
-  my $ activate_outputs = [];
-  for (my $ i = 0; $ i <@ $ outputs; $ i ++) {
-    $ activate_outputs-> [$ i] = relu ($ outputs-> [$ i]);
+  my $activate_outputs = [];
+  for (my $i = 0; $i <@$outputs; $i ++) {
+    $activate_outputs->[$i] = relu ($outputs->[$i]);
   }
   
   # Output to next input
-  $ inputs = $ activate_outputs;
+  $inputs = $activate_outputs;
 }
 
 # Show final output 1.166 0.872
-print "@ $ outputs \ n";
+print "@$outputs\n";
 
 #Activation function ReLU
 sub relu {
-  my ($ x) = @_;
+  my ($x) = @_;
   
-  my $ relu = $ x * ($ x> 0.0);
+  my $relu = $x * ($x> 0.0);
   
-  return $ relu;
+  return $relu;
 }
 
 #Sum of vectors
 sub add_vec {
-  my ($ mul_weight_inputs, $ biases) = @_;
+  my ($mul_weight_inputs, $biases) = @_;
   
-  my $ outputs = [];
-  for (my $ i = 0; $ i <@ $ mul_weight_inputs; $ i ++) {
-    $ outputs-> [$ i] = $ mul_weight_inputs-> [$ i] + $ biases-> [$ i];
+  my $outputs = [];
+  for (my $i = 0; $i <@$mul_weight_inputs; $i ++) {
+    $outputs->[$i] = $mul_weight_inputs->[$i] + $biases->[$i];
   }
   
-  return $ outputs;
+  return $outputs;
 }
 
 # Matrix product (matrix and vector multiplication)
 sub mul_mat {
-  my ($ weights, $ weights_rows_length, $ weights_columns_length, $ inputs) = @_;
+  my ($weights, $weights_rows_length, $weights_columns_length, $inputs) = @_;
   
-  my $ inputs_rows_length = @ $ inputs;
-  my $ inputs_columns_length = 1;
+  my $inputs_rows_length = @$inputs;
+  my $inputs_columns_length = 1;
 
-  my $ outputs = [];
+  my $outputs = [];
   
   #Calculation of matrix product
-  for (my $ row = 0; $ row <$ weights_rows_length; $ row ++) {
-    for (my $ col = 0; $ col <$ inputs_columns_length; $ col ++) {
-      for (my $ incol = 0; $ incol <$ weights_columns_length; $ incol ++) {
-        $ outputs-> [$ row + $ col * $ inputs_rows_length]
-         + = $ weights-> [$ row + $ incol * $ weights_rows_length] * $ inputs-> [$ incol + $ col * $ inputs_rows_length];
+  for (my $row = 0; $row <$weights_rows_length; $row ++) {
+    for (my $col = 0; $col <$inputs_columns_length; $col ++) {
+      for (my $incol = 0; $incol <$weights_columns_length; $incol ++) {
+        $outputs->[$row + $col * $inputs_rows_length]
+         + = $weights->[$row + $incol * $weights_rows_length] * $inputs->[$incol + $col * $inputs_rows_length];
       }
     }
   }
   
-  return $ outputs;
+  return $outputs;
 }
-</ pre>
+</pre>

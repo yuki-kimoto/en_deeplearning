@@ -1,12 +1,12 @@
-<h2> Calculation in the output layer </ h2>
+<h2> Calculation in the output layer </h2>
 
-I will explain the calculation of the output layer in deep learning. As a prerequisite for reading this article, read "<a href="/blog/20200302113052.html"> Calculations in the middle layer-Converting m inputs to n outputs </a>".
+I will explain the calculation of the output layer in deep learning. As a prerequisite for reading this article, read "<a href="/blog/20200302113052.html"> Calculations in the middle layer-Converting m inputs to n outputs</a>".
 
-<h3> Output layer in pattern recognition </ h3>
+<h3> Output layer in pattern recognition </h3>
 
 This is an explanation of the calculation of the output layer in pattern recognition.
 
-<h4> Expected final output in pattern recognition (classification problem) </ h4>
+<h4> Expected final output in pattern recognition (classification problem) </h4>
 
 The final expected correct output of the output layer in pattern recognition (classification problem) is "(1, 0)" "(0, 1)".
 
@@ -16,7 +16,7 @@ During learning, an output result such as "(0.3 1.2)" is obtained, but when the 
 
 There can be more than one classification, such as dogs, cats, and pigs. The correct output for a dog is "(1, 0, 0)", the correct output for a cat is "(0, 1, 0"", and the correct output for a pig is "(0, 0, 0," 1) ”.
 
-<h4> Use the output of the ReLU function as it is </ h4>
+<h4> Use the output of the ReLU function as it is </h4>
 
 It is easy to think that a special output function is needed to calculate such a final output, but for pattern recognition, the output of the ReLU function can be used as is. You don't have to do anything special.
 
@@ -24,12 +24,12 @@ Recall that the output of the Relu function was 0 if it wasn't activated, and if
 
 <pre>
 (1.99955473915037, 0.979640425704874, 0)
-</ pre>
+</pre>
 
 The above is by continuing learning
 
 <pre>
 (1, 0, 0)
-</ pre>
+</pre>
 
 It is possible to get closer to.

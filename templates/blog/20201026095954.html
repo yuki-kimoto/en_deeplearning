@@ -1,4 +1,4 @@
-<h2> Inverse error propagation method --Start writing backpropagation </ h2>
+<h2> Inverse error propagation method --Start writing backpropagation </h2>
 
 In deep learning, backpropagation is probably the most difficult part to understand when reading source code.
 
@@ -18,7 +18,7 @@ Now, even those who are involved in work in the humanities are feeling the deman
 
 The introduction to deep learning learned with Perl is a site devised so that you can understand deep learning with if sentence, for sentence and high school mathematics (understanding of inclination) + alpha.
 
-<h3> Definition of differentiation </ h3>
+<h3> Definition of differentiation </h3>
 
 Let's understand only a little simple differentiation that can be understood within the range of high school mathematics necessary for understanding the inverse error propagation method.
 
@@ -27,11 +27,11 @@ The definition of derivative in mathematics is as follows.
 <pre>
 #Definition of derivative --- In the following equation, make Δx as close to 0 as possible.
 f'(x) = (f (x + Δx) --f (x)) / ((x + Δx) --x)
-</ pre>
+</pre>
 
 "Ratio of change in output to small change in input" is the definition of derivative. Intuitively, it shows how sensitive the output changes to a change in an input.
 
-<h3> Differentiation of constant function </ h3>
+<h3> Differentiation of constant function </h3>
 
 The derivative of the constant is "0".
 
@@ -41,33 +41,33 @@ f (x) = 5;
 
 # Differentiation of constant function
 f'(x) = 0;
-</ pre>
+</pre>
 
 The "=" above represents the equivalence of mathematical symbols. Please note that it is not an assignment in the program.
 
 Let's calculate according to the definition. Let's write it as a Perl program so that it is easy to understand. With just the definition of mathematics, software engineers can be dazzled.
 
-It's a constant function, so think of the input as a convenience. Think of "$ x_delta" as close to 0 in the mathematical definition.
+It's a constant function, so think of the input as a convenience. Think of "$x_delta" as close to 0 in the mathematical definition.
 
 <pre>
 use strict;
 use warnings;
 
-my $ x = 3;
-my $ x_delta = 0.0000001;
+my $x = 3;
+my $x_delta = 0.0000001;
 
 # Differentiation of constant function
-my $ const_derivative = (const ($ x + $ x_delta) --const ($ x)) / (($ x + $ x_delta)-$ x);
+my $const_derivative = (const ($x + $x_delta) --const ($x)) / (($x + $x_delta)-$x);
 
 #Constant function
 sub const {
   return 5;
 }
 
-print $ const_derivative;
-</ pre>
+print $const_derivative;
+</pre>
 
-Make sure the result is "0" no matter what the value of "$ x" is.
+Make sure the result is "0" no matter what the value of "$x" is.
 
 That is, the derivative of the constant function is expressed as follows.
 
@@ -76,17 +76,17 @@ That is, the derivative of the constant function is expressed as follows.
 sub const_derivative {
   return 0;
 }
-</ pre>
+</pre>
 
-<h3> Relationship between differential and derivative of function, derivative and slope </ h3>
+<h3> Relationship between differential and derivative of function, derivative and slope </h3>
 
-<a href="/blog/20200919123308.html"> derivative </a> has exactly the same meaning as "differential of function". On this site, "differentiation of a certain function" is called "derivative". And the derivative is explained as a function to find the ratio of the change of the output to the minute change of a certain input, that is, the slope (also called the differential coefficient).
+<a href="/blog/20200919123308.html"> derivative</a> has exactly the same meaning as "differential of function". On this site, "differentiation of a certain function" is called "derivative". And the derivative is explained as a function to find the ratio of the change of the output to the minute change of a certain input, that is, the slope (also called the differential coefficient).
 
 The difference between the derivative of a function (also called the derivative) and the derivative (also called the gradient) is that the derivative of a function abstracts a general input because it is a function, whereas the derivative is specific. It is the actual value corresponding to the input.
 
 As a software engineer, understand that the derivative is the function for finding the slope, and the slope is the value actually found.
 
-<h3> Differentiation of linear function </ h3>
+<h3> Differentiation of linear function </h3>
 
 The derivative of the linear function is the coefficient of x. A linear function is a function with a degree of x such as "3x + 2".
 
@@ -96,37 +96,37 @@ f (x) = 3x + 2;
 
 #Differentiation of linear function (same value as coefficient of x)
 f'(x) = 3;
-</ pre>
+</pre>
 
 The "=" above represents the equivalence of mathematical symbols. Please note that it is not an assignment in the program.
 
 Let's calculate according to the definition. Let's write it as a Perl program so that it is easy to understand. With just the definition of mathematics, software engineers can be dazzled.
 
-Since it is a linear function, consider the input to be convenient. Think of "$ x_delta" as close to 0 in the mathematical definition.
+Since it is a linear function, consider the input to be convenient. Think of "$x_delta" as close to 0 in the mathematical definition.
 
 <pre>
 use strict;
 use warnings;
 
-my $ x = 3;
-my $ x_delta = 0.0000001;
+my $x = 3;
+my $x_delta = 0.0000001;
 
 #Differentiation of linear function
-my $ liner_derivative = (liner ($ x + $ x_delta) --liner ($ x)) / (($ x + $ x_delta)-$ x);
+my $liner_derivative = (liner ($x + $x_delta) --liner ($x)) / (($x + $x_delta)-$x);
 
 # Linear function
 sub liner {
-  my ($ x) = @_;
+  my ($x) = @_;
   
-  my $ y = 3 * $ x + 2;
+  my $y = 3 * $x + 2;
   
-  return $ y;
+  return $y;
 }
 
-print $ liner_derivative;
-</ pre>
+print $liner_derivative;
+</pre>
 
-Make sure the result is "3" no matter what the value of "$ x" is. In this case, there was an error and it was "3.00000000444089". When "$ x_delta" approaches 0 to the limit, it becomes 3.
+Make sure the result is "3" no matter what the value of "$x" is. In this case, there was an error and it was "3.00000000444089". When "$x_delta" approaches 0 to the limit, it becomes 3.
 
 In other words, the derivative of the linear function "3 x + 2" is expressed as follows.
 
@@ -135,9 +135,9 @@ In other words, the derivative of the linear function "3 x + 2" is expressed as 
 sub liner_derivative {
   return 3;
 }
-</ pre>
+</pre>
 
-<h3> Differentiation of activation function </ h3>
+<h3> Differentiation of activation function </h3>
 
 In deep learning, there is a function called the activation function to express the degree of activation of neurons. However, in reality, it may be better to think that it is introduced to find the slope of the loss function for one parameter in the inverse error propagation method, rather than expressing the degree of neuron activity. Maybe.
 
@@ -148,24 +148,24 @@ When the derivative appears in the source code, think "Oh, I'm looking for the s
 <pre>
 #Activation function
 sub activate {
-  my ($ input) = @_;
+  my ($input) = @_;
   
   # ...
   
-  return $ output;
+  return $output;
 }
 
 # Differentiation of activation function
 sub activate_derivative {
-  my ($ input) = @_;
+  my ($input) = @_;
   
   # ...
   
-  return $ output;
+  return $output;
 }
-</ pre>
+</pre>
 
-<h3> Differentiation of loss function </ h3>
+<h3> Differentiation of loss function </h3>
 
 In deep learning, the parameters are adjusted with the goal of reducing the value of the loss function, which is an indicator of error. Consider the derivative of the loss function.
 
@@ -176,15 +176,15 @@ The loss function differs from the functions we've seen so far in that it return
 <pre>
 # Loss function
 sub cost {
-  my ($ inputs) = @_;
+  my ($inputs) = @_;
   
-  my $ output;
+  my $output;
   
   # ...
   
-  return $ output;
+  return $output;
 }
-</ pre>
+</pre>
 
 I think it will be "Oya" here. I've never learned to differentiate a function that produces one output for multiple inputs. What is it in the first place?
 
@@ -193,42 +193,42 @@ To write the conclusion first, the result of the derivative of the loss function
 <pre>
 #Differentiation of loss function
 sub cost_derivative {
-  my ($ inputs) = @_;
+  my ($inputs) = @_;
   
-  my $ outputs = [];
+  my $outputs = [];
   
   # ...
   
-  return $ outputs;
+  return $outputs;
 }
-</ pre>
+</pre>
 
 However, this just looks like that, and in fact, it just summarizes that there is one output for one input. Let's rewrite the derivative of the loss function using a function that produces one output for one input called cost_derivative_each.
 
 <pre>
 sub cost_derivative {
-  my ($ inputs) = @_;
+  my ($inputs) = @_;
   
-  my $ outputs = [];
-  for (my $ i = 0; $ i <@ $ inputs; $ i ++) {
-    $ outputs-> [$ i] = cost_derivative_each ($ inputs-> [$ i]);
+  my $outputs = [];
+  for (my $i = 0; $i <@$inputs; $i ++) {
+    $outputs->[$i] = cost_derivative_each ($inputs->[$i]);
   }
   # ...
   
-  return $ outputs;
+  return $outputs;
 }
 
 # Loss function
 sub cost_derivative_each {
-  my ($ input) = @_;
+  my ($input) = @_;
   
-  my $ output;
+  my $output;
   
   # ...
   
-  return $ output;
+  return $output;
 }
-</ pre>
+</pre>
 
 Don't be afraid to misunderstand, the inputs other than the one you are interested in are treated like constants and have no effect on the result of the derivative of the loss function.
 
@@ -237,36 +237,36 @@ Take a look at the close entropy function, which is one of the loss functions. T
 <pre>
 # Cross-entropy cost derivative
 sub cross_entropy_cost_derivative {
-  my ($ vec_a, $ vec_y) = @_;
+  my ($vec_a, $vec_y) = @_;
   
-  my $ vec_out = [];
-  for (my $ i = 0; $ i <@ $ vec_a; $ i ++) {
-    $ vec_out-> [$ i] = $ vec_a-> [$ i]-$ vec_y-> [$ i];
+  my $vec_out = [];
+  for (my $i = 0; $i <@$vec_a; $i ++) {
+    $vec_out->[$i] = $vec_a->[$i]-$vec_y->[$i];
   }
   
-  return $ vec_out;
+  return $vec_out;
 }
-</ pre>
+</pre>
 
-<h3> What is partial differential? </ H3>
+<h3> What is partial differential? </H3>
 
 Partial differentiation is differentiation (laughs). It is a derivative that considers all variables other than the input variable of interest as constants.
 
-<h3> Find the slope of the loss function with respect to the last bias </ h3>
+<h3> Find the slope of the loss function with respect to the last bias </h3>
 
 Let's find the slope of the loss function with respect to the final bias.
 
 You need to understand how to find the slope of a multi-stage function.
 
 <ul>
-  <li> <a href="/blog/20201021085550.html"> How to find the slope for a multi-stage function-differentiation of synthetic function </a> </ li>
-</ ul>
+  <li> <a href="/blog/20201021085550.html"> How to find the slope for a multi-stage function-differentiation of synthetic function</a> </li>
+</ul>
 
 The slope of a multi-stage function can be calculated by the following formula.
 
 <pre>
 Slope of multi-stage function = Slope of function 1 * Slope of function 2 * Slope of function 3 * ... * Slope of function n-1 * Slope of function n
-</ pre>
+</pre>
 
 The slope of a multi-stage function is the product of the slopes of each function. In other words, if you know the slope of each function, you can find it by multiplying it.
 
@@ -276,14 +276,14 @@ Let's focus on one bias of the last m-to-n conversion function. Seen from one bi
 
 <pre>
 # Find the output from the equation including the bias (last m to n conversion function)
-my $ output0 = $ weigth0_0 * $ input0 + $ weigth01 * $ input1 + $ biase0;
+my $output0 = $weigth0_0 * $input0 + $weigth01 * $input1 + $biase0;
 
 # Apply activation function
-my $ activated_output0 = activate ($ output0);
+my $activated_output0 = activate ($output0);
 
-#Apply a loss function (arguments are conveniently described in the form of the $ activate_output of interest and other arguments)
-my $ cost = cost ($ activate_output0, $ other_args);
-</ pre>
+#Apply a loss function (arguments are conveniently described in the form of the $activate_output of interest and other arguments)
+my $cost = cost ($activate_output0, $other_args);
+</pre>
 
 The m-to-n conversion function is just a linear expression by focusing on one bias. The answer to "What is the derivative of the function that transforms from m to n?" Was "By paying attention to one bias, it becomes a mere linear expression."
 
@@ -291,47 +291,47 @@ Other than the bias of interest, it can be regarded as a constant. To write it i
 
 <pre>
 # Find the output from the equation including the bias (last m to n conversion function)
-my $ output0 = $ biase0 + C;
-</ pre>
+my $output0 = $biase0 + C;
+</pre>
 
-What if we differentiate this? C is a constant function, so the derivative is 0, isn't it? Since the coefficient of $ bias0 is "1", the derivative is "1". That is, the slope is "1".
+What if we differentiate this? C is a constant function, so the derivative is 0, isn't it? Since the coefficient of $bias0 is "1", the derivative is "1". That is, the slope is "1".
 
 <pre>
-my $ m_to_n_grad_for_biase0 = 1;
-</ pre>
+my $m_to_n_grad_for_biase0 = 1;
+</pre>
 
 What about the slope of the activation function next? It uses the derivative of the activation function.
 
 <pre>
 #Inclination of activation function
-my $ acivate_grad_for_output = activate_derivative ($ output);
-</ pre>
+my $acivate_grad_for_output = activate_derivative ($output);
+</pre>
 
 What about the slope of the loss function next? It uses the derivative of the loss function.
 
 <pre>
 #Loss function slope
-my $ cost_grad_for_activate_output = cost_derivative ($ activate_output, $ other_args);
-</ pre>
+my $cost_grad_for_activate_output = cost_derivative ($activate_output, $other_args);
+</pre>
 
 The slope of the loss function with respect to the bias was calculated by multiplying the slopes of each.
 
 <pre>
 # Slope of one bias with respect to the loss function
-my $ cost_grad_for_biase0 = $ m_to_n_grad_for_biase0 * $ private_grad_for_output * $ cost_grad_for_activate_output;
-</ pre>
+my $cost_grad_for_biase0 = $m_to_n_grad_for_biase0 * $private_grad_for_output * $cost_grad_for_activate_output;
+</pre>
 
 I was asked. The same method can be used for other biases. If all were obtained, the array would be as follows.
 
 <pre>
 [
-  $ cost_grad_for_biase0,
-  $ cost_grad_for_biase1,
-  $ cost_grad_for_biase2,
+  $cost_grad_for_biase0,
+  $cost_grad_for_biase1,
+  $cost_grad_for_biase2,
 ]
-</ pre>
+</pre>
 
-<h3> Find the slope of the loss function with respect to the last weight </ h3>
+<h3> Find the slope of the loss function with respect to the last weight </h3>
 
 Let's find the slope of the loss function with respect to the last weight. Next to the bias, we will challenge the weight.
 
@@ -339,14 +339,14 @@ Let's focus on one of the weights of the last m-to-n conversion function. From t
 
 <pre>
 # Output output from an expression containing weights (last m to n conversion function)
-my $ output0 = $ weigth0_0 * $ input0 + $ weigth01 * $ input1 + $ biase0;
+my $output0 = $weigth0_0 * $input0 + $weigth01 * $input1 + $biase0;
 
 # Apply activation function
-my $ activated_output0 = activate ($ output0);
+my $activated_output0 = activate ($output0);
 
-#Apply a loss function (arguments are conveniently described in the form of the $ activate_output of interest and other arguments)
-my $ cost = cost ($ activate_output0, $ other_args);
-</ pre>
+#Apply a loss function (arguments are conveniently described in the form of the $activate_output of interest and other arguments)
+my $cost = cost ($activate_output0, $other_args);
+</pre>
 
 The conversion function from m to n is just a linear expression by focusing on one weight.
 
@@ -354,35 +354,35 @@ Other than the weight of interest, it can be regarded as a constant. To write it
 
 <pre>
 # Output output from an expression containing weights (last m to n conversion function)
-my $ output0 = $ weigth0_0 * INPUT0 + C;
-</ pre>
+my $output0 = $weigth0_0 * INPUT0 + C;
+</pre>
 
-What if we differentiate this? C is a constant function, so the derivative is 0, isn't it? Since the coefficient of $ weight0 is "INPUT0", the derivative is "INPUT0". That is, the slope is "INPUT 0".
+What if we differentiate this? C is a constant function, so the derivative is 0, isn't it? Since the coefficient of $weight0 is "INPUT0", the derivative is "INPUT0". That is, the slope is "INPUT 0".
 
 <pre>
-my $ m_to_n_grad_for_weight = INPUT0;
-</ pre>
+my $m_to_n_grad_for_weight = INPUT0;
+</pre>
 
 What about the slope of the activation function next? It uses the derivative of the activation function.
 
 <pre>
 #Inclination of activation function
-my $ acivate_grad_for_output = activate_derivative ($ output);
-</ pre>
+my $acivate_grad_for_output = activate_derivative ($output);
+</pre>
 
 What about the slope of the loss function next? It uses the derivative of the loss function.
 
 <pre>
 #Loss function slope
-my $ cost_grad_for_activate_output = cost_derivative ($ activate_output, $ other_args);
-</ pre>
+my $cost_grad_for_activate_output = cost_derivative ($activate_output, $other_args);
+</pre>
 
 The slope of the loss function with respect to the weight was calculated by the product of each slope.
 
 <pre>
 # Slope of one weight with respect to the loss function
-my $ cost_grad_for_weight = $ m_to_n_grad_for_weight * $ allocated_grad_for_output * $ cost_grad_for_activate_output;
-</ pre>
+my $cost_grad_for_weight = $m_to_n_grad_for_weight * $allocated_grad_for_output * $cost_grad_for_activate_output;
+</pre>
 
 I was asked. The same method can be used for other weights.
 
@@ -391,74 +391,74 @@ Let's look at the relationship between the slope of the weight with respect to t
 This means that if you calculate the slope of the bias with respect to the loss function and multiply it by "INPUT 0", you can find the slope of the weight with respect to the loss function.
 
 <pre>
-my $ cost_grad_for_weight = $ cost_grad_for_biase0 * INPUT0;
-</ pre>
+my $cost_grad_for_weight = $cost_grad_for_biase0 * INPUT0;
+</pre>
 
-Assuming that the slopes for the loss functions of all weights are found, the array looks like this: It is expressed as a 3 row 2 column <a href="/blog/20200914103640.html"> column priority matrix </a>.
+Assuming that the slopes for the loss functions of all weights are found, the array looks like this: It is expressed as a 3 row 2 column <a href="/blog/20200914103640.html"> column priority matrix</a>.
 
 <pre>
 [
-  $ cost_grad_for_weight0_0,
-  $ cost_grad_for_weight1_0,
-  $ cost_grad_for_weight2_0,
+  $cost_grad_for_weight0_0,
+  $cost_grad_for_weight1_0,
+  $cost_grad_for_weight2_0,
 
-  $ cost_grad_for_weight0_1,
-  $ cost_grad_for_weight1_1,
-  $ cost_grad_for_weight2_1,
+  $cost_grad_for_weight0_1,
+  $cost_grad_for_weight1_1,
+  $cost_grad_for_weight2_1,
 ]
-</ pre>
+</pre>
 
 The slope of the weight with respect to the loss function is described below in consideration of the relationship with the slope of the bias with respect to the loss function.
 
 <pre>
 [
-  $ cost_grad_for_biase0 * INPUT0,
-  $ cost_grad_for_biase1 * INPUT0,
-  $ cost_grad_for_biase2 * INPUT0,
+  $cost_grad_for_biase0 * INPUT0,
+  $cost_grad_for_biase1 * INPUT0,
+  $cost_grad_for_biase2 * INPUT0,
 
-  $ cost_grad_for_biase0 * INPUT1,
-  $ cost_grad_for_biase1 * INPUT1,
-  $ cost_grad_for_biase2 * INPUT1,
+  $cost_grad_for_biase0 * INPUT1,
+  $cost_grad_for_biase1 * INPUT1,
+  $cost_grad_for_biase2 * INPUT1,
 ]
-</ pre>
+</pre>
 
-<h3> Matrix representation of the slope of the weight with respect to the loss function </ h3>
+<h3> Matrix representation of the slope of the weight with respect to the loss function </h3>
 
-Let's express the slope of the weight with respect to the loss function as a <a href="/blog/20200928161518.html"> matrix </a>. The slope of the loss function for each weight can be obtained one by one, but the matrix is ​​a collective representation of this.
+Let's express the slope of the weight with respect to the loss function as a <a href="/blog/20200928161518.html"> matrix</a>. The slope of the loss function for each weight can be obtained one by one, but the matrix is ​​a collective representation of this.
 
-It is the product of the <a href="/blog/20200917123308.html"> transposed matrix </a> of the bias matrix and the input matrix.
+It is the product of the <a href="/blog/20200917123308.html"> transposed matrix</a> of the bias matrix and the input matrix.
 
 <pre>
-my $ cost_grads_biases = [
-  $ cost_grad_for_biase0,
-  $ cost_grad_for_biase1,
-  $ cost_grad_for_biase2,
+my $cost_grads_biases = [
+  $cost_grad_for_biase0,
+  $cost_grad_for_biase1,
+  $cost_grad_for_biase2,
 ];;
 
-my $ inputs = [
-  $ input0,
-  $ input1
+my $inputs = [
+  $input0,
+  $input1
 ];;
 
 #Bias matrix * Transpose of input matrix
-my $ cost_grads_weights = mul_mat (to_mat ($ cost_grads_biases), transpose (to_mat ($ inputs)));
-</ pre>
+my $cost_grads_weights = mul_mat (to_mat ($cost_grads_biases), transpose (to_mat ($inputs)));
+</pre>
 
 The result is as follows. Make sure that what you think individually matches the result of the matrix calculation.
 
 <pre>
 [
-  $ cost_grad_for_biase0 * $ input0,
-  $ cost_grad_for_biase1 * $ input0,
-  $ cost_grad_for_biase2 * $ input0,
+  $cost_grad_for_biase0 * $input0,
+  $cost_grad_for_biase1 * $input0,
+  $cost_grad_for_biase2 * $input0,
 
-  $ cost_grad_for_biase0 * $ input1
-  $ cost_grad_for_biase1 * $ input1
-  $ cost_grad_for_biase2 * $ input1
+  $cost_grad_for_biase0 * $input1
+  $cost_grad_for_biase1 * $input1
+  $cost_grad_for_biase2 * $input1
 ]
-</ pre>
+</pre>
 
-<h3> Find the slope of the loss function for the penultimate bias </ h3>
+<h3> Find the slope of the loss function for the penultimate bias </h3>
 
 Let's find the slope of the loss function for one bias of the penultimate m to n conversion function.
 
@@ -466,114 +466,114 @@ Seen from one bias, the expression containing the bias leads to the penultimate 
 
 <pre>
 # Find the output from the equation including the bias (last m to n conversion function)
-my $ output0 = $ weigth0_0 * $ input0 + $ weigth01 * $ input1 + $ biase0;
+my $output0 = $weigth0_0 * $input0 + $weigth01 * $input1 + $biase0;
 
 # Apply activation function
-my $ activated_output0 = activate ($ output0);
+my $activated_output0 = activate ($output0);
 
 #The activated output will be the next input
-my $ forword_input0 = $ activate_output0;
+my $forword_input0 = $activate_output0;
 
-# $ forword_input0 will be the input of the next function from m to n
-my $ forword_output0 = $ forword_weigth0_0 * $ forword_input0 + $ forword_weigth0_1 * $ forword_input1 + $ forword_biase0;
-my $ forword_output1 = $ forword_weigth1_0 * $ forword_input0 + $ forword_weigth1_1 * $ forword_input1 + $ forword_biase1;
-my $ forword_output2 = $ forword_weigth2_0 * $ forword_input0 + $ forword_weigth2_1 * $ forword_input1 + $ forword_biase2;
-</ pre>
+# $forword_input0 will be the input of the next function from m to n
+my $forword_output0 = $forword_weigth0_0 * $forword_input0 + $forword_weigth0_1 * $forword_input1 + $forword_biase0;
+my $forword_output1 = $forword_weigth1_0 * $forword_input0 + $forword_weigth1_1 * $forword_input1 + $forword_biase1;
+my $forword_output2 = $forword_weigth2_0 * $forword_input0 + $forword_weigth2_1 * $forword_input1 + $forword_biase2;
+</pre>
 
 First of all, it can be regarded as a constant except for the bias of interest.
 
 <pre>
 # Find the output from the equation including the bias (last m to n conversion function)
-my $ output0 = $ biase0 + C;
-</ pre>
+my $output0 = $biase0 + C;
+</pre>
 
-What if we differentiate this? C is a constant function, so the derivative is 0, isn't it? Since the coefficient of $ bias0 is "1", the derivative is "1". That is, the slope is "1".
+What if we differentiate this? C is a constant function, so the derivative is 0, isn't it? Since the coefficient of $bias0 is "1", the derivative is "1". That is, the slope is "1".
 
 <pre>
-my $ m_to_n_grad_for_biase0 = 1;
-</ pre>
+my $m_to_n_grad_for_biase0 = 1;
+</pre>
 
 What about the slope of the activation function next? It uses the derivative of the activation function.
 
 <pre>
 #Inclination of activation function
-my $ acivate_grad_for_output0 = activate_derivative ($ output0);
-</ pre>
+my $acivate_grad_for_output0 = activate_derivative ($output0);
+</pre>
 
 Next, let's take a closer look that the activated output will be the input of the next m-to-n conversion function.
 
 <pre>
 #The activated output will be the next input
-my $ forword_input0 = $ activate_output0;
+my $forword_input0 = $activate_output0;
 
-# $ forword_input0 will be the input of the next function from m to n
-my $ forword_output0 = $ forword_weigth0_0 * $ forword_input0 + $ forword_weigth0_1 * $ forword_input1 + $ forword_biase0;
-my $ forword_output1 = $ forword_weigth1_0 * $ forword_input0 + $ forword_weigth1_1 * $ forword_input1 + $ forword_biase1;
-my $ forword_output2 = $ forword_weigth2_0 * $ forword_input0 + $ forword_weigth2_1 * $ forword_input1 + $ forword_biase2;
-</ pre>
+# $forword_input0 will be the input of the next function from m to n
+my $forword_output0 = $forword_weigth0_0 * $forword_input0 + $forword_weigth0_1 * $forword_input1 + $forword_biase0;
+my $forword_output1 = $forword_weigth1_0 * $forword_input0 + $forword_weigth1_1 * $forword_input1 + $forword_biase1;
+my $forword_output2 = $forword_weigth2_0 * $forword_input0 + $forword_weigth2_1 * $forword_input1 + $forword_biase2;
+</pre>
 
 The fact that there are multiple inputs means that the slope is the sum of them. If there are multiple inputs, the slope will be the sum of the slopes calculated for each.
 
 <pre>
 Slope of loss function when there are multiple inputs = Slope of loss function of Eq. 0 with respect to Input 1 + Slope of loss function of Eq. 1 with respect to Input 1 + Slope of loss function of Eq. 2 with respect to Input 1
-</ pre>
+</pre>
 
-Now, regarding Expression 0, let's think of everything other than the "$ forword_input0" that we are paying attention to as constants. The coefficient for $ forword_input0 is "FORWORD_WEIGTH0_0".
+Now, regarding Expression 0, let's think of everything other than the "$forword_input0" that we are paying attention to as constants. The coefficient for $forword_input0 is "FORWORD_WEIGTH0_0".
 
 <pre>
-my $ forword_output0 = FORWORD_WEIGTH0_0 * $ forword_input0 + C;
-</ pre>
+my $forword_output0 = FORWORD_WEIGTH0_0 * $forword_input0 + C;
+</pre>
 
 Now, have you seen each shape somewhere? It's similar to the following.
 
 <pre>
 # Output output from an expression containing weights (last m to n conversion function)
-my $ output0 = $ weigth0_0 * INPUT0 + C;
-</ pre>
+my $output0 = $weigth0_0 * INPUT0 + C;
+</pre>
 
 The slope of the loss function with respect to the last weight was the slope of the loss function of the last bias multiplied by INPUT0.
 
 <pre>
-$ cost_grad_for_biase0 * INPUT0,
-</ pre>
+$cost_grad_for_biase0 * INPUT0,
+</pre>
 
 Since the format of the expression is the same, only the constant part is different, "INPUT 0" should be changed to "FORWORD_WEIGTH0_0". When viewed from the current position, it is a bias one step ahead, so change "biase" to "forword_biase".
 
 <pre>
-$ cost_grad_for_forword_biase0 * FORWORD_WEIGTH0_0,
-</ pre>
+$cost_grad_for_forword_biase0 * FORWORD_WEIGTH0_0,
+</pre>
 
-The important point here is that "$ cost_grad_for_forword_biase0" has already been calculated in the calculation to calculate the loss function for the final bias.
+The important point here is that "$cost_grad_for_forword_biase0" has already been calculated in the calculation to calculate the loss function for the final bias.
 
 Now that we have calculated for Equation 0, let's calculate Equation 1 and Equation 2.
 
 <pre>
-$ cost_grad_for_forword_biase0 * FORWORD_WEIGTH0_0,
-$ cost_grad_for_forword_biase1 * FORWORD_WEIGTH1_0,
-$ cost_grad_for_forword_biase2 * FORWORD_WEIGTH2_0,
-</ pre>
+$cost_grad_for_forword_biase0 * FORWORD_WEIGTH0_0,
+$cost_grad_for_forword_biase1 * FORWORD_WEIGTH1_0,
+$cost_grad_for_forword_biase2 * FORWORD_WEIGTH2_0,
+</pre>
 
 Taking the slope of the activation function into consideration and multiplying it, the sum of the slopes obtained by Equation 0, Equation 1 and Equation 2 is calculated as follows.
 
 <pre>
-my $ cost_grad_for_biase0
-  = $ cost_grad_for_forword_biase0 * FORWORD_WEIGTH0_0 * $ private_grad_for_output0 * $ m_to_n_grad_for_biase0
-  + $ cost_grad_for_forword_biase1 * FORWORD_WEIGTH1_0 * $ private_grad_for_output0 * $ m_to_n_grad_for_biase0
-  + $ cost_grad_for_forword_biase2 * FORWORD_WEIGTH2_0 * $ private_grad_for_output0 * $ m_to_n_grad_for_biase0
-</ pre>
+my $cost_grad_for_biase0
+  = $cost_grad_for_forword_biase0 * FORWORD_WEIGTH0_0 * $private_grad_for_output0 * $m_to_n_grad_for_biase0
+  + $cost_grad_for_forword_biase1 * FORWORD_WEIGTH1_0 * $private_grad_for_output0 * $m_to_n_grad_for_biase0
+  + $cost_grad_for_forword_biase2 * FORWORD_WEIGTH2_0 * $private_grad_for_output0 * $m_to_n_grad_for_biase0
+</pre>
 
 Let's find the slope for the loss function for other biases.
 
 <pre>
-my $ cost_grad_for_biase1
-  = $ cost_grad_for_forword_biase0 * FORWORD_WEIGTH0_1 * $ private_grad_for_output1 * $ m_to_n_grad_for_biase1
-  + $ cost_grad_for_forword_biase1 * FORWORD_WEIGTH1_1 * $ allocated_grad_for_output1 * $ m_to_n_grad_for_biase1
-  + $ cost_grad_for_forword_biase2 * FORWORD_WEIGTH2_1 * $ allocated_grad_for_output1 * $ m_to_n_grad_for_biase1
-</ pre>
+my $cost_grad_for_biase1
+  = $cost_grad_for_forword_biase0 * FORWORD_WEIGTH0_1 * $private_grad_for_output1 * $m_to_n_grad_for_biase1
+  + $cost_grad_for_forword_biase1 * FORWORD_WEIGTH1_1 * $allocated_grad_for_output1 * $m_to_n_grad_for_biase1
+  + $cost_grad_for_forword_biase2 * FORWORD_WEIGTH2_1 * $allocated_grad_for_output1 * $m_to_n_grad_for_biase1
+</pre>
 
 <pre>
-my $ cost_grad_for_biase2
-  = $ cost_grad_for_forword_biase0 * FORWORD_WEIGTH0_2 * $ allocated_grad_for_output2 * $ m_to_n_grad_for_biase2
-  + $ cost_grad_for_forword_biase1 * FORWORD_WEIGTH1_2 * $ allocated_grad_for_output2 * $ m_to_n_grad_for_biase2
-  + $ cost_grad_for_forword_biase2 * FORWORD_WEIGTH2_2 * $ allocated_grad_for_output2 * $ m_to_n_grad_for_biase2
-</ pre>
+my $cost_grad_for_biase2
+  = $cost_grad_for_forword_biase0 * FORWORD_WEIGTH0_2 * $allocated_grad_for_output2 * $m_to_n_grad_for_biase2
+  + $cost_grad_for_forword_biase1 * FORWORD_WEIGTH1_2 * $allocated_grad_for_output2 * $m_to_n_grad_for_biase2
+  + $cost_grad_for_forword_biase2 * FORWORD_WEIGTH2_2 * $allocated_grad_for_output2 * $m_to_n_grad_for_biase2
+</pre>

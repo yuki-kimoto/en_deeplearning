@@ -1,6 +1,6 @@
-<h2> Find random numbers that follow a normal distribution </ h2>
+<h2> Find random numbers that follow a normal distribution </h2>
 
-Let's find a random number that follows a normal distribution in Perl. <a href="/blog/20201007144439.html"> Initial value of Xavier </a> and <a href="/blog/20201006144439.html"> Initial value of He </a> as the initial value of the weight parameter. >, But both are random numbers that follow a normal distribution.
+Let's find a random number that follows a normal distribution in Perl. <a href="/blog/20201007144439.html"> Initial value of Xavier</a> and <a href="/blog/20201006144439.html"> Initial value of He</a> as the initial value of the weight parameter. >, But both are random numbers that follow a normal distribution.
 
 The normal distribution has a high center, and the more you go to the right and left, the lower the distribution. The left and right are targets and smooth graphs. Expressing one normal distribution with (x, y) coordinates is as follows.
 
@@ -14,7 +14,7 @@ The normal distribution has a high center, and the more you go to the right and 
 (2, 0.05)
 (3, 0.001)
 (4, 0.00001)
-</ pre>
+</pre>
 
 The normal distribution is shaped by specifying the mean and standard deviation.
 
@@ -27,23 +27,23 @@ use strict;
 use warnings;
 
 # Function to find random numbers that follow a normal distribution
-# $ ave is mean, $ sigma is standard deviation,
+# $ave is mean, $sigma is standard deviation,
 sub randn {
-  my ($ ave, $ sigma) = @_;
-  my ($ r1, $ r2) = (rand (), rand ());
-  while ($ r1 == 0) {$ r1 = rand ();}
-  return ($ sigma * sqrt (-2 * log ($ r1)) * sin (2 * 3.14159265359 * $ r2)) + $ ave;
+  my ($ave, $sigma) = @_;
+  my ($r1, $r2) = (rand(), rand());
+  while ($r1 == 0) {$r1 = rand();}
+  return($sigma * sqrt(-2 * log($r1)) * sin(2 * 3.14159265359 * $r2)) + $ave;
 }
 
-my $ ave = 0;
-my $ sigma = 1;
+my $ave = 0;
+my $sigma = 1;
 
 # Generate a random number that follows a normal distribution
 for (0 .. 100) {
-  my $ randn = randn ($ ave, $ sigma);
-  print "$ randn \ n";
+  my $randn = randn ($ave, $sigma);
+  print "$randn\n";
 }
-</ pre>
+</pre>
 
 This is a sample output result.
 
@@ -149,4 +149,4 @@ This is a sample output result.
 0.456481012707392
 -0.713494905933569
 -1.10745100942014
-</ pre>
+</pre>

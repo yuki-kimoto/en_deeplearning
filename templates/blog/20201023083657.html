@@ -1,50 +1,50 @@
-<h2> What is the parameter update optimization algorithm? </ H2>
+<h2> What is the parameter update optimization algorithm? </H2>
 
-The parameter update optimization algorithm updates the parameters of <a href="/blog/20201015143424.html"> weight </a> and <a href="/blog/20201016143424.html"> bias </a>. In some cases, it is an algorithm designed to reach a high percentage of correct answers quickly and also to have a high final percentage of correct answers.
+The parameter update optimization algorithm updates the parameters of <a href="/blog/20201015143424.html"> weight</a> and <a href="/blog/20201016143424.html"> bias</a>. In some cases, it is an algorithm designed to reach a high percentage of correct answers quickly and also to have a high final percentage of correct answers.
 
 <ul>
-  <li> <a href="/blog/20201017123741.html"> Stochastic Gradient Descent Method --SGD </a> </ li>
-  <li> <a href="/blog/20201022083657.html"> Adam --Improved SGD </a> </ li>
-</ ul>
+  <li> <a href="/blog/20201017123741.html"> Stochastic Gradient Descent Method --SGD</a> </li>
+  <li> <a href="/blog/20201022083657.html"> Adam --Improved SGD</a> </li>
+</ul>
 
-<h3> What is Mini Batch SGD? </ H3>
+<h3> What is Mini Batch SGD? </H3>
 
 In the explanation of this site, the stochastic gradient descent method includes mini-batch SGD, but the original meaning is that one with a batch size of 1 is called SGD, and one with multiple batch sizes is called mini-batch SGD. I call.
 
-<h3> What is the gradient descent method? </ H3>
+<h3> What is the gradient descent method? </H3>
 
 Gradient descent is a stochastic gradient descent that does not randomly sort the training data.
 
 Probabilistic means that the training data is randomly rearranged.
 
-<h3> What is the steepest descent method? </ H3>
+<h3> What is the steepest descent method? </H3>
 
 The steepest descent method is a gradient descent method in which the batch size is the same as the number of trainings.
 
 "Sudden descent" means that a parameter that causes a large change (large slope) to the loss function, which is an index of error, is updated by subtracting the value considering the learning rate from its magnitude.
 
-<h3> How to understand </ h3>
+<h3> How to understand </h3>
 
 How to understand the parameter update optimization algorithm.
 
-<h4> Randomly sort the training data </ ​​h4>
+<h4> Randomly sort the training data </​​h4>
 
 It is expressed by the word "stochastic".
 
-<h4> Several batch sizes </ h4>
+<h4> Several batch sizes </h4>
 
 If the batch size is the same as the number of trainings, it is the steepest descent method, if there is one batch size, it is the gradient descent method (SDG), and if there are multiple batch sizes, it is the mini-batch SGD.
 
-<h3> Batch size and parallelization </ h3>
+<h3> Batch size and parallelization </h3>
 
 The great thing about the mini-batch SDG is that it can be parallelized using threads and so on. This can improve performance.
 
 Since each learning is independent, the slope can be calculated independently.
 
-<h3> Parameter update optimization algorithm that further improves the mini-batch SDG </ h3>
+<h3> Parameter update optimization algorithm that further improves the mini-batch SDG </h3>
 
 There is a parameter optimization algorithm that is an improvement over the mini-batch SDG.
 
 <ul>
-  <li> <a href="/blog/20201022083657.html"> Adam --Improved SGD </a> </ li>
-</ ul>
+  <li> <a href="/blog/20201022083657.html"> Adam --Improved SGD</a> </li>
+</ul>
