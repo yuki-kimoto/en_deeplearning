@@ -4,7 +4,7 @@ use FindBin;
 use lib "$FindBin::Bin/network_lib";
 use List::Util 'shuffle';
 
-use SPVM 'MyAIUtil';
+use SPVM 'MyAIUtil2';
 use SPVM 'Hash';
 use SPVM 'List';
 use SPVM 'IntList';
@@ -47,7 +47,7 @@ $mnist_train_label_info_spvm->set_int(items_count => $mnist_train_label_info->{i
 $mnist_train_label_info_spvm->set(label_numbers => SPVM::IntList->new($mnist_train_label_info->{label_numbers}));
 
 # ディープネットークを訓練
-SPVM::MyAIUtil->train_deep_network($mnist_train_image_info_spvm, $mnist_train_label_info_spvm, $epoch_count, $mini_batch_size, $neurons_count_in_layers, $learning_rate);
+SPVM::MyAIUtil2->train_deep_network($mnist_train_image_info_spvm, $mnist_train_label_info_spvm, $epoch_count, $mini_batch_size, $neurons_count_in_layers, $learning_rate);
 
 # MNIST画像情報を読み込む
 sub load_mnist_train_image_file {

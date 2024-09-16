@@ -1,0 +1,7 @@
+class MyAIUtil2::FloatMatrix {
+  allow MyAIUtil2;
+
+  has rows_length : public rw int;
+  has columns_length : public rw int;
+  has values : public rw float[];
+}

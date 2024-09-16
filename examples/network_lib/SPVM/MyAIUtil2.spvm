@@ -1,0 +1,742 @@
+class MyAIUtil2 : precompile {
+  use Fn;
+  use Math;
+  use List;
+  use Hash;
+  use MyAIUtil2::FloatMatrix;
+  use IntList;
+  use Array;
+  use Format;
+  use Sys;
+  
+  # 総実行回数
+  our $TOTAL_COUNT : int;
+
+  # 正解数
+  our $ANSWER_MATCH_COUNT : int;
+  
+  # seed
+  our $SEED : int;
+  
+  INIT {
+    $SEED = (int)Sys->time;
+  }
+  
+  # シャッフルする
+  static method shufflei : int[] ($array_original : int[]) {
+    my $size = @$array_original;
+    my $array = Array->copy_int($array_original);
+    for (my $i = 0; $i < $size; $i++) {
+      my $seed = $SEED;
+      my $j = Fn->crand(\$seed) % $size;
+      $SEED = $seed;
+      my $t = $array->[$i];
+      $array->[$i] = $array->[$j];
+      $array->[$j] = $t;
+    }
+    return $array;
+  }
+  
+  static method train_deep_network : void ($mnist_train_image_info_spvm : Hash, $mnist_train_label_info_spvm : Hash,
+    $epoch_count : int, $mini_batch_size : int, $neurons_count_in_layers : int[], $learning_rate : int)
+  {
+    # 各層のm個の入力をn個の出力に変換する関数の情報。入力数、出力数、バイアス、重み
+    my $m_to_n_func_infos = MyAIUtil2->init_m_to_n_func_infos($neurons_count_in_layers);
+
+    # 訓練データのインデックス(最初の4万枚だけを訓練用データとして利用する。残りの1万枚は検証用データとする)
+    my $training_data_indexes = new int[40000];
+    my $cur_training_data_index = 0;
+    for (my $i = 0; $i < @$training_data_indexes; $i++) {
+      $training_data_indexes->[$i] = $i;
+    }
+
+    # ミニバッチ単位における各変換関数の情報
+    my $m_to_n_func_mini_batch_infos = MyAIUtil2->init_m_to_n_func_mini_batch_infos($m_to_n_func_infos);
+
+    # エポックの回数だけ訓練セットを実行
+    for (my $epoch_index = 0; $epoch_index < $epoch_count; $epoch_index++) {
+      
+      # 訓練データのインデックスをシャッフル(ランダムに学習させた方が汎用化するらしい)
+      my $training_data_indexes_shuffle = MyAIUtil2->shufflei($training_data_indexes);
+      
+      # 確率的勾配降下法を使ってパラメーターを更新
+      MyAIUtil2->update_params_sgd(
+        $m_to_n_func_mini_batch_infos,
+        $m_to_n_func_infos,
+        $training_data_indexes_shuffle,
+        $mini_batch_size,
+        $mnist_train_image_info_spvm,
+        $mnist_train_label_info_spvm,
+        $learning_rate
+      );
+    }
+  }
+  
+  static method update_params_sgd : void ($m_to_n_func_mini_batch_infos : List, $m_to_n_func_infos : List, $training_data_indexes_shuffle : int[],
+    $mini_batch_size: int, $mnist_train_image_info_spvm : Hash, $mnist_train_label_info_spvm : Hash, $learning_rate : float) {
+ 
+    for (my $training_data_indexes_shuffle_index = 0; $training_data_indexes_shuffle_index < @$training_data_indexes_shuffle; $training_data_indexes_shuffle_index += $mini_batch_size) {
+      
+      # ミニバッチにおける各変換関数のバイアスの傾きの合計とミニバッチにおける各変換関数の重みの傾きの合計を0で初期化
+      for (my $m_to_n_func_index = 0; $m_to_n_func_index < $m_to_n_func_mini_batch_infos->length; $m_to_n_func_index++) {
+        my $m_to_n_func_info = (Hash)$m_to_n_func_infos->get($m_to_n_func_index);
+        my $biases = $m_to_n_func_info->get("biases");
+        my $weights_mat = $m_to_n_func_info->get("weights_mat");
+        
+        # ミニバッチにおける各変換関数のバイアスの傾きの合計を0で初期化して作成
+        my $m_to_n_func_mini_batch_info = (Hash)$m_to_n_func_mini_batch_infos->get($m_to_n_func_index);
+        my $biase_grad_totals = (float[])$m_to_n_func_mini_batch_info->get("biase_grad_totals");
+        $m_to_n_func_mini_batch_info->set(biase_grad_totals => MyAIUtil2->array_new_zero(scalar @$biase_grad_totals));
+        
+        # ミニバッチにおける各変換関数の重みの傾きの合計を0で初期化して作成
+        my $weight_grad_totals_mat = (MyAIUtil2::FloatMatrix)$m_to_n_func_mini_batch_info->get("weight_grad_totals_mat");
+        $weight_grad_totals_mat->set_values(MyAIUtil2->array_new_zero(scalar @{$weight_grad_totals_mat->values}));
+      }
+      
+      for (my $mini_batch_index = 0; $mini_batch_index < $mini_batch_size; $mini_batch_index++) {        
+        my $training_data_index = $training_data_indexes_shuffle->[$training_data_indexes_shuffle_index + $mini_batch_index];
+        
+        # バックプロパゲーションを使って重みとバイアスの損失関数に関する傾きを取得
+        my $m_to_n_func_grad_infos = MyAIUtil2->backprop($m_to_n_func_infos, $mnist_train_image_info_spvm, $mnist_train_label_info_spvm, $training_data_index);
+        
+        # バイアスの損失関数に関する傾き
+        my $biase_grads_list = (List)$m_to_n_func_grad_infos->get("biases");
+        
+        # 重みの損失関数に関する傾き
+        my $weight_grads_mat_list = (List)$m_to_n_func_grad_infos->get("weights_mat");
+
+        # ミニバッチにおける各変換関数のバイアスの傾きの合計とミニバッチにおける各変換関数の重みの傾きを加算
+        for (my $m_to_n_func_index = 0; $m_to_n_func_index < $m_to_n_func_mini_batch_infos->length; $m_to_n_func_index++) {
+          my $m_to_n_func_info = $m_to_n_func_infos->get($m_to_n_func_index);
+          
+          # ミニバッチにおける各変換関数のバイアスの傾きを加算
+          my $m_to_n_func_mini_batch_info = (Hash)$m_to_n_func_mini_batch_infos->get($m_to_n_func_index);
+          my $biase_grad_totals = (float[])$m_to_n_func_mini_batch_info->get("biase_grad_totals");
+          my $biase_grads = (float[])$biase_grads_list->get($m_to_n_func_index);
+          MyAIUtil2->array_add_inplace($biase_grad_totals, $biase_grads);
+
+          # ミニバッチにおける各変換関数の重みの傾きを加算
+          my $weight_grad_totals_mat = (MyAIUtil2::FloatMatrix)$m_to_n_func_mini_batch_info->get("weight_grad_totals_mat");
+          my $weight_grads_mat = (MyAIUtil2::FloatMatrix)$weight_grads_mat_list->get($m_to_n_func_index);
+          MyAIUtil2->array_add_inplace($weight_grad_totals_mat->values, $weight_grads_mat->values);
+        }
+      }
+
+      # 各変換関数のバイアスと重みをミニバッチの傾きの合計を使って更新
+      for (my $m_to_n_func_index = 0; $m_to_n_func_index < $m_to_n_func_infos->length; $m_to_n_func_index++) {
+        
+        # 各変換関数のバイアスを更新(学習率を考慮し、ミニバッチ数で割る)
+        my $m_to_n_func_info = (Hash)$m_to_n_func_infos->get($m_to_n_func_index);
+        my $biases = (float[])$m_to_n_func_info->get("biases");
+        
+        my $m_to_n_func_mini_batch_info = (Hash)$m_to_n_func_mini_batch_infos->get($m_to_n_func_index);
+        my $biase_grad_totals = (float[])$m_to_n_func_mini_batch_info->get("biase_grad_totals");
+        MyAIUtil2->update_params($biases, $biase_grad_totals, $learning_rate, $mini_batch_size);
+        
+        # 各変換関数の重みを更新(学習率を考慮し、傾きの合計をミニバッチ数で、ミニバッチ数で割る)
+        my $weights_mat = (MyAIUtil2::FloatMatrix)$m_to_n_func_info->get("weights_mat");
+        my $weight_grad_totals_mat = (MyAIUtil2::FloatMatrix)$m_to_n_func_mini_batch_info->get("weight_grad_totals_mat");
+        MyAIUtil2->update_params($weights_mat->values, $weight_grad_totals_mat->values, $learning_rate, $mini_batch_size);
+      }
+    }
+  }
+
+  static method init_m_to_n_func_infos : List ($neurons_count_in_layers : int[]) {
+    # 各層のm個の入力をn個の出力に変換する関数の情報。入力数、出力数、バイアス、重み
+    my $m_to_n_func_infos = List->new([]);
+
+    # 各層のニューロン数からmからnへの変換関数の情報を作成
+    for (my $i = 0; $i < @$neurons_count_in_layers - 1; $i++) {
+      my $inputs_length = $neurons_count_in_layers->[$i];
+      my $outputs_length = $neurons_count_in_layers->[$i + 1];
+      
+      # バイアスを0で初期化
+      my $biases = MyAIUtil2->array_new_zero($outputs_length);
+
+      # Xivierの初期値で重みを初期化。重みは列優先行列
+      my $weights_mat = MyAIUtil2->mat_new_zero($outputs_length, $inputs_length);
+      my $weights_length = $weights_mat->rows_length * $weights_mat->columns_length;
+      $weights_mat->set_values(MyAIUtil2->array_create_xavier_init_value($weights_length, $inputs_length));
+      
+      # 変換関数の情報を設定
+      my $m_to_n_func_info = Hash->new({});
+      $m_to_n_func_info->set_int(inputs_length => $inputs_length);
+      $m_to_n_func_info->set_int(outputs_length => $outputs_length);
+      $m_to_n_func_info->set(biases => $biases);
+      $m_to_n_func_info->set(weights_mat => $weights_mat);
+
+      $m_to_n_func_infos->push($m_to_n_func_info);
+    }
+    
+    return $m_to_n_func_infos;
+  }
+
+  static method init_m_to_n_func_mini_batch_infos : List ($m_to_n_func_infos : List) {
+    # ミニバッチ単位における各変換関数の情報
+    
+    my $m_to_n_func_mini_batch_infos = List->new_len(new object[0], $m_to_n_func_infos->length);
+
+    # ミニバッチにおける各変換関数のバイアスの傾きの合計とミニバッチにおける各変換関数の重みの傾きの合計を0で初期化して作成
+    # メモリ領域を繰り返しつかうためここで初期化
+    for (my $m_to_n_func_index = 0; $m_to_n_func_index < $m_to_n_func_infos->length; $m_to_n_func_index++) {
+      my $m_to_n_func_info = (Hash)$m_to_n_func_infos->get($m_to_n_func_index);
+      my $biases = (float[])$m_to_n_func_info->get("biases");
+      my $weights_mat = (MyAIUtil2::FloatMatrix)$m_to_n_func_info->get("weights_mat");
+      
+      # バイアスの長さ
+      my $biases_length = scalar @$biases;
+
+      # ミニバッチにおける各変換関数のバイアスの傾きの合計を0で初期化して作成
+      my $biase_grad_totals = MyAIUtil2->array_new_zero($biases_length);
+
+      # ミニバッチにおける各変換関数の重みの傾きの合計を0で初期化して作成
+      my $weight_grad_totals_mat = MyAIUtil2->mat_new_zero($weights_mat->rows_length, $weights_mat->columns_length);
+      
+      my $m_to_n_func_mini_batch_info = Hash->new({});
+      $m_to_n_func_mini_batch_info->set(biase_grad_totals => $biase_grad_totals);
+      $m_to_n_func_mini_batch_info->set(weight_grad_totals_mat => $weight_grad_totals_mat);
+      
+      $m_to_n_func_mini_batch_infos->set($m_to_n_func_index => $m_to_n_func_mini_batch_info);
+    }
+    
+    return $m_to_n_func_mini_batch_infos;
+  }
+
+  # バックプロパゲーション
+  static method backprop : Hash ($m_to_n_func_infos : List, $mnist_train_image_info_spvm : Hash, $mnist_train_label_info_spvm : Hash, $training_data_index : int)  {
+    
+    my $m_to_n_func_info = (Hash)$m_to_n_func_infos->get(0);
+    my $first_inputs_length = (int)$m_to_n_func_info->get("inputs_length");
+    
+    # 入力(0～255の値を0～1に変換)
+    my $mnist_train_image_rows_count = (int)$mnist_train_image_info_spvm->get("rows_count");
+    my $mnist_train_image_columns_count = (int)$mnist_train_image_info_spvm->get("columns_count");
+    my $image_unit_length = $mnist_train_image_rows_count * $mnist_train_image_columns_count;
+    my $mnist_train_image_data = (byte[])$mnist_train_image_info_spvm->get("data");
+    
+    my $first_inputs_raw_uint8 = Array->copy_byte($mnist_train_image_data, $image_unit_length * $training_data_index, $image_unit_length);
+    my $first_inputs_raw_float = MyAIUtil2->convert_ubyte_array_to_float_array($first_inputs_raw_uint8);
+    
+    my $first_inputs = MyAIUtil2->array_div_scalar($first_inputs_raw_float, 255);
+    
+    # 期待される出力を確率分布化する
+    my $label_numbers = (IntList)$mnist_train_label_info_spvm->get("label_numbers");
+    my $label_number = (Int)$label_numbers->get($training_data_index);
+    my $desired_outputs = MyAIUtil2->probabilize_desired_outputs($label_number);
+    
+    # 各変換関数のバイアスの傾き
+    my $biase_grads_in_m_to_n_funcs = List->new_len(new float[][0], $m_to_n_func_infos->length);
+    
+    # 各変換関数の重みの傾き
+    my $weight_grads_mat_in_m_to_n_funcs = List->new_len(new MyAIUtil2::FloatMatrix[0], $m_to_n_func_infos->length);
+    
+    # バイアスの傾きと重みの傾きの初期化
+    for (my $m_to_n_func_index = 0; $m_to_n_func_index < $m_to_n_func_infos->length; $m_to_n_func_index++) {
+      my $m_to_n_func_info = (Hash)$m_to_n_func_infos->get($m_to_n_func_index);
+      my $inputs_length = (int)$m_to_n_func_info->get("inputs_length");
+      my $outputs_length = (int)$m_to_n_func_info->get("outputs_length");
+      
+      # バイアスの傾きを0で初期化
+      $biase_grads_in_m_to_n_funcs->set($m_to_n_func_index => MyAIUtil2->array_new_zero($outputs_length));
+
+      # 重みの傾きを0で初期化
+      $weight_grads_mat_in_m_to_n_funcs->set($m_to_n_func_index => MyAIUtil2->mat_new_zero($outputs_length, $inputs_length));
+    }
+
+    # 各層の入力
+    my $inputs_in_m_to_n_funcs = List->new(new float[][0]);
+    $inputs_in_m_to_n_funcs->push($first_inputs);
+    
+    
+    # 各層の活性化された出力
+    my $outputs_in_m_to_n_funcs = List->new(new float[][0]);
+    
+    # 入力層の入力から出力層の出力を求める
+    # バックプロパゲーションのために各層の出力と活性化された出力を保存
+    for (my $m_to_n_func_index = 0; $m_to_n_func_index < $m_to_n_func_infos->length; $m_to_n_func_index++) {
+      my $cur_inputs = (float[])$inputs_in_m_to_n_funcs->get($inputs_in_m_to_n_funcs->length - 1);
+      my $m_to_n_func_info = (Hash)$m_to_n_func_infos->get($m_to_n_func_index);
+      my $inputs_length = (int)$m_to_n_func_info->get("inputs_length");
+      my $outputs_length = (int)$m_to_n_func_info->get("outputs_length");
+      
+      # 重み行列
+      my $weights_mat = (MyAIUtil2::FloatMatrix)$m_to_n_func_info->get("weights_mat");
+
+      # 入力行列
+      my $cur_inputs_rows_length = $outputs_length;
+      my $cur_inputs_columns_length = 1;
+      my $cur_inputs_mat = MyAIUtil2->mat_new($cur_inputs, $cur_inputs_rows_length, $cur_inputs_columns_length);
+      
+      # 重みと入力の行列積
+      my $mul_weights_inputs_mat = MyAIUtil2->mat_mul($weights_mat, $cur_inputs_mat);
+      my $mul_weights_inputs = $mul_weights_inputs_mat->values;
+
+      # バイアス
+      my $biases = (float[])$m_to_n_func_info->get("biases");
+      
+      # 出力 - 重みと入力の行列積とバイアスの和
+      my $outputs = MyAIUtil2->array_add($mul_weights_inputs, $biases);
+      
+      # 活性化された出力 - 出力に活性化関数を適用
+      my $activate_outputs = MyAIUtil2->array_sigmoid($outputs);
+      
+      # バックプロパゲーションのために出力を保存
+      $outputs_in_m_to_n_funcs->push($outputs);
+      
+      # バックプロパゲーションのために次の入力を保存
+      $inputs_in_m_to_n_funcs->push($activate_outputs);
+    }
+    
+    # 最後の出力
+    my $last_outputs = (float[])$outputs_in_m_to_n_funcs->get($outputs_in_m_to_n_funcs->length - 1);
+    
+    # 最後の活性化された出力
+    my $last_activate_outputs = (float[])$inputs_in_m_to_n_funcs->pop;
+    
+    # softmax関数
+    # my $softmax_outputs = MyAIUtil2->softmax($last_activate_outputs);
+    
+    # 誤差
+    
+    my $cost = MyAIUtil2->cross_entropy_cost($last_activate_outputs, $desired_outputs);
+    # my $cost = MyAIUtil2->cross_entropy_cost($softmax_outputs, $desired_outputs);
+    print "Cost: " . Format->sprintf("%.3f", [(object)$cost]) . "\n";
+    
+    # 正解したかどうか
+    my $answer = MyAIUtil2->max_index($last_activate_outputs);
+    # my $answer = MyAIUtil2->max_index($softmax_outputs);
+    my $desired_answer = MyAIUtil2->max_index($desired_outputs);
+    $TOTAL_COUNT++;
+    if ($answer == $desired_answer) {
+      $ANSWER_MATCH_COUNT++;
+    }
+    
+    # 正解率を出力
+    my $match_rate = (double)$ANSWER_MATCH_COUNT / $TOTAL_COUNT;
+    print "Match Rate: " . Format->sprintf("%.02f", [(object)(100 * $match_rate)]) . "%\n";
+    
+    # 活性化された出力の微小変化 / 最後の出力の微小変化 
+    my $grad_last_outputs_to_activate_func = MyAIUtil2->array_sigmoid_derivative($last_outputs);
+    
+    # 損失関数の微小変化 / 最後に活性化された出力の微小変化
+    # my $grad_last_activate_outputs_to_cost_func = MyAIUtil2->softmax_cross_entropy_cost_derivative($last_activate_outputs, $desired_outputs);
+    my $grad_last_activate_outputs_to_cost_func = MyAIUtil2->cross_entropy_cost_derivative($last_activate_outputs, $desired_outputs);
+
+    # 損失関数の微小変化 / 最後の出力の微小変化 (合成微分)
+    my $grad_last_outputs_to_cost_func = MyAIUtil2->array_mul($grad_last_outputs_to_activate_func, $grad_last_activate_outputs_to_cost_func);
+
+    # 損失関数の微小変化 / 最終の層のバイアスの微小変化
+    my $last_biase_grads = $grad_last_outputs_to_cost_func;
+    
+
+    # 損失関数の微小変化 / 最終の層の重みの微小変化
+    my $last_biase_grads_mat = MyAIUtil2->mat_new($last_biase_grads, scalar @$last_biase_grads, 1);
+    my $last_inputs = (float[])$inputs_in_m_to_n_funcs->get($inputs_in_m_to_n_funcs->length - 1);
+    my $last_inputs_transpose_mat = MyAIUtil2->mat_new($last_inputs, 1, scalar @$last_inputs);
+    my $last_weight_grads_mat = MyAIUtil2->mat_mul($last_biase_grads_mat, $last_inputs_transpose_mat);
+      
+    $biase_grads_in_m_to_n_funcs->set($biase_grads_in_m_to_n_funcs->length - 1 => $last_biase_grads);
+    $weight_grads_mat_in_m_to_n_funcs->set($biase_grads_in_m_to_n_funcs->length - 1 => $last_weight_grads_mat);
+    
+    # 最後の重みとバイアスの変換より一つ前から始める
+    for (my $m_to_n_func_index = $m_to_n_func_infos->length - 2; $m_to_n_func_index >= 0; $m_to_n_func_index--) {
+      
+      # 活性化された出力の微小変化 / 出力の微小変化
+      my $outputs = (float[])$outputs_in_m_to_n_funcs->get($m_to_n_func_index);
+
+      # 損失関数の微小変化 / この層のバイアスの微小変化(微分の連鎖率を使って求める)
+      # 次の層の重みの傾きの転置行列とバイアスの傾きの転置行列をかけて、それぞれの要素に、活性化関数の導関数をかける
+      my $forword_m_to_n_func_info = (Hash)$m_to_n_func_infos->get($m_to_n_func_index + 1);
+      my $forword_weights_mat = (MyAIUtil2::FloatMatrix)$forword_m_to_n_func_info->get("weights_mat");
+      my $forword_weights_mat_transpose = MyAIUtil2->mat_transpose($forword_weights_mat);
+      my $forword_biase_grads = (float[])$biase_grads_in_m_to_n_funcs->get($m_to_n_func_index + 1);
+      my $forword_biase_grads_mat = MyAIUtil2->mat_new($forword_biase_grads, scalar @$forword_biase_grads, 1);
+      my $mul_forword_weights_transpose_mat_forword_biase_grads_mat = MyAIUtil2->mat_mul($forword_weights_mat_transpose, $forword_biase_grads_mat);
+      my $mul_forword_weights_transpose_mat_forword_biase_grads_mat_values = $mul_forword_weights_transpose_mat_forword_biase_grads_mat->values;
+      my $grads_outputs_to_array_sigmoid = MyAIUtil2->array_sigmoid_derivative($outputs);
+      my $biase_grads = MyAIUtil2->array_mul($mul_forword_weights_transpose_mat_forword_biase_grads_mat_values, $grads_outputs_to_array_sigmoid);
+
+      $biase_grads_in_m_to_n_funcs->set($m_to_n_func_index => $biase_grads);
+      
+      # 損失関数の微小変化 / この層の重みの微小変化(微分の連鎖率を使って求める)
+      my $biase_grads_mat = MyAIUtil2->mat_new($biase_grads, scalar @$biase_grads, 1);
+      my $inputs = (float[])$inputs_in_m_to_n_funcs->get($m_to_n_func_index);
+      
+      my $inputs_mat_transpose = MyAIUtil2->mat_new($inputs, 1, scalar @$inputs);
+      
+      my $weights_grads_mat = MyAIUtil2->mat_mul($biase_grads_mat, $inputs_mat_transpose);
+      
+      $weight_grads_mat_in_m_to_n_funcs->set($m_to_n_func_index => $weights_grads_mat);
+    }
+
+    my $m_to_n_func_grad_infos = Hash->new({});
+    $m_to_n_func_grad_infos->set(biases => $biase_grads_in_m_to_n_funcs);
+    $m_to_n_func_grad_infos->set(weights_mat => $weight_grads_mat_in_m_to_n_funcs);
+    
+    return $m_to_n_func_grad_infos;
+  }
+
+  static method convert_ubyte_array_to_float_array : float[] ($ubytes : byte[]) {
+    my $floats = new float[scalar @$ubytes];
+    
+    for (my $i = 0; $i < @$ubytes; $i++) {
+      $floats->[$i] = ((int)$ubytes->[$i]) & 0xFF;
+    }
+    
+    return $floats;
+  }
+
+  # 学習率とミニバッチ数を考慮してパラメーターを更新
+  static method update_params : void ($params : float[], $param_grads : float[], $learning_rate : float, $mini_batch_size : int) {
+    
+    for (my $param_index = 0; $param_index < @$params; $param_index++) {
+      my $update_value = ($learning_rate / $mini_batch_size) * $param_grads->[$param_index];
+      $params->[$param_index] -= $update_value;
+    }
+  }
+
+  # 配列の中で最大値のインデックスを求める。同じ数の場合は、最初の方を返す
+  static method max_index : int ($nums : float[]) {
+    
+    my $max = $nums->[0];
+    my $max_index = 0;
+    for (my $i = 0; $i < @$nums; $i++) {
+      if ($nums->[$i] > $max) {
+        $max_index = $i;
+        $max = $nums->[$i];
+      }
+    }
+    
+    return $max_index;
+  }
+
+  # 期待される出力を確率分布化する
+  static method probabilize_desired_outputs : float[] ($label_number : int) {
+    
+    my $desired_outputs = new float[10];
+    for (my $desired_outputs_index = 0; $desired_outputs_index < 10; $desired_outputs_index++) {
+      if ($label_number == $desired_outputs_index) {
+        $desired_outputs->[$desired_outputs_index] = 1;
+      }
+      else {
+        $desired_outputs->[$desired_outputs_index] = 0;
+      }
+    }
+    
+    return $desired_outputs;
+  }
+
+  # 配列の各要素の和
+  static method array_add : float[] ($nums1 : float[], $nums2 : float[]) {
+    
+    if (@$nums1 != @$nums2) {
+      die "Array length is diffent";
+    }
+    
+    my $nums_out = new float[scalar @$nums1];
+    for (my $i = 0; $i < @$nums1; $i++) {
+      $nums_out->[$i] = $nums1->[$i] + $nums2->[$i];
+    }
+    
+    return $nums_out;
+  }
+
+  # 配列の各要素の和を最初の引数に足す
+  static method array_add_inplace : void ($nums1 : float[], $nums2 : float[]) {
+    
+    if (@$nums1 != @$nums2) {
+      die "Array length is diffent";
+    }
+    
+    for (my $i = 0; $i < @$nums1; $i++) {
+      $nums1->[$i] += $nums2->[$i];
+    }
+  }
+
+  # 配列の各要素の積
+  static method array_mul : float[] ($nums1 : float[], $nums2 : float[]) {
+    
+    if (@$nums1 != @$nums2) {
+      die "Array length is diffent";
+    }
+    
+    my $nums_out = new float[scalar @$nums1];
+    for (my $i = 0; $i < @$nums1; $i++) {
+      $nums_out->[$i] = $nums1->[$i] * $nums2->[$i];
+    }
+    
+    return $nums_out;
+  }
+
+  # Xivierの初期値を取得
+  static method create_xavier_init_value : float ($inputs_length : int) {
+      
+    return &randn(0, Math->sqrtf((float)1 / $inputs_length));
+  }
+
+  # 配列の各要素にXivierの初期値を取得を適用する
+  static method array_create_xavier_init_value : float[] ($array_length : int, $inputs_length : int) {
+    
+    my $nums_out = new float[$array_length];
+    for (my $i = 0; $i < $array_length; $i++) {
+      $nums_out->[$i] = &create_xavier_init_value($inputs_length);
+    }
+    
+    return $nums_out;
+  }
+
+  # Heの初期値を取得
+  static method create_he_init_value : float ($inputs_length : int) {
+    
+    my $he_init_value = &randn(0, Math->sqrtf((float)2 / $inputs_length));
+    
+    return $he_init_value;
+  }
+
+  # 配列の各要素にHeの初期値を取得を適用する
+  static method array_create_he_init_value : float[] ($array_length : int, $inputs_length : int) {
+    
+    my $nums_out = new float[$array_length];
+    for (my $i = 0; $i < $array_length; $i++) {
+      $nums_out->[$i] = &create_he_init_value($inputs_length);
+    }
+    
+    return $nums_out;
+  }
+
+  # シグモイド関数
+  static method sigmoid : float ($x : float) {
+    
+    my $sigmoid = 1.0f / (1.0f + Math->expf(-$x));
+    
+    return $sigmoid;
+  }
+
+  # シグモイド関数の導関数
+  static method sigmoid_derivative : float ($x : float) {
+    
+    my $sigmoid_derivative = &sigmoid($x) * (1 - &sigmoid($x));
+    
+    return $sigmoid_derivative;
+  }
+
+  # 配列の各要素にシグモイド関数を適用する
+  static method array_sigmoid : float[] ($nums : float[]) {
+    
+    my $nums_out = new float[scalar @$nums];
+    for (my $i = 0; $i < @$nums; $i++) {
+      $nums_out->[$i] = &sigmoid($nums->[$i]);
+    }
+    
+    return $nums_out;
+  }
+
+  # 配列の各要素にシグモイド関数の導関数を適用する
+  static method array_sigmoid_derivative : float[] ($nums : float[]) {
+    
+    my $nums_out = new float[scalar @$nums];
+    for (my $i = 0; $i < @$nums; $i++) {
+      $nums_out->[$i] = &sigmoid_derivative($nums->[$i]);
+    }
+    
+    return $nums_out;
+  }
+
+  # ReLU関数
+  static method relu : float ($x : float) {
+    
+    my $relu = $x * ($x > 0.0);
+    
+    return $relu;
+  }
+
+  # ReLU関数の導関数
+  static method relu_derivative : float ($x : float) {
+    
+    my $relu_derivative = 1 * ($x > 0.0);
+    
+    return $relu_derivative;
+  }
+
+  # 配列の各要素にReLU関数を適用する
+  static method array_relu : float[] ($nums : float[]) {
+    
+    my $nums_out = new float[scalar @$nums];
+    for (my $i = 0; $i < @$nums; $i++) {
+      $nums_out->[$i] = &relu($nums->[$i]);
+    }
+    
+    return $nums_out;
+  }
+
+  # 配列の各要素にReLU関数の導関数を適用する
+  static method array_relu_derivative : float[] ($nums : float[]) {
+    
+    my $nums_out = new float[scalar @$nums];
+    for (my $i = 0; $i < @$nums; $i++) {
+      $nums_out->[$i] = &relu_derivative($nums->[$i]);
+    }
+    
+    return $nums_out;
+  }
+
+  # クロスエントロピーコスト
+  static method cross_entropy_cost : float ($vec_a : float[], $vec_y : float[]) {
+    
+    my $cross_entropy_cost = 0f;
+    for (my $i = 0; $i < @$vec_a; $i++) {
+      my $tmp = -$vec_y->[$i] * Math->logf($vec_a->[$i]) - (1 - $vec_y->[$i]) * Math->logf(1 - $vec_a->[$i]);
+      $cross_entropy_cost += $tmp;
+    }
+
+    return $cross_entropy_cost;
+  }
+
+  # クロスエントロピーコストの導関数
+  static method cross_entropy_cost_derivative : float[] ($vec_a : float[], $vec_y : float[]) {
+    
+    my $vec_out = new float[scalar @$vec_a];
+    for (my $i = 0; $i < @$vec_a; $i++) {
+      $vec_out->[$i] = $vec_a->[$i] - $vec_y->[$i];
+    }
+    
+    return $vec_out;
+  }
+
+  # 正規分布に従う乱数を求める関数
+  # $m は平均, $sigma は標準偏差、
+  static method randn : float ($m : float, $sigma : float) {
+    my $seed = $SEED;
+    my $r1 = ((double)Fn->crand(\$seed) + 1) / ((double)Fn->RAND_MAX + 2);
+    my $r2 = ((double)Fn->crand(\$seed) + 1) / ((double)Fn->RAND_MAX + 2);
+    $SEED = $seed;
+
+    my $randn = ($sigma * Math->sqrt(-2 * Math->log($r1)) * Math->sin(2 * 3.14159265359 * $r2)) + $m;
+
+    return (float)$randn;
+  }
+
+  # 配列を0で初期化して作成
+  static method array_new_zero : float[] ($length : int) {
+    
+    my $nums = new float[$length];
+    
+    return $nums;
+  }
+
+  # 行列を0で初期化
+  static method mat_new_zero : MyAIUtil2::FloatMatrix ($rows_length : int, $columns_length : int) {
+    my $values_length = $rows_length * $columns_length;
+    
+    my $mat = new MyAIUtil2::FloatMatrix;
+    $mat->{rows_length} = $rows_length;
+    $mat->{columns_length} = $columns_length;
+    $mat->{values} = new float[$values_length];
+    
+    return $mat;
+  }
+
+  # 行列の積を求める
+  static method mat_mul : MyAIUtil2::FloatMatrix ($mat1 : MyAIUtil2::FloatMatrix, $mat2 : MyAIUtil2::FloatMatrix) {
+    my $mat1_rows_length = $mat1->{rows_length};
+    my $mat1_columns_length = $mat1->{columns_length};
+    my $mat1_values = $mat1->{values};
+    
+    my $mat2_rows_length = $mat2->{rows_length};
+    my $mat2_columns_length = $mat2->{columns_length};
+    my $mat2_values = $mat2->{values};
+    
+    # 行列の積の計算
+    my $mat_out_values = new float[$mat1_rows_length * $mat2_columns_length];
+    for(my $row = 0; $row < $mat1_rows_length; $row++) {
+      for(my $col = 0; $col < $mat2_columns_length; $col++) {
+        for(my $incol = 0; $incol < $mat1_columns_length; $incol++) {
+          my $elem_part1 = $mat1_values->[$row + $incol * $mat1_rows_length];
+          my $elem_part2 = $mat2_values->[$incol + $col * $mat2_rows_length];
+          my $elem_part =  $elem_part1 * $elem_part2;
+          $mat_out_values->[$row + $col * $mat1_rows_length] += $elem_part;
+        }
+      }
+    }
+    
+    my $mat_out = &mat_new($mat_out_values, $mat1_rows_length, $mat2_columns_length);
+    
+    return $mat_out;
+  }
+
+  # 列優先の行列の作成
+  static method mat_new : MyAIUtil2::FloatMatrix ($values : float[], $rows_length : int, $columns_length : int) {
+    
+    my $mat = new MyAIUtil2::FloatMatrix;
+    $mat->{rows_length} = $rows_length;
+    $mat->{columns_length} = $columns_length;
+    $mat->{values} = $values;
+    
+    return $mat;
+  }
+
+  # 行列を転置(行列の入れ替え)
+  static method mat_transpose : MyAIUtil2::FloatMatrix ($mat : MyAIUtil2::FloatMatrix) {
+    
+    my $rows_length = $mat->{rows_length};
+    my $columns_length = $mat->{columns_length};
+    my $length = $rows_length * $columns_length;
+    
+    my $mat_trans = new MyAIUtil2::FloatMatrix;
+    $mat_trans->{rows_length} = $columns_length;
+    $mat_trans->{columns_length} = $rows_length;
+    
+    my $values = $mat->{values};
+    my $mat_trans_values = new float[$length];
+    
+    for (my $row_index = 0; $row_index < $rows_length; $row_index++) {
+      for (my $column_index = 0; $column_index < $columns_length; $column_index++) {
+        $mat_trans_values->[$row_index * $columns_length + $column_index] = $values->[$column_index * $rows_length+ $row_index];
+      }
+    }
+    $mat_trans->{values} = $mat_trans_values;
+    
+    return $mat_trans;
+  }
+  
+  # 配列の要素のスカラー値との積
+  static method array_div_scalar : float[] ($nums : float[], $scalar_num : float) {
+    
+    my $nums_out = new float[scalar @$nums];
+    for (my $i = 0; $i < @$nums; $i++) {
+      $nums_out->[$i] = $nums->[$i] / $scalar_num;
+    }
+    
+    return $nums_out;
+  }
+  
+  # softmax関数
+  static method softmax : float[] ($nums : float[]) {
+    
+    my $nums_length = @$nums;
+    my $exp_total = 0f;
+    for (my $i = 0; $i < $nums_length; $i++) {
+      $exp_total += Math->expf($nums->[$i]);
+    }
+    
+    my $nums_out = new float[$nums_length];
+    for (my $i = 0; $i < $nums_length; $i++) {
+      $nums_out->[$i] = Math->expf($nums->[$i]) / $exp_total;
+    }
+    
+    return $nums_out;
+  }
+
+  # softmaxクロスエントロピー誤差の導関数
+  static method softmax_cross_entropy_cost_derivative : float[] ($softmax_outputs : float[], $desired_outputs : float[]) {
+    
+    my $length = @$softmax_outputs;
+    
+    my $softmax_cross_entropy_cost_derivative = new float[$length];
+    for (my $i = 0; $i < @$softmax_outputs; $i++) {
+      $softmax_cross_entropy_cost_derivative->[$i] = ($softmax_outputs->[$i] - $desired_outputs->[$i]) / $length;
+    }
+    
+    return $softmax_cross_entropy_cost_derivative;
+  }
+}
