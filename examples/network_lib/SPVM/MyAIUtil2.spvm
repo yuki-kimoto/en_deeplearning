@@ -89,7 +89,10 @@ class MyAIUtil2 : precompile {
         
         # ミニバッチにおける各変換関数の重みの傾きの合計を0で初期化して作成
         my $weight_grad_totals_mat = (MyAIUtil2::FloatMatrix)$m_to_n_func_mini_batch_info->get("weight_grad_totals_mat");
-        $weight_grad_totals_mat->set_values(new float[scalar @{$weight_grad_totals_mat->values}]);
+        
+        # $weight_grad_totals_mat->set_values(new float[scalar @{$weight_grad_totals_mat->values}]);
+        
+        Fn->memcpy($weight_grad_totals_mat->values, 0, new float[scalar @{$weight_grad_totals_mat->values}], 0, 4 * (scalar @{$weight_grad_totals_mat->values}));
       }
       
       for (my $mini_batch_index = 0; $mini_batch_index < $mini_batch_size; $mini_batch_index++) {        
