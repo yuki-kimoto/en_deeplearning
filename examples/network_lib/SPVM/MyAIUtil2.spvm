@@ -113,12 +113,12 @@ class MyAIUtil2 : precompile {
           my $m_to_n_func_mini_batch_info = (Hash)$m_to_n_func_mini_batch_infos->get($m_to_n_func_index);
           my $biase_grad_totals = (float[])$m_to_n_func_mini_batch_info->get("biase_grad_totals");
           my $biase_grads = (float[])$biase_grads_list->get($m_to_n_func_index);
-          MyAIUtil2->array_add_inplace($biase_grad_totals, $biase_grads);
+          $biase_grad_totals = MyAIUtil2->array_add($biase_grad_totals, $biase_grads);
 
           # ミニバッチにおける各変換関数の重みの傾きを加算
           my $weight_grad_totals_mat = (MyAIUtil2::FloatMatrix)$m_to_n_func_mini_batch_info->get("weight_grad_totals_mat");
           my $weight_grads_mat = (MyAIUtil2::FloatMatrix)$weight_grads_mat_list->get($m_to_n_func_index);
-          MyAIUtil2->array_add_inplace($weight_grad_totals_mat->values, $weight_grads_mat->values);
+          $weight_grad_totals_mat->{values} = MyAIUtil2->array_add($weight_grad_totals_mat->values, $weight_grads_mat->values);
         }
       }
 
@@ -439,18 +439,6 @@ class MyAIUtil2 : precompile {
     }
     
     return $nums_out;
-  }
-
-  # 配列の各要素の和を最初の引数に足す
-  static method array_add_inplace : void ($nums1 : float[], $nums2 : float[]) {
-    
-    if (@$nums1 != @$nums2) {
-      die "Array length is diffent";
-    }
-    
-    for (my $i = 0; $i < @$nums1; $i++) {
-      $nums1->[$i] += $nums2->[$i];
-    }
   }
 
   # 配列の各要素の積
