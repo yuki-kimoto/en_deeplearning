@@ -394,14 +394,14 @@ class MyAIUtil2 : precompile {
   }
 
   # 配列の中で最大値のインデックスを求める。同じ数の場合は、最初の方を返す
-  static method max_index : int ($nums : float[]) {
+  static method max_index : int ($data : float[]) {
     
-    my $max = $nums->[0];
+    my $max = $data->[0];
     my $max_index = 0;
-    for (my $i = 0; $i < @$nums; $i++) {
-      if ($nums->[$i] > $max) {
+    for (my $i = 0; $i < @$data; $i++) {
+      if ($data->[$i] > $max) {
         $max_index = $i;
-        $max = $nums->[$i];
+        $max = $data->[$i];
       }
     }
     
@@ -425,33 +425,33 @@ class MyAIUtil2 : precompile {
   }
 
   # 配列の各要素の和
-  static method array_add : float[] ($nums1 : float[], $nums2 : float[]) {
+  static method array_add : float[] ($data1 : float[], $data2 : float[]) {
     
-    if (@$nums1 != @$nums2) {
+    if (@$data1 != @$data2) {
       die "Array length is diffent";
     }
     
-    my $nums_out = new float[scalar @$nums1];
-    for (my $i = 0; $i < @$nums1; $i++) {
-      $nums_out->[$i] = $nums1->[$i] + $nums2->[$i];
+    my $data_out = new float[scalar @$data1];
+    for (my $i = 0; $i < @$data1; $i++) {
+      $data_out->[$i] = $data1->[$i] + $data2->[$i];
     }
     
-    return $nums_out;
+    return $data_out;
   }
 
   # 配列の各要素の積
-  static method array_mul : float[] ($nums1 : float[], $nums2 : float[]) {
+  static method array_mul : float[] ($data1 : float[], $data2 : float[]) {
     
-    if (@$nums1 != @$nums2) {
+    if (@$data1 != @$data2) {
       die "Array length is diffent";
     }
     
-    my $nums_out = new float[scalar @$nums1];
-    for (my $i = 0; $i < @$nums1; $i++) {
-      $nums_out->[$i] = $nums1->[$i] * $nums2->[$i];
+    my $data_out = new float[scalar @$data1];
+    for (my $i = 0; $i < @$data1; $i++) {
+      $data_out->[$i] = $data1->[$i] * $data2->[$i];
     }
     
-    return $nums_out;
+    return $data_out;
   }
 
   # Xivierの初期値を取得
@@ -463,12 +463,12 @@ class MyAIUtil2 : precompile {
   # 配列の各要素にXivierの初期値を取得を適用する
   static method array_create_xavier_init_value : float[] ($array_length : int, $inputs_length : int) {
     
-    my $nums_out = new float[$array_length];
+    my $data_out = new float[$array_length];
     for (my $i = 0; $i < $array_length; $i++) {
-      $nums_out->[$i] = &create_xavier_init_value($inputs_length);
+      $data_out->[$i] = &create_xavier_init_value($inputs_length);
     }
     
-    return $nums_out;
+    return $data_out;
   }
 
   # Heの初期値を取得
@@ -482,12 +482,12 @@ class MyAIUtil2 : precompile {
   # 配列の各要素にHeの初期値を取得を適用する
   static method array_create_he_init_value : float[] ($array_length : int, $inputs_length : int) {
     
-    my $nums_out = new float[$array_length];
+    my $data_out = new float[$array_length];
     for (my $i = 0; $i < $array_length; $i++) {
-      $nums_out->[$i] = &create_he_init_value($inputs_length);
+      $data_out->[$i] = &create_he_init_value($inputs_length);
     }
     
-    return $nums_out;
+    return $data_out;
   }
 
   # シグモイド関数
@@ -507,25 +507,25 @@ class MyAIUtil2 : precompile {
   }
 
   # 配列の各要素にシグモイド関数を適用する
-  static method array_sigmoid : float[] ($nums : float[]) {
+  static method array_sigmoid : float[] ($data : float[]) {
     
-    my $nums_out = new float[scalar @$nums];
-    for (my $i = 0; $i < @$nums; $i++) {
-      $nums_out->[$i] = &sigmoid($nums->[$i]);
+    my $data_out = new float[scalar @$data];
+    for (my $i = 0; $i < @$data; $i++) {
+      $data_out->[$i] = &sigmoid($data->[$i]);
     }
     
-    return $nums_out;
+    return $data_out;
   }
 
   # 配列の各要素にシグモイド関数の導関数を適用する
-  static method array_sigmoid_derivative : float[] ($nums : float[]) {
+  static method array_sigmoid_derivative : float[] ($data : float[]) {
     
-    my $nums_out = new float[scalar @$nums];
-    for (my $i = 0; $i < @$nums; $i++) {
-      $nums_out->[$i] = &sigmoid_derivative($nums->[$i]);
+    my $data_out = new float[scalar @$data];
+    for (my $i = 0; $i < @$data; $i++) {
+      $data_out->[$i] = &sigmoid_derivative($data->[$i]);
     }
     
-    return $nums_out;
+    return $data_out;
   }
 
   # ReLU関数
@@ -545,25 +545,25 @@ class MyAIUtil2 : precompile {
   }
 
   # 配列の各要素にReLU関数を適用する
-  static method array_relu : float[] ($nums : float[]) {
+  static method array_relu : float[] ($data : float[]) {
     
-    my $nums_out = new float[scalar @$nums];
-    for (my $i = 0; $i < @$nums; $i++) {
-      $nums_out->[$i] = &relu($nums->[$i]);
+    my $data_out = new float[scalar @$data];
+    for (my $i = 0; $i < @$data; $i++) {
+      $data_out->[$i] = &relu($data->[$i]);
     }
     
-    return $nums_out;
+    return $data_out;
   }
   
   # 配列の各要素にReLU関数の導関数を適用する
-  static method array_relu_derivative : float[] ($nums : float[]) {
+  static method array_relu_derivative : float[] ($data : float[]) {
     
-    my $nums_out = new float[scalar @$nums];
-    for (my $i = 0; $i < @$nums; $i++) {
-      $nums_out->[$i] = &relu_derivative($nums->[$i]);
+    my $data_out = new float[scalar @$data];
+    for (my $i = 0; $i < @$data; $i++) {
+      $data_out->[$i] = &relu_derivative($data->[$i]);
     }
     
-    return $nums_out;
+    return $data_out;
   }
   
   static method cross_entropy_cost : float ($data_x : float[], $vec_y : float[]) {
