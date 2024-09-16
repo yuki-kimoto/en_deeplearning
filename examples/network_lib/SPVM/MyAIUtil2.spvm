@@ -8,6 +8,8 @@ class MyAIUtil2 : precompile {
   use Array;
   use Format;
   use Sys;
+  use R::OP::Float as FOP;
+  
   
   # 総実行回数
   our $TOTAL_COUNT : int;
@@ -21,6 +23,7 @@ class MyAIUtil2 : precompile {
   INIT {
     $SEED = (int)Sys->time;
   }
+  
   
   # シャッフルする
   static method shufflei : int[] ($array_original : int[]) {
@@ -217,7 +220,8 @@ class MyAIUtil2 : precompile {
     my $first_inputs_raw_uint8 = Array->copy_byte($mnist_train_image_data, $image_unit_length * $training_data_index, $image_unit_length);
     my $first_inputs_raw_float = MyAIUtil2->convert_ubyte_array_to_float_array($first_inputs_raw_uint8);
     
-    my $first_inputs = MyAIUtil2->array_div_scalar($first_inputs_raw_float, 255);
+    
+    my $first_inputs = FOP->scadiv(FOP->c($first_inputs_raw_float), FOP->c(255f))->data;
     
     # 期待される出力を確率分布化する
     my $label_numbers = (IntList)$mnist_train_label_info_spvm->get("label_numbers");
@@ -679,17 +683,6 @@ class MyAIUtil2 : precompile {
     $mat_trans->{values} = $mat_trans_values;
     
     return $mat_trans;
-  }
-  
-  # 配列の要素のスカラー値との積
-  static method array_div_scalar : float[] ($nums : float[], $scalar_num : float) {
-    
-    my $nums_out = new float[scalar @$nums];
-    for (my $i = 0; $i < @$nums; $i++) {
-      $nums_out->[$i] = $nums->[$i] / $scalar_num;
-    }
-    
-    return $nums_out;
   }
   
 }
