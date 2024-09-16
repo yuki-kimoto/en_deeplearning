@@ -566,11 +566,11 @@ class MyAIUtil2 : precompile {
     return $nums_out;
   }
   
-  static method cross_entropy_cost : float ($vec_a : float[], $vec_y : float[]) {
+  static method cross_entropy_cost : float ($data_x : float[], $vec_y : float[]) {
     
     my $cross_entropy_cost = 0f;
-    for (my $i = 0; $i < @$vec_a; $i++) {
-      my $tmp = -$vec_y->[$i] * Math->logf($vec_a->[$i]) - (1 - $vec_y->[$i]) * Math->logf(1 - $vec_a->[$i]);
+    for (my $i = 0; $i < @$data_x; $i++) {
+      my $tmp = -$vec_y->[$i] * Math->logf($data_x->[$i]) - (1 - $vec_y->[$i]) * Math->logf(1 - $data_x->[$i]);
       $cross_entropy_cost += $tmp;
     }
     
