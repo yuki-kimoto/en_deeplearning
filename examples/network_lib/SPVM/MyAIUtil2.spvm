@@ -9,7 +9,7 @@ class MyAIUtil2 : precompile {
   use Format;
   use Sys;
   use R::OP::Float as FOP;
-  use R::OP::Matrix::Float as FMOP;
+  use R::OP::Matrix::Float as MFOP;
   
   # 総実行回数
   our $TOTAL_COUNT : int;
@@ -342,7 +342,7 @@ class MyAIUtil2 : precompile {
       # 次の層の重みの傾きの転置行列とバイアスの傾きの転置行列をかけて、それぞれの要素に、活性化関数の導関数をかける
       my $forword_m_to_n_func_info = (Hash)$m_to_n_func_infos->get($m_to_n_func_index + 1);
       my $forword_weights_mat = (MyAIUtil2::FloatMatrix)$forword_m_to_n_func_info->get("weights_mat");
-      my $forword_weights_mat_transpose = MyAIUtil2::FloatMatrix->from_ndarray(FMOP->t(FMOP->matrix($forword_weights_mat->{values}, $forword_weights_mat->{rows_length}, $forword_weights_mat->{columns_length})));
+      my $forword_weights_mat_transpose = MyAIUtil2::FloatMatrix->from_ndarray(MFOP->t(MFOP->matrix($forword_weights_mat->{values}, $forword_weights_mat->{rows_length}, $forword_weights_mat->{columns_length})));
       my $forword_biase_grads = (float[])$biase_grads_in_m_to_n_funcs->get($m_to_n_func_index + 1);
       my $forword_biase_grads_mat = MyAIUtil2->mat_new($forword_biase_grads, scalar @$forword_biase_grads, 1);
       my $mul_forword_weights_transpose_mat_forword_biase_grads_mat = MyAIUtil2->mat_mul($forword_weights_mat_transpose, $forword_biase_grads_mat);
