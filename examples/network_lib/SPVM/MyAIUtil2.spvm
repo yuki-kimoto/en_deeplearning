@@ -293,18 +293,13 @@ class MyAIUtil2 : precompile {
     # 最後の活性化された出力
     my $last_activate_outputs = (float[])$inputs_in_m_to_n_funcs->pop;
     
-    # softmax関数
-    # my $softmax_outputs = MyAIUtil2->softmax($last_activate_outputs);
-    
     # 誤差
     
     my $cost = MyAIUtil2->cross_entropy_cost($last_activate_outputs, $desired_outputs);
-    # my $cost = MyAIUtil2->cross_entropy_cost($softmax_outputs, $desired_outputs);
     print "Cost: " . Format->sprintf("%.3f", [(object)$cost]) . "\n";
     
     # 正解したかどうか
     my $answer = MyAIUtil2->max_index($last_activate_outputs);
-    # my $answer = MyAIUtil2->max_index($softmax_outputs);
     my $desired_answer = MyAIUtil2->max_index($desired_outputs);
     $TOTAL_COUNT++;
     if ($answer == $desired_answer) {
@@ -319,7 +314,6 @@ class MyAIUtil2 : precompile {
     my $grad_last_outputs_to_activate_func = MyAIUtil2->array_sigmoid_derivative($last_outputs);
     
     # 損失関数の微小変化 / 最後に活性化された出力の微小変化
-    # my $grad_last_activate_outputs_to_cost_func = MyAIUtil2->softmax_cross_entropy_cost_derivative($last_activate_outputs, $desired_outputs);
     my $grad_last_activate_outputs_to_cost_func = MyAIUtil2->cross_entropy_cost_derivative($last_activate_outputs, $desired_outputs);
 
     # 損失関数の微小変化 / 最後の出力の微小変化 (合成微分)
@@ -698,33 +692,4 @@ class MyAIUtil2 : precompile {
     return $nums_out;
   }
   
-  # softmax関数
-  static method softmax : float[] ($nums : float[]) {
-    
-    my $nums_length = @$nums;
-    my $exp_total = 0f;
-    for (my $i = 0; $i < $nums_length; $i++) {
-      $exp_total += Math->expf($nums->[$i]);
-    }
-    
-    my $nums_out = new float[$nums_length];
-    for (my $i = 0; $i < $nums_length; $i++) {
-      $nums_out->[$i] = Math->expf($nums->[$i]) / $exp_total;
-    }
-    
-    return $nums_out;
-  }
-
-  # softmaxクロスエントロピー誤差の導関数
-  static method softmax_cross_entropy_cost_derivative : float[] ($softmax_outputs : float[], $desired_outputs : float[]) {
-    
-    my $length = @$softmax_outputs;
-    
-    my $softmax_cross_entropy_cost_derivative = new float[$length];
-    for (my $i = 0; $i < @$softmax_outputs; $i++) {
-      $softmax_cross_entropy_cost_derivative->[$i] = ($softmax_outputs->[$i] - $desired_outputs->[$i]) / $length;
-    }
-    
-    return $softmax_cross_entropy_cost_derivative;
-  }
 }
