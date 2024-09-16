@@ -264,7 +264,7 @@ class MyAIUtil2 : precompile {
       my $cur_inputs_rows_length = @$cur_inputs;
       my $cur_inputs_columns_length = 1;
       
-      my $cur_inputs_mat = MyAIUtil2->mat_new($cur_inputs, $cur_inputs_rows_length, $cur_inputs_columns_length);
+      my $cur_inputs_mat = MyAIUtil2::FloatMatrix->from_ndarray(MFOP->matrix($cur_inputs, $cur_inputs_rows_length, $cur_inputs_columns_length));
       
       # 重みと入力の行列積
       my $mul_weights_inputs_mat = MyAIUtil2->mat_mul($weights_mat, $cur_inputs_mat);
@@ -323,9 +323,9 @@ class MyAIUtil2 : precompile {
     
 
     # 損失関数の微小変化 / 最終の層の重みの微小変化
-    my $last_biase_grads_mat = MyAIUtil2->mat_new($last_biase_grads, scalar @$last_biase_grads, 1);
+    my $last_biase_grads_mat = MyAIUtil2::FloatMatrix->from_ndarray(MFOP->matrix($last_biase_grads, scalar @$last_biase_grads, 1));
     my $last_inputs = (float[])$inputs_in_m_to_n_funcs->get($inputs_in_m_to_n_funcs->length - 1);
-    my $last_inputs_transpose_mat = MyAIUtil2->mat_new($last_inputs, 1, scalar @$last_inputs);
+    my $last_inputs_transpose_mat = MyAIUtil2::FloatMatrix->from_ndarray(MFOP->matrix($last_inputs, 1, scalar @$last_inputs));
     my $last_weight_grads_mat = MyAIUtil2->mat_mul($last_biase_grads_mat, $last_inputs_transpose_mat);
       
     $biase_grads_in_m_to_n_funcs->set($biase_grads_in_m_to_n_funcs->length - 1 => $last_biase_grads);
@@ -343,7 +343,7 @@ class MyAIUtil2 : precompile {
       my $forword_weights_mat = (MyAIUtil2::FloatMatrix)$forword_m_to_n_func_info->get("weights_mat");
       my $forword_weights_mat_transpose = MyAIUtil2::FloatMatrix->from_ndarray(MFOP->t(MFOP->matrix($forword_weights_mat->{values}, $forword_weights_mat->{rows_length}, $forword_weights_mat->{columns_length})));
       my $forword_biase_grads = (float[])$biase_grads_in_m_to_n_funcs->get($m_to_n_func_index + 1);
-      my $forword_biase_grads_mat = MyAIUtil2->mat_new($forword_biase_grads, scalar @$forword_biase_grads, 1);
+      my $forword_biase_grads_mat = MyAIUtil2::FloatMatrix->from_ndarray(MFOP->matrix($forword_biase_grads, scalar @$forword_biase_grads, 1));
       my $mul_forword_weights_transpose_mat_forword_biase_grads_mat = MyAIUtil2->mat_mul($forword_weights_mat_transpose, $forword_biase_grads_mat);
       my $mul_forword_weights_transpose_mat_forword_biase_grads_mat_values = $mul_forword_weights_transpose_mat_forword_biase_grads_mat->values;
       my $grads_outputs_to_array_sigmoid = MyAIUtil2->array_sigmoid_derivative($outputs);
@@ -352,10 +352,10 @@ class MyAIUtil2 : precompile {
       $biase_grads_in_m_to_n_funcs->set($m_to_n_func_index => $biase_grads);
       
       # 損失関数の微小変化 / この層の重みの微小変化(微分の連鎖率を使って求める)
-      my $biase_grads_mat = MyAIUtil2->mat_new($biase_grads, scalar @$biase_grads, 1);
+      my $biase_grads_mat = MyAIUtil2::FloatMatrix->from_ndarray(MFOP->matrix($biase_grads, scalar @$biase_grads, 1));
       my $inputs = (float[])$inputs_in_m_to_n_funcs->get($m_to_n_func_index);
       
-      my $inputs_mat_transpose = MyAIUtil2->mat_new($inputs, 1, scalar @$inputs);
+      my $inputs_mat_transpose = MyAIUtil2::FloatMatrix->from_ndarray(MFOP->matrix($inputs, 1, scalar @$inputs));
       
       my $weights_grads_mat = MyAIUtil2->mat_mul($biase_grads_mat, $inputs_mat_transpose);
       
@@ -620,20 +620,9 @@ class MyAIUtil2 : precompile {
       }
     }
     
-    my $mat_out = &mat_new($mat_out_values, $mat1_rows_length, $mat2_columns_length);
+    my $mat_out = MyAIUtil2::FloatMatrix->from_ndarray(MFOP->matrix($mat_out_values, $mat1_rows_length, $mat2_columns_length));
     
     return $mat_out;
   }
 
-  # 列優先の行列の作成
-  static method mat_new : MyAIUtil2::FloatMatrix ($values : float[], $rows_length : int, $columns_length : int) {
-    
-    my $mat = new MyAIUtil2::FloatMatrix;
-    $mat->{rows_length} = $rows_length;
-    $mat->{columns_length} = $columns_length;
-    $mat->{values} = $values;
-    
-    return $mat;
-  }
-  
 }
