@@ -82,10 +82,6 @@ class MyAIUtil2 : precompile {
       
       # ミニバッチにおける各変換関数のバイアスの傾きの合計とミニバッチにおける各変換関数の重みの傾きの合計を0で初期化
       for (my $m_to_n_func_index = 0; $m_to_n_func_index < $m_to_n_func_mini_batch_infos->length; $m_to_n_func_index++) {
-        my $m_to_n_func_info = (Hash)$m_to_n_func_infos->get($m_to_n_func_index);
-        my $biases = $m_to_n_func_info->get("biases");
-        my $weights_mat = $m_to_n_func_info->get("weights_mat");
-        
         # ミニバッチにおける各変換関数のバイアスの傾きの合計を0で初期化して作成
         my $m_to_n_func_mini_batch_info = (Hash)$m_to_n_func_mini_batch_infos->get($m_to_n_func_index);
         my $biase_grad_totals = (float[])$m_to_n_func_mini_batch_info->get("biase_grad_totals");
