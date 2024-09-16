@@ -318,7 +318,7 @@ class MyAIUtil2 : precompile {
     my $grad_last_outputs_to_activate_func = MyAIUtil2->array_sigmoid_derivative($last_outputs);
     
     # 損失関数の微小変化 / 最後に活性化された出力の微小変化
-    my $grad_last_activate_outputs_to_cost_func = MyAIUtil2->cross_entropy_cost_derivative($last_activate_outputs, $desired_outputs);
+    my $grad_last_activate_outputs_to_cost_func = MyAIUtil2->cross_entropy_cost_derivative(FOP->c($last_activate_outputs), FOP->c($desired_outputs))->data;
 
     # 損失関数の微小変化 / 最後の出力の微小変化 (合成微分)
     my $grad_last_outputs_to_cost_func = MyAIUtil2->array_mul($grad_last_outputs_to_activate_func, $grad_last_activate_outputs_to_cost_func);
@@ -554,7 +554,7 @@ class MyAIUtil2 : precompile {
     
     return $nums_out;
   }
-
+  
   # 配列の各要素にReLU関数の導関数を適用する
   static method array_relu_derivative : float[] ($nums : float[]) {
     
@@ -565,8 +565,7 @@ class MyAIUtil2 : precompile {
     
     return $nums_out;
   }
-
-  # クロスエントロピーコスト
+  
   static method cross_entropy_cost : float ($vec_a : float[], $vec_y : float[]) {
     
     my $cross_entropy_cost = 0f;
@@ -574,23 +573,28 @@ class MyAIUtil2 : precompile {
       my $tmp = -$vec_y->[$i] * Math->logf($vec_a->[$i]) - (1 - $vec_y->[$i]) * Math->logf(1 - $vec_a->[$i]);
       $cross_entropy_cost += $tmp;
     }
-
+    
     return $cross_entropy_cost;
   }
-
-  # クロスエントロピーコストの導関数
-  static method cross_entropy_cost_derivative : float[] ($vec_a : float[], $vec_y : float[]) {
+  
+  static method cross_entropy_cost_derivative : R::NDArray::Float ($ndarray_x : R::NDArray::Float, $ndarray_y : R::NDArray::Float) {
     
-    my $vec_out = new float[scalar @$vec_a];
-    for (my $i = 0; $i < @$vec_a; $i++) {
-      $vec_out->[$i] = $vec_a->[$i] - $vec_y->[$i];
+    my $data_x = $ndarray_x->data;
+    
+    my $data_y = $ndarray_y->data;
+    
+    my $data_out = new float[scalar @$data_x];
+    for (my $i = 0; $i < @$data_x; $i++) {
+      $data_out->[$i] = $data_x->[$i] - $data_y->[$i];
     }
     
-    return $vec_out;
+    my $ndarray_out = FOP->c($data_out);
+    
+    return $ndarray_out;
   }
-
-  # 正規分布に従う乱数を求める関数
-  # $m は平均, $sigma は標準偏差、
+  
+  # Get rundom value
+  # $m : average, $sigma : standard deviation
   static method randn : float ($m : float, $sigma : float) {
     my $seed = $SEED;
     my $r1 = ((double)Fn->crand(\$seed) + 1) / ((double)Fn->RAND_MAX + 2);
