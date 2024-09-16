@@ -90,9 +90,9 @@ class MyAIUtil2 : precompile {
         # ミニバッチにおける各変換関数の重みの傾きの合計を0で初期化して作成
         my $weight_grad_totals_mat = (MyAIUtil2::FloatMatrix)$m_to_n_func_mini_batch_info->get("weight_grad_totals_mat");
         
-        # $weight_grad_totals_mat->set_values(new float[scalar @{$weight_grad_totals_mat->values}]);
+        # $weight_grad_totals_mat->set_data(new float[scalar @{$weight_grad_totals_mat->data}]);
         
-        Fn->memcpy($weight_grad_totals_mat->values, 0, new float[scalar @{$weight_grad_totals_mat->values}], 0, 4 * (scalar @{$weight_grad_totals_mat->values}));
+        Fn->memcpy($weight_grad_totals_mat->data, 0, new float[scalar @{$weight_grad_totals_mat->data}], 0, 4 * (scalar @{$weight_grad_totals_mat->data}));
       }
       
       for (my $mini_batch_index = 0; $mini_batch_index < $mini_batch_size; $mini_batch_index++) {        
@@ -121,9 +121,9 @@ class MyAIUtil2 : precompile {
           my $weight_grad_totals_mat = (MyAIUtil2::FloatMatrix)$m_to_n_func_mini_batch_info->get("weight_grad_totals_mat");
           my $weight_grads_mat = (MyAIUtil2::FloatMatrix)$weight_grads_mat_list->get($m_to_n_func_index);
           
-          # $weight_grad_totals_mat->{values} = MyAIUtil2->array_add($weight_grad_totals_mat->values, $weight_grads_mat->values);
+          # $weight_grad_totals_mat->{data} = MyAIUtil2->array_add($weight_grad_totals_mat->data, $weight_grads_mat->data);
           
-          Fn->memcpy($weight_grad_totals_mat->{values}, 0, MyAIUtil2->array_add($weight_grad_totals_mat->values, $weight_grads_mat->values), 0, 4 * @{$weight_grad_totals_mat->{values}});
+          Fn->memcpy($weight_grad_totals_mat->{data}, 0, MyAIUtil2->array_add($weight_grad_totals_mat->data, $weight_grads_mat->data), 0, 4 * @{$weight_grad_totals_mat->{data}});
         }
       }
 
@@ -141,7 +141,7 @@ class MyAIUtil2 : precompile {
         # 各変換関数の重みを更新(学習率を考慮し、傾きの合計をミニバッチ数で、ミニバッチ数で割る)
         my $weights_mat = (MyAIUtil2::FloatMatrix)$m_to_n_func_info->get("weights_mat");
         my $weight_grad_totals_mat = (MyAIUtil2::FloatMatrix)$m_to_n_func_mini_batch_info->get("weight_grad_totals_mat");
-        MyAIUtil2->update_params($weights_mat->values, $weight_grad_totals_mat->values, $learning_rate, $mini_batch_size);
+        MyAIUtil2->update_params($weights_mat->data, $weight_grad_totals_mat->data, $learning_rate, $mini_batch_size);
       }
     }
   }
@@ -194,7 +194,7 @@ class MyAIUtil2 : precompile {
       my $biase_grad_totals = new float[$biases_length];
 
       # ミニバッチにおける各変換関数の重みの傾きの合計を0で初期化して作成
-      my $weight_grad_totals_mat = MyAIUtil2::FloatMatrix->from_ndarray(MFOP->matrix(undef, $weights_mat->rows_length, $weights_mat->columns_length));
+      my $weight_grad_totals_mat = MyAIUtil2::FloatMatrix->from_ndarray(MFOP->matrix(undef, $weights_mat->nrow, $weights_mat->ncol));
       
       my $m_to_n_func_mini_batch_info = Hash->new({});
       $m_to_n_func_mini_batch_info->set(biase_grad_totals => $biase_grad_totals);
@@ -266,14 +266,14 @@ class MyAIUtil2 : precompile {
       my $weights_mat = (MyAIUtil2::FloatMatrix)$m_to_n_func_info->get("weights_mat");
       
       # 入力行列
-      my $cur_inputs_rows_length = @$cur_inputs;
-      my $cur_inputs_columns_length = 1;
+      my $cur_inputs_nrow = @$cur_inputs;
+      my $cur_inputs_ncol = 1;
       
-      my $cur_inputs_mat = MyAIUtil2::FloatMatrix->from_ndarray(MFOP->matrix($cur_inputs, $cur_inputs_rows_length, $cur_inputs_columns_length));
+      my $cur_inputs_mat = MyAIUtil2::FloatMatrix->from_ndarray(MFOP->matrix($cur_inputs, $cur_inputs_nrow, $cur_inputs_ncol));
       
       # 重みと入力の行列積
       my $mul_weights_inputs_mat = MyAIUtil2->mat_mul($weights_mat, $cur_inputs_mat);
-      my $mul_weights_inputs = $mul_weights_inputs_mat->values;
+      my $mul_weights_inputs = $mul_weights_inputs_mat->data;
 
       # バイアス
       my $biases = (float[])$m_to_n_func_info->get("biases");
@@ -346,13 +346,13 @@ class MyAIUtil2 : precompile {
       # 次の層の重みの傾きの転置行列とバイアスの傾きの転置行列をかけて、それぞれの要素に、活性化関数の導関数をかける
       my $forword_m_to_n_func_info = (Hash)$m_to_n_func_infos->get($m_to_n_func_index + 1);
       my $forword_weights_mat = (MyAIUtil2::FloatMatrix)$forword_m_to_n_func_info->get("weights_mat");
-      my $forword_weights_mat_transpose = MyAIUtil2::FloatMatrix->from_ndarray(MFOP->t(MFOP->matrix($forword_weights_mat->{values}, $forword_weights_mat->{rows_length}, $forword_weights_mat->{columns_length})));
+      my $forword_weights_mat_transpose = MyAIUtil2::FloatMatrix->from_ndarray(MFOP->t(MFOP->matrix($forword_weights_mat->{data}, $forword_weights_mat->{nrow}, $forword_weights_mat->{ncol})));
       my $forword_biase_grads = (float[])$biase_grads_in_m_to_n_funcs->get($m_to_n_func_index + 1);
       my $forword_biase_grads_mat = MyAIUtil2::FloatMatrix->from_ndarray(MFOP->matrix($forword_biase_grads, scalar @$forword_biase_grads, 1));
       my $mul_forword_weights_transpose_mat_forword_biase_grads_mat = MyAIUtil2->mat_mul($forword_weights_mat_transpose, $forword_biase_grads_mat);
-      my $mul_forword_weights_transpose_mat_forword_biase_grads_mat_values = $mul_forword_weights_transpose_mat_forword_biase_grads_mat->values;
+      my $mul_forword_weights_transpose_mat_forword_biase_grads_mat_data = $mul_forword_weights_transpose_mat_forword_biase_grads_mat->data;
       my $grads_outputs_to_array_sigmoid = MyAIUtil2->array_sigmoid_derivative($outputs);
-      my $biase_grads = MyAIUtil2->array_mul($mul_forword_weights_transpose_mat_forword_biase_grads_mat_values, $grads_outputs_to_array_sigmoid);
+      my $biase_grads = MyAIUtil2->array_mul($mul_forword_weights_transpose_mat_forword_biase_grads_mat_data, $grads_outputs_to_array_sigmoid);
 
       $biase_grads_in_m_to_n_funcs->set($m_to_n_func_index => $biase_grads);
       
@@ -604,28 +604,28 @@ class MyAIUtil2 : precompile {
   
   # 行列の積を求める
   static method mat_mul : MyAIUtil2::FloatMatrix ($mat1 : MyAIUtil2::FloatMatrix, $mat2 : MyAIUtil2::FloatMatrix) {
-    my $mat1_rows_length = $mat1->{rows_length};
-    my $mat1_columns_length = $mat1->{columns_length};
-    my $mat1_values = $mat1->{values};
+    my $mat1_nrow = $mat1->{nrow};
+    my $mat1_ncol = $mat1->{ncol};
+    my $mat1_data = $mat1->{data};
     
-    my $mat2_rows_length = $mat2->{rows_length};
-    my $mat2_columns_length = $mat2->{columns_length};
-    my $mat2_values = $mat2->{values};
+    my $mat2_nrow = $mat2->{nrow};
+    my $mat2_ncol = $mat2->{ncol};
+    my $mat2_data = $mat2->{data};
     
     # 行列の積の計算
-    my $mat_out_values = new float[$mat1_rows_length * $mat2_columns_length];
-    for(my $row = 0; $row < $mat1_rows_length; $row++) {
-      for(my $col = 0; $col < $mat2_columns_length; $col++) {
-        for(my $incol = 0; $incol < $mat1_columns_length; $incol++) {
-          my $elem_part1 = $mat1_values->[$row + $incol * $mat1_rows_length];
-          my $elem_part2 = $mat2_values->[$incol + $col * $mat2_rows_length];
+    my $mat_out_data = new float[$mat1_nrow * $mat2_ncol];
+    for(my $row = 0; $row < $mat1_nrow; $row++) {
+      for(my $col = 0; $col < $mat2_ncol; $col++) {
+        for(my $incol = 0; $incol < $mat1_ncol; $incol++) {
+          my $elem_part1 = $mat1_data->[$row + $incol * $mat1_nrow];
+          my $elem_part2 = $mat2_data->[$incol + $col * $mat2_nrow];
           my $elem_part =  $elem_part1 * $elem_part2;
-          $mat_out_values->[$row + $col * $mat1_rows_length] += $elem_part;
+          $mat_out_data->[$row + $col * $mat1_nrow] += $elem_part;
         }
       }
     }
     
-    my $mat_out = MyAIUtil2::FloatMatrix->from_ndarray(MFOP->matrix($mat_out_values, $mat1_rows_length, $mat2_columns_length));
+    my $mat_out = MyAIUtil2::FloatMatrix->from_ndarray(MFOP->matrix($mat_out_data, $mat1_nrow, $mat2_ncol));
     
     return $mat_out;
   }

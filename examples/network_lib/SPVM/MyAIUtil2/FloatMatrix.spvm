@@ -1,20 +1,20 @@
 class MyAIUtil2::FloatMatrix {
   allow MyAIUtil2;
 
-  has rows_length : public rw int;
-  has columns_length : public rw int;
-  has values : public rw float[];
+  has nrow : public rw int;
+  has ncol : public rw int;
+  has data : public rw float[];
   
   # Class Method
   static method from_ndarray : MyAIUtil2::FloatMatrix ($ndarray : R::NDArray::Float) {
     
     my $matrix = new MyAIUtil2::FloatMatrix;
     
-    $matrix->{values} = $ndarray->data;
+    $matrix->{data} = $ndarray->data;
     
-    $matrix->{rows_length} = $ndarray->nrow;
+    $matrix->{nrow} = $ndarray->nrow;
     
-    $matrix->{columns_length} = $ndarray->ncol;
+    $matrix->{ncol} = $ndarray->ncol;
     
     return $matrix;
   }
