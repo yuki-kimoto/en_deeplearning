@@ -146,7 +146,7 @@ class MyAIUtil2 : precompile {
   static method init_m_to_n_func_infos : List ($neurons_count_in_layers : int[]) {
     # 各層のm個の入力をn個の出力に変換する関数の情報。入力数、出力数、バイアス、重み
     my $m_to_n_func_infos = List->new([]);
-
+    
     # 各層のニューロン数からmからnへの変換関数の情報を作成
     for (my $i = 0; $i < @$neurons_count_in_layers - 1; $i++) {
       my $inputs_length = $neurons_count_in_layers->[$i];
@@ -154,11 +154,10 @@ class MyAIUtil2 : precompile {
       
       # バイアスを0で初期化
       my $biases = new float[$outputs_length];
-
+      
       # Xivierの初期値で重みを初期化。重みは列優先行列
-      my $weights_mat = MyAIUtil2::FloatMatrix->from_ndarray(MFOP->matrix(undef, $outputs_length, $inputs_length));
-      my $weights_length = $weights_mat->rows_length * $weights_mat->columns_length;
-      $weights_mat->set_values(MyAIUtil2->array_create_xavier_init_value($weights_length, $inputs_length));
+      my $weights_length = $outputs_length * $inputs_length;
+      my $weights_mat = MyAIUtil2::FloatMatrix->from_ndarray(MFOP->matrix(MyAIUtil2->array_create_xavier_init_value($weights_length, $inputs_length), $outputs_length, $inputs_length));
       
       # 変換関数の情報を設定
       my $m_to_n_func_info = Hash->new({});
@@ -166,7 +165,7 @@ class MyAIUtil2 : precompile {
       $m_to_n_func_info->set_int(outputs_length => $outputs_length);
       $m_to_n_func_info->set(biases => $biases);
       $m_to_n_func_info->set(weights_mat => $weights_mat);
-
+      
       $m_to_n_func_infos->push($m_to_n_func_info);
     }
     
