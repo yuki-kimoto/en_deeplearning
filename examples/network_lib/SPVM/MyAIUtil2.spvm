@@ -256,15 +256,14 @@ class MyAIUtil2 : precompile {
     for (my $m_to_n_func_index = 0; $m_to_n_func_index < $m_to_n_func_infos->length; $m_to_n_func_index++) {
       my $cur_inputs = (float[])$inputs_in_m_to_n_funcs->get($inputs_in_m_to_n_funcs->length - 1);
       my $m_to_n_func_info = (Hash)$m_to_n_func_infos->get($m_to_n_func_index);
-      my $inputs_length = (int)$m_to_n_func_info->get("inputs_length");
-      my $outputs_length = (int)$m_to_n_func_info->get("outputs_length");
       
       # 重み行列
       my $weights_mat = (MyAIUtil2::FloatMatrix)$m_to_n_func_info->get("weights_mat");
-
+      
       # 入力行列
-      my $cur_inputs_rows_length = $outputs_length;
+      my $cur_inputs_rows_length = @$cur_inputs;
       my $cur_inputs_columns_length = 1;
+      
       my $cur_inputs_mat = MyAIUtil2->mat_new($cur_inputs, $cur_inputs_rows_length, $cur_inputs_columns_length);
       
       # 重みと入力の行列積
