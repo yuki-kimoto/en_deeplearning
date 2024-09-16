@@ -89,11 +89,11 @@ class MyAIUtil2 : precompile {
         # ミニバッチにおける各変換関数のバイアスの傾きの合計を0で初期化して作成
         my $m_to_n_func_mini_batch_info = (Hash)$m_to_n_func_mini_batch_infos->get($m_to_n_func_index);
         my $biase_grad_totals = (float[])$m_to_n_func_mini_batch_info->get("biase_grad_totals");
-        $m_to_n_func_mini_batch_info->set(biase_grad_totals => MyAIUtil2->array_new_zero(scalar @$biase_grad_totals));
+        $m_to_n_func_mini_batch_info->set(biase_grad_totals => new float[scalar @$biase_grad_totals]);
         
         # ミニバッチにおける各変換関数の重みの傾きの合計を0で初期化して作成
         my $weight_grad_totals_mat = (MyAIUtil2::FloatMatrix)$m_to_n_func_mini_batch_info->get("weight_grad_totals_mat");
-        $weight_grad_totals_mat->set_values(MyAIUtil2->array_new_zero(scalar @{$weight_grad_totals_mat->values}));
+        $weight_grad_totals_mat->set_values(new float[scalar @{$weight_grad_totals_mat->values}]);
       }
       
       for (my $mini_batch_index = 0; $mini_batch_index < $mini_batch_size; $mini_batch_index++) {        
@@ -154,7 +154,7 @@ class MyAIUtil2 : precompile {
       my $outputs_length = $neurons_count_in_layers->[$i + 1];
       
       # バイアスを0で初期化
-      my $biases = MyAIUtil2->array_new_zero($outputs_length);
+      my $biases = new float[$outputs_length];
 
       # Xivierの初期値で重みを初期化。重みは列優先行列
       my $weights_mat = MyAIUtil2->mat_new_zero($outputs_length, $inputs_length);
@@ -190,7 +190,7 @@ class MyAIUtil2 : precompile {
       my $biases_length = scalar @$biases;
 
       # ミニバッチにおける各変換関数のバイアスの傾きの合計を0で初期化して作成
-      my $biase_grad_totals = MyAIUtil2->array_new_zero($biases_length);
+      my $biase_grad_totals = new float[$biases_length];
 
       # ミニバッチにおける各変換関数の重みの傾きの合計を0で初期化して作成
       my $weight_grad_totals_mat = MyAIUtil2->mat_new_zero($weights_mat->rows_length, $weights_mat->columns_length);
@@ -241,7 +241,7 @@ class MyAIUtil2 : precompile {
       my $outputs_length = (int)$m_to_n_func_info->get("outputs_length");
       
       # バイアスの傾きを0で初期化
-      $biase_grads_in_m_to_n_funcs->set($m_to_n_func_index => MyAIUtil2->array_new_zero($outputs_length));
+      $biase_grads_in_m_to_n_funcs->set($m_to_n_func_index => new float[$outputs_length]);
 
       # 重みの傾きを0で初期化
       $weight_grads_mat_in_m_to_n_funcs->set($m_to_n_func_index => MyAIUtil2->mat_new_zero($outputs_length, $inputs_length));
@@ -596,20 +596,12 @@ class MyAIUtil2 : precompile {
     my $r1 = ((double)Fn->crand(\$seed) + 1) / ((double)Fn->RAND_MAX + 2);
     my $r2 = ((double)Fn->crand(\$seed) + 1) / ((double)Fn->RAND_MAX + 2);
     $SEED = $seed;
-
+    
     my $randn = ($sigma * Math->sqrt(-2 * Math->log($r1)) * Math->sin(2 * 3.14159265359 * $r2)) + $m;
-
+    
     return (float)$randn;
   }
-
-  # 配列を0で初期化して作成
-  static method array_new_zero : float[] ($length : int) {
-    
-    my $nums = new float[$length];
-    
-    return $nums;
-  }
-
+  
   # 行列を0で初期化
   static method mat_new_zero : MyAIUtil2::FloatMatrix ($rows_length : int, $columns_length : int) {
     my $values_length = $rows_length * $columns_length;
