@@ -4,4 +4,18 @@ class MyAIUtil2::FloatMatrix {
   has rows_length : public rw int;
   has columns_length : public rw int;
   has values : public rw float[];
+  
+  # Class Method
+  static method from_ndarray : MyAIUtil2::FloatMatrix ($ndarray : R::NDArray::Float) {
+    
+    my $matrix = new MyAIUtil2::FloatMatrix;
+    
+    $matrix->{values} = $ndarray->data;
+    
+    $matrix->{rows_length} = $ndarray->nrow;
+    
+    $matrix->{columns_length} = $ndarray->ncol;
+    
+    return $matrix;
+  }
 }
