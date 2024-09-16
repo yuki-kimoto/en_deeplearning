@@ -120,7 +120,10 @@ class MyAIUtil2 : precompile {
           # ミニバッチにおける各変換関数の重みの傾きを加算
           my $weight_grad_totals_mat = (MyAIUtil2::FloatMatrix)$m_to_n_func_mini_batch_info->get("weight_grad_totals_mat");
           my $weight_grads_mat = (MyAIUtil2::FloatMatrix)$weight_grads_mat_list->get($m_to_n_func_index);
-          $weight_grad_totals_mat->{values} = MyAIUtil2->array_add($weight_grad_totals_mat->values, $weight_grads_mat->values);
+          
+          # $weight_grad_totals_mat->{values} = MyAIUtil2->array_add($weight_grad_totals_mat->values, $weight_grads_mat->values);
+          
+          Fn->memcpy($weight_grad_totals_mat->{values}, 0, MyAIUtil2->array_add($weight_grad_totals_mat->values, $weight_grads_mat->values), 0, 4 * @{$weight_grad_totals_mat->{values}});
         }
       }
 
