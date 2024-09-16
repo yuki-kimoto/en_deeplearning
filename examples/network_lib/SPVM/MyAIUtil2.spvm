@@ -153,7 +153,7 @@ class MyAIUtil2 : precompile {
       my $biases = new float[$outputs_length];
 
       # Xivierの初期値で重みを初期化。重みは列優先行列
-      my $weights_mat = MyAIUtil2->mat_new_zero($outputs_length, $inputs_length);
+      my $weights_mat = MyAIUtil2::FloatMatrix->from_ndarray(MFOP->matrix(undef, $outputs_length, $inputs_length));
       my $weights_length = $weights_mat->rows_length * $weights_mat->columns_length;
       $weights_mat->set_values(MyAIUtil2->array_create_xavier_init_value($weights_length, $inputs_length));
       
@@ -189,7 +189,7 @@ class MyAIUtil2 : precompile {
       my $biase_grad_totals = new float[$biases_length];
 
       # ミニバッチにおける各変換関数の重みの傾きの合計を0で初期化して作成
-      my $weight_grad_totals_mat = MyAIUtil2->mat_new_zero($weights_mat->rows_length, $weights_mat->columns_length);
+      my $weight_grad_totals_mat = MyAIUtil2::FloatMatrix->from_ndarray(MFOP->matrix(undef, $weights_mat->rows_length, $weights_mat->columns_length));
       
       my $m_to_n_func_mini_batch_info = Hash->new({});
       $m_to_n_func_mini_batch_info->set(biase_grad_totals => $biase_grad_totals);
@@ -240,7 +240,7 @@ class MyAIUtil2 : precompile {
       $biase_grads_in_m_to_n_funcs->set($m_to_n_func_index => new float[$outputs_length]);
 
       # 重みの傾きを0で初期化
-      $weight_grads_mat_in_m_to_n_funcs->set($m_to_n_func_index => MyAIUtil2->mat_new_zero($outputs_length, $inputs_length));
+      $weight_grads_mat_in_m_to_n_funcs->set($m_to_n_func_index => MyAIUtil2::FloatMatrix->from_ndarray(MFOP->matrix(undef, $outputs_length, $inputs_length)));
     }
 
     # 各層の入力
@@ -598,18 +598,6 @@ class MyAIUtil2 : precompile {
     return (float)$randn;
   }
   
-  # 行列を0で初期化
-  static method mat_new_zero : MyAIUtil2::FloatMatrix ($rows_length : int, $columns_length : int) {
-    my $values_length = $rows_length * $columns_length;
-    
-    my $mat = new MyAIUtil2::FloatMatrix;
-    $mat->{rows_length} = $rows_length;
-    $mat->{columns_length} = $columns_length;
-    $mat->{values} = new float[$values_length];
-    
-    return $mat;
-  }
-
   # 行列の積を求める
   static method mat_mul : MyAIUtil2::FloatMatrix ($mat1 : MyAIUtil2::FloatMatrix, $mat2 : MyAIUtil2::FloatMatrix) {
     my $mat1_rows_length = $mat1->{rows_length};
