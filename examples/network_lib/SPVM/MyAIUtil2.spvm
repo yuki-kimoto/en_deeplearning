@@ -85,8 +85,9 @@ class MyAIUtil2 : precompile {
       for (my $m_to_n_func_index = 0; $m_to_n_func_index < $m_to_n_func_mini_batch_infos->length; $m_to_n_func_index++) {
         # ミニバッチにおける各変換関数のバイアスの傾きの合計を0で初期化して作成
         my $m_to_n_func_mini_batch_info = (Hash)$m_to_n_func_mini_batch_infos->get($m_to_n_func_index);
-        my $biase_grad_totals = (float[])$m_to_n_func_mini_batch_info->get("biase_grad_totals");
-        $m_to_n_func_mini_batch_info->set(biase_grad_totals => new float[scalar @$biase_grad_totals]);
+        
+        my $biase_grad_totals = (R::NDArray::Float)$m_to_n_func_mini_batch_info->get("biase_grad_totals");
+        $m_to_n_func_mini_batch_info->set(biase_grad_totals => FOP->c(undef, [$biase_grad_totals->length]));
         
         # ミニバッチにおける各変換関数の重みの傾きの合計を0で初期化して作成
         my $weight_grad_totals_mat = (R::NDArray::Float)$m_to_n_func_mini_batch_info->get("weight_grad_totals_mat");
@@ -114,9 +115,9 @@ class MyAIUtil2 : precompile {
           
           # ミニバッチにおける各変換関数のバイアスの傾きを加算
           my $m_to_n_func_mini_batch_info = (Hash)$m_to_n_func_mini_batch_infos->get($m_to_n_func_index);
-          my $biase_grad_totals = (float[])$m_to_n_func_mini_batch_info->get("biase_grad_totals");
-          my $biase_grads = (float[])$biase_grads_list->get($m_to_n_func_index);
-          $biase_grad_totals = FOP->add(FOP->c($biase_grad_totals), FOP->c($biase_grads))->data;
+          my $biase_grad_totals = (R::NDArray::Float)$m_to_n_func_mini_batch_info->get("biase_grad_totals");
+          my $biase_grads = (R::NDArray::Float)$biase_grads_list->get($m_to_n_func_index);
+          $biase_grad_totals = FOP->add(FOP->c($biase_grad_totals), FOP->c($biase_grads));
 
           # ミニバッチにおける各変換関数の重みの傾きを加算
           my $weight_grad_totals_mat = (R::NDArray::Float)$m_to_n_func_mini_batch_info->get("weight_grad_totals_mat");
@@ -136,7 +137,7 @@ class MyAIUtil2 : precompile {
         my $biases = (float[])$m_to_n_func_info->get("biases");
         
         my $m_to_n_func_mini_batch_info = (Hash)$m_to_n_func_mini_batch_infos->get($m_to_n_func_index);
-        my $biase_grad_totals = (float[])$m_to_n_func_mini_batch_info->get("biase_grad_totals");
+        my $biase_grad_totals = (R::NDArray::Float)$m_to_n_func_mini_batch_info->get("biase_grad_totals");
         MyAIUtil2->update_params(FOP->c($biases), FOP->c($biase_grad_totals), $learning_rate, $mini_batch_size);
         
         # 各変換関数の重みを更新(学習率を考慮し、傾きの合計をミニバッチ数で、ミニバッチ数で割る)
@@ -192,7 +193,7 @@ class MyAIUtil2 : precompile {
       my $biases_length = scalar @$biases;
 
       # ミニバッチにおける各変換関数のバイアスの傾きの合計を0で初期化して作成
-      my $biase_grad_totals = new float[$biases_length];
+      my $biase_grad_totals = FOP->c(undef, [$biases_length]);
 
       # ミニバッチにおける各変換関数の重みの傾きの合計を0で初期化して作成
       my $weight_grad_totals_mat = MFOP->matrix(undef, $weights_mat->nrow, $weights_mat->ncol);
@@ -230,7 +231,7 @@ class MyAIUtil2 : precompile {
     my $desired_outputs = MyAIUtil2->probabilize_desired_outputs($label_number)->data;
     
     # 各変換関数のバイアスの傾き
-    my $biase_grads_in_m_to_n_funcs = List->new_len(new float[][0], $m_to_n_func_infos->length);
+    my $biase_grads_in_m_to_n_funcs = List->new_len(new R::NDArray::Float[0], $m_to_n_func_infos->length);
     
     # 各変換関数の重みの傾き
     my $weight_grads_mat_in_m_to_n_funcs = List->new_len(new R::NDArray::Float[0], $m_to_n_func_infos->length);
@@ -242,7 +243,7 @@ class MyAIUtil2 : precompile {
       my $outputs_length = (int)$m_to_n_func_info->get("outputs_length");
       
       # バイアスの傾きを0で初期化
-      $biase_grads_in_m_to_n_funcs->set($m_to_n_func_index => new float[$outputs_length]);
+      $biase_grads_in_m_to_n_funcs->set($m_to_n_func_index => FOP->c(undef, [$outputs_length]));
 
       # 重みの傾きを0で初期化
       $weight_grads_mat_in_m_to_n_funcs->set($m_to_n_func_index => MFOP->matrix(undef, $outputs_length, $inputs_length));
@@ -321,14 +322,14 @@ class MyAIUtil2 : precompile {
     my $grad_last_activate_outputs_to_cost_func = MyAIUtil2->cross_entropy_cost_derivative(FOP->c($last_activate_outputs), FOP->c($desired_outputs))->data;
 
     # 損失関数の微小変化 / 最後の出力の微小変化 (合成微分)
-    my $grad_last_outputs_to_cost_func = FOP->mul(FOP->c($grad_last_outputs_to_activate_func), FOP->c($grad_last_activate_outputs_to_cost_func))->data;
+    my $grad_last_outputs_to_cost_func = FOP->mul(FOP->c($grad_last_outputs_to_activate_func), FOP->c($grad_last_activate_outputs_to_cost_func));
 
     # 損失関数の微小変化 / 最終の層のバイアスの微小変化
     my $last_biase_grads = $grad_last_outputs_to_cost_func;
     
 
     # 損失関数の微小変化 / 最終の層の重みの微小変化
-    my $last_biase_grads_mat = MFOP->matrix($last_biase_grads, scalar @$last_biase_grads, 1);
+    my $last_biase_grads_mat = MFOP->matrix($last_biase_grads, $last_biase_grads->length, 1);
     my $last_inputs = (float[])$inputs_in_m_to_n_funcs->get($inputs_in_m_to_n_funcs->length - 1);
     my $last_inputs_transpose_mat = MFOP->matrix($last_inputs, 1, scalar @$last_inputs);
     my $last_weight_grads_mat = MFOP->mul($last_biase_grads_mat, $last_inputs_transpose_mat);
@@ -347,17 +348,17 @@ class MyAIUtil2 : precompile {
       my $forword_m_to_n_func_info = (Hash)$m_to_n_func_infos->get($m_to_n_func_index + 1);
       my $forword_weights_mat = (R::NDArray::Float)$forword_m_to_n_func_info->get("weights_mat");
       my $forword_weights_mat_transpose = MFOP->t($forword_weights_mat);
-      my $forword_biase_grads = (float[])$biase_grads_in_m_to_n_funcs->get($m_to_n_func_index + 1);
-      my $forword_biase_grads_mat = MFOP->matrix($forword_biase_grads, scalar @$forword_biase_grads, 1);
+      my $forword_biase_grads = (R::NDArray::Float)$biase_grads_in_m_to_n_funcs->get($m_to_n_func_index + 1);
+      my $forword_biase_grads_mat = MFOP->matrix($forword_biase_grads, $forword_biase_grads->length, 1);
       my $mul_forword_weights_transpose_mat_forword_biase_grads_mat = MFOP->mul($forword_weights_mat_transpose, $forword_biase_grads_mat);
       my $mul_forword_weights_transpose_mat_forword_biase_grads_mat_data = $mul_forword_weights_transpose_mat_forword_biase_grads_mat->data;
       my $grads_outputs_to_array_sigmoid = MyAIUtil2->array_sigmoid_derivative(FOP->c($outputs))->data;
-      my $biase_grads = FOP->mul(FOP->c($mul_forword_weights_transpose_mat_forword_biase_grads_mat_data), FOP->c($grads_outputs_to_array_sigmoid))->data;
+      my $biase_grads = FOP->mul(FOP->c($mul_forword_weights_transpose_mat_forword_biase_grads_mat_data), FOP->c($grads_outputs_to_array_sigmoid));
 
       $biase_grads_in_m_to_n_funcs->set($m_to_n_func_index => $biase_grads);
       
       # 損失関数の微小変化 / この層の重みの微小変化(微分の連鎖率を使って求める)
-      my $biase_grads_mat = MFOP->matrix($biase_grads, scalar @$biase_grads, 1);
+      my $biase_grads_mat = MFOP->matrix($biase_grads, $biase_grads->length, 1);
       my $inputs = (float[])$inputs_in_m_to_n_funcs->get($m_to_n_func_index);
       
       my $inputs_mat_transpose = MFOP->matrix($inputs, 1, scalar @$inputs);
