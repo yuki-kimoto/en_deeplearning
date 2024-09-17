@@ -352,9 +352,9 @@ class MyAIUtil2 : precompile {
       my $forword_biase_grads = (R::NDArray::Float)$biase_grads_in_m_to_n_funcs->get($m_to_n_func_index + 1);
       my $forword_biase_grads_mat = MFOP->matrix($forword_biase_grads, $forword_biase_grads->length, 1);
       my $mul_forword_weights_transpose_mat_forword_biase_grads_mat = MFOP->mul($forword_weights_mat_transpose, $forword_biase_grads_mat);
-      my $mul_forword_weights_transpose_mat_forword_biase_grads_mat_data = $mul_forword_weights_transpose_mat_forword_biase_grads_mat->data;
+      $mul_forword_weights_transpose_mat_forword_biase_grads_mat->drop_dim;
       my $grads_outputs_to_array_sigmoid = MyAIUtil2->array_sigmoid_derivative($outputs);
-      my $biase_grads = FOP->mul(FOP->c($mul_forword_weights_transpose_mat_forword_biase_grads_mat_data), FOP->c($grads_outputs_to_array_sigmoid));
+      my $biase_grads = FOP->mul($mul_forword_weights_transpose_mat_forword_biase_grads_mat, $grads_outputs_to_array_sigmoid);
 
       $biase_grads_in_m_to_n_funcs->set($m_to_n_func_index => $biase_grads);
       
