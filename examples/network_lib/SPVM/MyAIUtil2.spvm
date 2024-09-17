@@ -228,7 +228,7 @@ class MyAIUtil2 : precompile {
     # 期待される出力を確率分布化する
     my $label_numbers = (IntList)$mnist_train_label_info_spvm->get("label_numbers");
     my $label_number = (Int)$label_numbers->get($training_data_index);
-    my $desired_outputs = MyAIUtil2->probabilize_desired_outputs($label_number)->data;
+    my $desired_outputs = MyAIUtil2->probabilize_desired_outputs($label_number);
     
     # 各変換関数のバイアスの傾き
     my $biase_grads_in_m_to_n_funcs = List->new_len(new R::NDArray::Float[0], $m_to_n_func_infos->length);
@@ -301,11 +301,11 @@ class MyAIUtil2 : precompile {
     
     # 誤差
     
-    my $cost = MyAIUtil2->cross_entropy_cost(FOP->c($last_activate_outputs), FOP->c($desired_outputs))->data->[0];
+    my $cost = MyAIUtil2->cross_entropy_cost($last_activate_outputs, $desired_outputs)->data->[0];
     print "Cost: " . Format->sprintf("%.3f", [(object)$cost]) . "\n";
     
     # 正解したかどうか
-    my $answer = MyAIUtil2->max_index(FOP->c($last_activate_outputs))->data->[0];
+    my $answer = MyAIUtil2->max_index($last_activate_outputs)->data->[0];
     my $desired_answer = MyAIUtil2->max_index(FOP->c($desired_outputs))->data->[0];
     $TOTAL_COUNT++;
     if ($answer == $desired_answer) {
