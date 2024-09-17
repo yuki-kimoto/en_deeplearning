@@ -1,4 +1,4 @@
-class MyAIUtil2 : precompile {
+class MyAIUtil2 {
   use Fn;
   use Math;
   use List;
