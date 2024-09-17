@@ -137,12 +137,12 @@ class MyAIUtil2 : precompile {
         
         my $m_to_n_func_mini_batch_info = (Hash)$m_to_n_func_mini_batch_infos->get($m_to_n_func_index);
         my $biase_grad_totals = (float[])$m_to_n_func_mini_batch_info->get("biase_grad_totals");
-        MyAIUtil2->update_params($biases, $biase_grad_totals, $learning_rate, $mini_batch_size);
+        MyAIUtil2->update_params(FOP->c($biases), FOP->c($biase_grad_totals), $learning_rate, $mini_batch_size);
         
         # 各変換関数の重みを更新(学習率を考慮し、傾きの合計をミニバッチ数で、ミニバッチ数で割る)
         my $weights_mat = (R::NDArray::Float)$m_to_n_func_info->get("weights_mat");
         my $weight_grad_totals_mat = (R::NDArray::Float)$m_to_n_func_mini_batch_info->get("weight_grad_totals_mat");
-        MyAIUtil2->update_params($weights_mat->data, $weight_grad_totals_mat->data, $learning_rate, $mini_batch_size);
+        MyAIUtil2->update_params($weights_mat, $weight_grad_totals_mat, $learning_rate, $mini_batch_size);
       }
     }
   }
@@ -386,7 +386,11 @@ class MyAIUtil2 : precompile {
   }
   
   # 学習率とミニバッチ数を考慮してパラメーターを更新
-  static method update_params : void ($params : float[], $param_grads : float[], $learning_rate : float, $mini_batch_size : int) {
+  static method update_params : void ($params_ndarray : R::NDArray::Float, $param_grads_ndarray : R::NDArray::Float, $learning_rate : float, $mini_batch_size : int) {
+    
+    my $params = $params_ndarray->data;
+    
+    my $param_grads = $param_grads_ndarray->data;
     
     for (my $param_index = 0; $param_index < @$params; $param_index++) {
       my $update_value = ($learning_rate / $mini_batch_size) * $param_grads->[$param_index];
