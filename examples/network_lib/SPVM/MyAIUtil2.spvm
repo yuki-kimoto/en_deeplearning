@@ -134,11 +134,11 @@ class MyAIUtil2 : precompile {
         
         # 各変換関数のバイアスを更新(学習率を考慮し、ミニバッチ数で割る)
         my $m_to_n_func_info = (Hash)$m_to_n_func_infos->get($m_to_n_func_index);
-        my $biases = (float[])$m_to_n_func_info->get("biases");
+        my $biases = (R::NDArray::Float)$m_to_n_func_info->get("biases");
         
         my $m_to_n_func_mini_batch_info = (Hash)$m_to_n_func_mini_batch_infos->get($m_to_n_func_index);
         my $biase_grad_totals = (R::NDArray::Float)$m_to_n_func_mini_batch_info->get("biase_grad_totals");
-        MyAIUtil2->update_params(FOP->c($biases), FOP->c($biase_grad_totals), $learning_rate, $mini_batch_size);
+        MyAIUtil2->update_params($biases, FOP->c($biase_grad_totals), $learning_rate, $mini_batch_size);
         
         # 各変換関数の重みを更新(学習率を考慮し、傾きの合計をミニバッチ数で、ミニバッチ数で割る)
         my $weights_mat = (R::NDArray::Float)$m_to_n_func_info->get("weights_mat");
@@ -158,7 +158,7 @@ class MyAIUtil2 : precompile {
       my $outputs_length = $neurons_count_in_layers->[$i + 1];
       
       # バイアスを0で初期化
-      my $biases = new float[$outputs_length];
+      my $biases = FOP->c(undef, [$outputs_length]);
       
       # Xivierの初期値で重みを初期化。重みは列優先行列
       my $weights_length = $outputs_length * $inputs_length;
@@ -186,11 +186,11 @@ class MyAIUtil2 : precompile {
     # メモリ領域を繰り返しつかうためここで初期化
     for (my $m_to_n_func_index = 0; $m_to_n_func_index < $m_to_n_func_infos->length; $m_to_n_func_index++) {
       my $m_to_n_func_info = (Hash)$m_to_n_func_infos->get($m_to_n_func_index);
-      my $biases = (float[])$m_to_n_func_info->get("biases");
+      my $biases = (R::NDArray::Float)$m_to_n_func_info->get("biases");
       my $weights_mat = (R::NDArray::Float)$m_to_n_func_info->get("weights_mat");
       
       # バイアスの長さ
-      my $biases_length = scalar @$biases;
+      my $biases_length = $biases->length;
 
       # ミニバッチにおける各変換関数のバイアスの傾きの合計を0で初期化して作成
       my $biase_grad_totals = FOP->c(undef, [$biases_length]);
@@ -277,10 +277,10 @@ class MyAIUtil2 : precompile {
       my $mul_weights_inputs = $mul_weights_inputs_mat->data;
 
       # バイアス
-      my $biases = (float[])$m_to_n_func_info->get("biases");
+      my $biases = (R::NDArray::Float)$m_to_n_func_info->get("biases");
       
       # 出力 - 重みと入力の行列積とバイアスの和
-      my $outputs = FOP->add(FOP->c($mul_weights_inputs), FOP->c($biases))->data;
+      my $outputs = FOP->add(FOP->c($mul_weights_inputs), $biases)->data;
       
       # 活性化された出力 - 出力に活性化関数を適用
       my $activate_outputs = MyAIUtil2->array_sigmoid(FOP->c($outputs))->data;
