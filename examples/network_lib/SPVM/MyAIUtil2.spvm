@@ -12,10 +12,10 @@ class MyAIUtil2 : precompile {
   use R::OP::Matrix::Float as MFOP;
   use R::NDArray::Float;
   
-  # 総実行回数
+  # Total executions
   our $TOTAL_COUNT : int;
 
-  # 正解数
+  # Number of correct answers
   our $ANSWER_MATCH_COUNT : int;
   
   # seed
@@ -26,7 +26,7 @@ class MyAIUtil2 : precompile {
   }
   
   
-  # シャッフルする
+  # Shuffle
   static method shufflei : int[] ($array_original : int[]) {
     my $size = @$array_original;
     my $array = Array->copy_int($array_original);
@@ -44,26 +44,26 @@ class MyAIUtil2 : precompile {
   static method train_deep_network : void ($mnist_train_image_info_spvm : Hash, $mnist_train_label_info_spvm : Hash,
     $epoch_count : int, $mini_batch_size : int, $neurons_count_in_layers : int[], $learning_rate : int)
   {
-    # 各層のm個の入力をn個の出力に変換する関数の情報。入力数、出力数、バイアス、重み
+    # Information on the function that converts m inputs to n outputs for each layer. Number of inputs, number of outputs, bias, weights
     my $m_to_n_func_infos = MyAIUtil2->init_m_to_n_func_infos($neurons_count_in_layers);
 
-    # 訓練データのインデックス(最初の4万枚だけを訓練用データとして利用する。残りの1万枚は検証用データとする)
+    # Training data index (only the first 40,000 images are used as training data. The remaining 10,000 images are used as validation data)
     my $training_data_indexes = new int[40000];
     my $cur_training_data_index = 0;
     for (my $i = 0; $i < @$training_data_indexes; $i++) {
       $training_data_indexes->[$i] = $i;
     }
 
-    # ミニバッチ単位における各変換関数の情報
+    # Information on each transformation function in a mini-batch
     my $m_to_n_func_mini_batch_infos = MyAIUtil2->init_m_to_n_func_mini_batch_infos($m_to_n_func_infos);
 
-    # エポックの回数だけ訓練セットを実行
+    # Run the training set for a number of epochs
     for (my $epoch_index = 0; $epoch_index < $epoch_count; $epoch_index++) {
       
-      # 訓練データのインデックスをシャッフル(ランダムに学習させた方が汎用化するらしい)
+      # Shuffle the training data index (it seems that random learning is more generalizable)
       my $training_data_indexes_shuffle = MyAIUtil2->shufflei($training_data_indexes);
       
-      # 確率的勾配降下法を使ってパラメーターを更新
+      # Update parameters using stochastic gradient descent
       MyAIUtil2->update_params_sgd(
         $m_to_n_func_mini_batch_infos,
         $m_to_n_func_infos,
@@ -81,15 +81,15 @@ class MyAIUtil2 : precompile {
  
     for (my $training_data_indexes_shuffle_index = 0; $training_data_indexes_shuffle_index < @$training_data_indexes_shuffle; $training_data_indexes_shuffle_index += $mini_batch_size) {
       
-      # ミニバッチにおける各変換関数のバイアスの傾きの合計とミニバッチにおける各変換関数の重みの傾きの合計を0で初期化
+      # Initialize the sum of the bias slopes of each transformation function in the mini-batch and the sum of the weight slopes of each transformation function in the mini-batch to 0.
       for (my $m_to_n_func_index = 0; $m_to_n_func_index < $m_to_n_func_mini_batch_infos->length; $m_to_n_func_index++) {
-        # ミニバッチにおける各変換関数のバイアスの傾きの合計を0で初期化して作成
+        # The sum of the bias slopes of each transformation function in the mini-batch is initialized to 0.
         my $m_to_n_func_mini_batch_info = (Hash)$m_to_n_func_mini_batch_infos->get($m_to_n_func_index);
         
         my $biase_grad_totals = (R::NDArray::Float)$m_to_n_func_mini_batch_info->get("biase_grad_totals");
         $m_to_n_func_mini_batch_info->set(biase_grad_totals => FOP->c(undef, [$biase_grad_totals->length]));
         
-        # ミニバッチにおける各変換関数の重みの傾きの合計を0で初期化して作成
+        # The sum of the weight gradients of each transformation function in the mini-batch is initialized to 0.
         my $weight_grad_totals_mat = (R::NDArray::Float)$m_to_n_func_mini_batch_info->get("weight_grad_totals_mat");
         
         # $weight_grad_totals_mat->set_data(FOP->c(undef, [$weight_grad_totals_mat->length]);
@@ -100,26 +100,26 @@ class MyAIUtil2 : precompile {
       for (my $mini_batch_index = 0; $mini_batch_index < $mini_batch_size; $mini_batch_index++) {        
         my $training_data_index = $training_data_indexes_shuffle->[$training_data_indexes_shuffle_index + $mini_batch_index];
         
-        # バックプロパゲーションを使って重みとバイアスの損失関数に関する傾きを取得
+        # Use backpropagation to get the gradient of the weights and biases with respect to the loss function
         my $m_to_n_func_grad_infos = MyAIUtil2->backprop($m_to_n_func_infos, $mnist_train_image_info_spvm, $mnist_train_label_info_spvm, $training_data_index);
         
-        # バイアスの損失関数に関する傾き
+        # The slope of the bias loss function
         my $biase_grads_list = (List)$m_to_n_func_grad_infos->get("biases");
         
-        # 重みの損失関数に関する傾き
+        # The gradient of the weights with respect to the loss function
         my $weight_grads_mat_list = (List)$m_to_n_func_grad_infos->get("weights_mat");
 
-        # ミニバッチにおける各変換関数のバイアスの傾きの合計とミニバッチにおける各変換関数の重みの傾きを加算
+        # Add the sum of the bias slopes of each transformation function in the mini-batch and the weight slopes of each transformation function in the mini-batch
         for (my $m_to_n_func_index = 0; $m_to_n_func_index < $m_to_n_func_mini_batch_infos->length; $m_to_n_func_index++) {
           my $m_to_n_func_info = $m_to_n_func_infos->get($m_to_n_func_index);
           
-          # ミニバッチにおける各変換関数のバイアスの傾きを加算
+          # Add the bias slope of each transformation function in the mini-batch
           my $m_to_n_func_mini_batch_info = (Hash)$m_to_n_func_mini_batch_infos->get($m_to_n_func_index);
           my $biase_grad_totals = (R::NDArray::Float)$m_to_n_func_mini_batch_info->get("biase_grad_totals");
           my $biase_grads = (R::NDArray::Float)$biase_grads_list->get($m_to_n_func_index);
           $biase_grad_totals = FOP->add($biase_grad_totals, $biase_grads);
 
-          # ミニバッチにおける各変換関数の重みの傾きを加算
+          # Add the gradient of the weights of each transformation function in the mini-batch
           my $weight_grad_totals_mat = (R::NDArray::Float)$m_to_n_func_mini_batch_info->get("weight_grad_totals_mat");
           my $weight_grads_mat = (R::NDArray::Float)$weight_grads_mat_list->get($m_to_n_func_index);
           
@@ -129,10 +129,10 @@ class MyAIUtil2 : precompile {
         }
       }
 
-      # 各変換関数のバイアスと重みをミニバッチの傾きの合計を使って更新
+      # Update the biases and weights of each transformation function using the sum of the gradients over the mini-batch
       for (my $m_to_n_func_index = 0; $m_to_n_func_index < $m_to_n_func_infos->length; $m_to_n_func_index++) {
         
-        # 各変換関数のバイアスを更新(学習率を考慮し、ミニバッチ数で割る)
+        # Update the biases of each transformation function (taking into account the learning rate and dividing by the number of mini-batches)
         my $m_to_n_func_info = (Hash)$m_to_n_func_infos->get($m_to_n_func_index);
         my $biases = (R::NDArray::Float)$m_to_n_func_info->get("biases");
         
@@ -140,7 +140,7 @@ class MyAIUtil2 : precompile {
         my $biase_grad_totals = (R::NDArray::Float)$m_to_n_func_mini_batch_info->get("biase_grad_totals");
         MyAIUtil2->update_params($biases, $biase_grad_totals, $learning_rate, $mini_batch_size);
         
-        # 各変換関数の重みを更新(学習率を考慮し、傾きの合計をミニバッチ数で、ミニバッチ数で割る)
+        # Update the weights of each transformation function (taking into account the learning rate, sum of the gradients by the number of mini-batches, divided by the number of mini-batches)
         my $weights_mat = (R::NDArray::Float)$m_to_n_func_info->get("weights_mat");
         my $weight_grad_totals_mat = (R::NDArray::Float)$m_to_n_func_mini_batch_info->get("weight_grad_totals_mat");
         MyAIUtil2->update_params($weights_mat, $weight_grad_totals_mat, $learning_rate, $mini_batch_size);
@@ -149,22 +149,22 @@ class MyAIUtil2 : precompile {
   }
 
   static method init_m_to_n_func_infos : List ($neurons_count_in_layers : int[]) {
-    # 各層のm個の入力をn個の出力に変換する関数の情報。入力数、出力数、バイアス、重み
+    # Information on the function that converts m inputs to n outputs for each layer. Number of inputs, number of outputs, bias, weights
     my $m_to_n_func_infos = List->new([]);
     
-    # 各層のニューロン数からmからnへの変換関数の情報を作成
+    # Create information on the conversion function from m to n based on the number of neurons in each layer
     for (my $i = 0; $i < @$neurons_count_in_layers - 1; $i++) {
       my $inputs_length = $neurons_count_in_layers->[$i];
       my $outputs_length = $neurons_count_in_layers->[$i + 1];
       
-      # バイアスを0で初期化
+      # Initialize bias to 0
       my $biases = FOP->c(undef, [$outputs_length]);
       
-      # Xivierの初期値で重みを初期化。重みは列優先行列
+      # Initialize weights with Xavier initial values. Weights are column-major matrix.
       my $weights_length = $outputs_length * $inputs_length;
       my $weights_mat = MFOP->matrix(MyAIUtil2->array_create_xavier_init_value($weights_length, $inputs_length), $outputs_length, $inputs_length);
       
-      # 変換関数の情報を設定
+      # Set conversion function information
       my $m_to_n_func_info = Hash->new({});
       $m_to_n_func_info->set_int(inputs_length => $inputs_length);
       $m_to_n_func_info->set_int(outputs_length => $outputs_length);
@@ -178,24 +178,24 @@ class MyAIUtil2 : precompile {
   }
 
   static method init_m_to_n_func_mini_batch_infos : List ($m_to_n_func_infos : List) {
-    # ミニバッチ単位における各変換関数の情報
+    # Information on each transformation function in a mini-batch
     
     my $m_to_n_func_mini_batch_infos = List->new_len(new object[0], $m_to_n_func_infos->length);
 
-    # ミニバッチにおける各変換関数のバイアスの傾きの合計とミニバッチにおける各変換関数の重みの傾きの合計を0で初期化して作成
-    # メモリ領域を繰り返しつかうためここで初期化
+    # The sum of the bias slopes of each transformation function in the mini-batch and the sum of the weight slopes of each transformation function in the mini-batch are initialized to 0.
+    # Initialize the memory area here to use it repeatedly
     for (my $m_to_n_func_index = 0; $m_to_n_func_index < $m_to_n_func_infos->length; $m_to_n_func_index++) {
       my $m_to_n_func_info = (Hash)$m_to_n_func_infos->get($m_to_n_func_index);
       my $biases = (R::NDArray::Float)$m_to_n_func_info->get("biases");
       my $weights_mat = (R::NDArray::Float)$m_to_n_func_info->get("weights_mat");
       
-      # バイアスの長さ
+      # Bias Length
       my $biases_length = $biases->length;
 
-      # ミニバッチにおける各変換関数のバイアスの傾きの合計を0で初期化して作成
+      # The sum of the bias slopes of each transformation function in the mini-batch is initialized to 0.
       my $biase_grad_totals = FOP->c(undef, [$biases_length]);
 
-      # ミニバッチにおける各変換関数の重みの傾きの合計を0で初期化して作成
+      # The sum of the weight gradients of each transformation function in the mini-batch is initialized to 0.
       my $weight_grad_totals_mat = MFOP->matrix(undef, $weights_mat->nrow, $weights_mat->ncol);
       
       my $m_to_n_func_mini_batch_info = Hash->new({});
@@ -208,13 +208,13 @@ class MyAIUtil2 : precompile {
     return $m_to_n_func_mini_batch_infos;
   }
 
-  # バックプロパゲーション
+  # Backpropagation
   static method backprop : Hash ($m_to_n_func_infos : List, $mnist_train_image_info_spvm : Hash, $mnist_train_label_info_spvm : Hash, $training_data_index : int)  {
     
     my $m_to_n_func_info = (Hash)$m_to_n_func_infos->get(0);
     my $first_inputs_length = (int)$m_to_n_func_info->get("inputs_length");
     
-    # 入力(0～255の値を0～1に変換)
+    # Input (converts values ​​from 0 to 255 into 0 to 1)
     my $mnist_train_image_rows_count = (int)$mnist_train_image_info_spvm->get("rows_count");
     my $mnist_train_image_columns_count = (int)$mnist_train_image_info_spvm->get("columns_count");
     my $image_unit_length = $mnist_train_image_rows_count * $mnist_train_image_columns_count;
@@ -225,86 +225,86 @@ class MyAIUtil2 : precompile {
     
     my $first_inputs = FOP->scadiv($first_inputs_raw_float, FOP->c(255f));
     
-    # 期待される出力を確率分布化する
+    # Generate a probability distribution for the expected outputる
     my $label_numbers = (IntList)$mnist_train_label_info_spvm->get("label_numbers");
     my $label_number = (Int)$label_numbers->get($training_data_index);
     my $desired_outputs = MyAIUtil2->probabilize_desired_outputs($label_number);
     
-    # 各変換関数のバイアスの傾き
+    # The bias slope of each transformation function
     my $biase_grads_in_m_to_n_funcs = List->new_len(new R::NDArray::Float[0], $m_to_n_func_infos->length);
     
-    # 各変換関数の重みの傾き
+    # The weight gradient of each transformation function
     my $weight_grads_mat_in_m_to_n_funcs = List->new_len(new R::NDArray::Float[0], $m_to_n_func_infos->length);
     
-    # バイアスの傾きと重みの傾きの初期化
+    # Initialization of bias gradients and weight gradients
     for (my $m_to_n_func_index = 0; $m_to_n_func_index < $m_to_n_func_infos->length; $m_to_n_func_index++) {
       my $m_to_n_func_info = (Hash)$m_to_n_func_infos->get($m_to_n_func_index);
       my $inputs_length = (int)$m_to_n_func_info->get("inputs_length");
       my $outputs_length = (int)$m_to_n_func_info->get("outputs_length");
       
-      # バイアスの傾きを0で初期化
+      # Initialize the bias slope to 0
       $biase_grads_in_m_to_n_funcs->set($m_to_n_func_index => FOP->c(undef, [$outputs_length]));
 
-      # 重みの傾きを0で初期化
+      # Initialize weight gradients to 0
       $weight_grads_mat_in_m_to_n_funcs->set($m_to_n_func_index => MFOP->matrix(undef, $outputs_length, $inputs_length));
     }
 
-    # 各層の入力
+    # Input for each layer
     my $inputs_in_m_to_n_funcs = List->new(new R::NDArray::Float[0]);
     $inputs_in_m_to_n_funcs->push($first_inputs);
     
     
-    # 各層の活性化された出力
+    # Activation output of each layer
     my $outputs_in_m_to_n_funcs = List->new(new R::NDArray::Float[0]);
     
-    # 入力層の入力から出力層の出力を求める
-    # バックプロパゲーションのために各層の出力と活性化された出力を保存
+    # Obtain the output of the output layer from the input of the input layer
+    # Save each layer's output and activations for backpropagation
     for (my $m_to_n_func_index = 0; $m_to_n_func_index < $m_to_n_func_infos->length; $m_to_n_func_index++) {
       my $cur_inputs = (R::NDArray::Float)$inputs_in_m_to_n_funcs->get($inputs_in_m_to_n_funcs->length - 1);
       my $m_to_n_func_info = (Hash)$m_to_n_func_infos->get($m_to_n_func_index);
       
-      # 重み行列
+      # Weight matrix
       my $weights_mat = (R::NDArray::Float)$m_to_n_func_info->get("weights_mat");
       
-      # 入力行列
+      # Input Matrix
       my $cur_inputs_nrow = $cur_inputs->length;
       my $cur_inputs_ncol = 1;
       
       my $cur_inputs_mat = MFOP->matrix($cur_inputs, $cur_inputs_nrow, $cur_inputs_ncol);
       
-      # 重みと入力の行列積
+      # Matrix multiplication of weights and inputs
       my $mul_weights_inputs_mat = MFOP->mul($weights_mat, $cur_inputs_mat);
       $mul_weights_inputs_mat->drop_dim;
       my $mul_weights_inputs = $mul_weights_inputs_mat;
       
-      # バイアス
+      # bias
       my $biases = (R::NDArray::Float)$m_to_n_func_info->get("biases");
       
-      # 出力 - 重みと入力の行列積とバイアスの和
+      # Output - The sum of the weights and inputs matrix products and the biases
       my $outputs = FOP->add($mul_weights_inputs, $biases);
       
-      # 活性化された出力 - 出力に活性化関数を適用
-      my $activate_outputs = MyAIUtil2->array_sigmoid(FOP->c($outputs));
+      # Activated output - Apply the activation function to the output
+      my $activate_outputs = MyAIUtil2->array_sigmoid($outputs);
       
-      # バックプロパゲーションのために出力を保存
+      # Save output for backpropagation
       $outputs_in_m_to_n_funcs->push($outputs);
       
-      # バックプロパゲーションのために次の入力を保存
+      # Save next input for backpropagation
       $inputs_in_m_to_n_funcs->push($activate_outputs);
     }
     
-    # 最後の出力
+    # Final output
     my $last_outputs = (R::NDArray::Float)$outputs_in_m_to_n_funcs->get($outputs_in_m_to_n_funcs->length - 1);
     
-    # 最後の活性化された出力
+    # Last Activated Output
     my $last_activate_outputs = (R::NDArray::Float)$inputs_in_m_to_n_funcs->pop;
     
-    # 誤差
+    # error
     
     my $cost = MyAIUtil2->cross_entropy_cost($last_activate_outputs, $desired_outputs)->data->[0];
     print "Cost: " . Format->sprintf("%.3f", [(object)$cost]) . "\n";
     
-    # 正解したかどうか
+    # Did you get it right?
     my $answer = MyAIUtil2->max_index($last_activate_outputs)->data->[0];
     my $desired_answer = MyAIUtil2->max_index($desired_outputs)->data->[0];
     $TOTAL_COUNT++;
@@ -312,24 +312,24 @@ class MyAIUtil2 : precompile {
       $ANSWER_MATCH_COUNT++;
     }
     
-    # 正解率を出力
+    # Output accuracy rate
     my $match_rate = (double)$ANSWER_MATCH_COUNT / $TOTAL_COUNT;
     print "Match Rate: " . Format->sprintf("%.02f", [(object)(100 * $match_rate)]) . "%\n";
     
-    # 活性化された出力の微小変化 / 最後の出力の微小変化 
+    # Activated Output Change / Last Output Change
     my $grad_last_outputs_to_activate_func = MyAIUtil2->array_sigmoid_derivative($last_outputs);
     
-    # 損失関数の微小変化 / 最後に活性化された出力の微小変化
+    # Small change in loss function / Small change in last activated output
     my $grad_last_activate_outputs_to_cost_func = MyAIUtil2->cross_entropy_cost_derivative($last_activate_outputs, $desired_outputs);
 
-    # 損失関数の微小変化 / 最後の出力の微小変化 (合成微分)
+    # Small change in loss function / Small change in final output (composite derivative)
     my $grad_last_outputs_to_cost_func = FOP->mul($grad_last_outputs_to_activate_func, $grad_last_activate_outputs_to_cost_func);
 
-    # 損失関数の微小変化 / 最終の層のバイアスの微小変化
+    # Small changes in loss function / small changes in bias of final layer
     my $last_biase_grads = $grad_last_outputs_to_cost_func;
     
 
-    # 損失関数の微小変化 / 最終の層の重みの微小変化
+    # Small changes in loss function / small changes in weights of the final layer
     my $last_biase_grads_mat = MFOP->matrix($last_biase_grads, $last_biase_grads->length, 1);
     my $last_inputs = (R::NDArray::Float)$inputs_in_m_to_n_funcs->get($inputs_in_m_to_n_funcs->length - 1);
     my $last_inputs_transpose_mat = MFOP->matrix($last_inputs, 1, $last_inputs->length);
@@ -338,14 +338,14 @@ class MyAIUtil2 : precompile {
     $biase_grads_in_m_to_n_funcs->set($biase_grads_in_m_to_n_funcs->length - 1 => $last_biase_grads);
     $weight_grads_mat_in_m_to_n_funcs->set($biase_grads_in_m_to_n_funcs->length - 1 => $last_weight_grads_mat);
     
-    # 最後の重みとバイアスの変換より一つ前から始める
+    # Start one step before the last weight and bias transformation
     for (my $m_to_n_func_index = $m_to_n_func_infos->length - 2; $m_to_n_func_index >= 0; $m_to_n_func_index--) {
       
-      # 活性化された出力の微小変化 / 出力の微小変化
+      # Activated Output Change / Output Change
       my $outputs = (R::NDArray::Float)$outputs_in_m_to_n_funcs->get($m_to_n_func_index);
 
-      # 損失関数の微小変化 / この層のバイアスの微小変化(微分の連鎖率を使って求める)
-      # 次の層の重みの傾きの転置行列とバイアスの傾きの転置行列をかけて、それぞれの要素に、活性化関数の導関数をかける
+      # Small change in loss function / Small change in bias of this layer (calculated using chain rate of derivative)
+      # Multiply the transpose of the weight gradients and bias gradients of the next layer, and multiply each element by the derivative of the activation function.
       my $forword_m_to_n_func_info = (Hash)$m_to_n_func_infos->get($m_to_n_func_index + 1);
       my $forword_weights_mat = (R::NDArray::Float)$forword_m_to_n_func_info->get("weights_mat");
       my $forword_weights_mat_transpose = MFOP->t($forword_weights_mat);
@@ -358,7 +358,7 @@ class MyAIUtil2 : precompile {
 
       $biase_grads_in_m_to_n_funcs->set($m_to_n_func_index => $biase_grads);
       
-      # 損失関数の微小変化 / この層の重みの微小変化(微分の連鎖率を使って求める)
+      # Small change in loss function / Small change in weights of this layer (calculated using derivative chain rate)
       my $biase_grads_mat = MFOP->matrix($biase_grads, $biase_grads->length, 1);
       my $inputs = (R::NDArray::Float)$inputs_in_m_to_n_funcs->get($m_to_n_func_index);
       
@@ -386,7 +386,7 @@ class MyAIUtil2 : precompile {
     return $floats;
   }
   
-  # 学習率とミニバッチ数を考慮してパラメーターを更新
+  # Update parameters taking into account learning rate and mini-batch size
   static method update_params : void ($params_ndarray : R::NDArray::Float, $param_grads_ndarray : R::NDArray::Float, $learning_rate : float, $mini_batch_size : int) {
     
     my $params = $params_ndarray->data;
@@ -399,7 +399,7 @@ class MyAIUtil2 : precompile {
     }
   }
   
-  # 配列の中で最大値のインデックスを求める。同じ数の場合は、最初の方を返す
+  # Finds the index of the maximum value in an array. In the case of ties, returns the first one.
   static method max_index : R::NDArray::Int ($ndarray : R::NDArray::Float) {
     
     my $data = $ndarray->data;
@@ -418,7 +418,7 @@ class MyAIUtil2 : precompile {
     return $ndarray_ret;
   }
   
-  # 期待される出力を確率分布化する
+  # Generate a probability distribution for the expected output
   static method probabilize_desired_outputs : R::NDArray::Float ($label_number : int) {
     
     my $ndarray_ret = FOP->c(undef, [10]);
