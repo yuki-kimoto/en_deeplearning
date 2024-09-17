@@ -321,7 +321,7 @@ class MyAIUtil2 : precompile {
     my $grad_last_activate_outputs_to_cost_func = MyAIUtil2->cross_entropy_cost_derivative(FOP->c($last_activate_outputs), FOP->c($desired_outputs))->data;
 
     # 損失関数の微小変化 / 最後の出力の微小変化 (合成微分)
-    my $grad_last_outputs_to_cost_func = MyAIUtil2->array_mul($grad_last_outputs_to_activate_func, $grad_last_activate_outputs_to_cost_func);
+    my $grad_last_outputs_to_cost_func = FOP->mul(FOP->c($grad_last_outputs_to_activate_func), FOP->c($grad_last_activate_outputs_to_cost_func))->data;
 
     # 損失関数の微小変化 / 最終の層のバイアスの微小変化
     my $last_biase_grads = $grad_last_outputs_to_cost_func;
@@ -352,7 +352,7 @@ class MyAIUtil2 : precompile {
       my $mul_forword_weights_transpose_mat_forword_biase_grads_mat = MFOP->mul($forword_weights_mat_transpose, $forword_biase_grads_mat);
       my $mul_forword_weights_transpose_mat_forword_biase_grads_mat_data = $mul_forword_weights_transpose_mat_forword_biase_grads_mat->data;
       my $grads_outputs_to_array_sigmoid = MyAIUtil2->array_sigmoid_derivative(FOP->c($outputs))->data;
-      my $biase_grads = MyAIUtil2->array_mul($mul_forword_weights_transpose_mat_forword_biase_grads_mat_data, $grads_outputs_to_array_sigmoid);
+      my $biase_grads = FOP->mul(FOP->c($mul_forword_weights_transpose_mat_forword_biase_grads_mat_data), FOP->c($grads_outputs_to_array_sigmoid))->data;
 
       $biase_grads_in_m_to_n_funcs->set($m_to_n_func_index => $biase_grads);
       
@@ -438,20 +438,6 @@ class MyAIUtil2 : precompile {
     return $data_ret;
   }
 
-  static method array_mul : float[] ($data1 : float[], $data2 : float[]) {
-    
-    if (@$data1 != @$data2) {
-      die "Array length is diffent";
-    }
-    
-    my $data_ret = new float[scalar @$data1];
-    for (my $i = 0; $i < @$data1; $i++) {
-      $data_ret->[$i] = $data1->[$i] * $data2->[$i];
-    }
-    
-    return $data_ret;
-  }
-  
   static method create_xavier_init_value : float ($inputs_length : int) {
       
     return &randn(0, Math->sqrtf((float)1 / $inputs_length));
@@ -462,23 +448,6 @@ class MyAIUtil2 : precompile {
     my $data_ret = new float[$array_length];
     for (my $i = 0; $i < $array_length; $i++) {
       $data_ret->[$i] = &create_xavier_init_value($inputs_length);
-    }
-    
-    return $data_ret;
-  }
-  
-  static method create_he_init_value : float ($inputs_length : int) {
-    
-    my $he_init_value = &randn(0, Math->sqrtf((float)2 / $inputs_length));
-    
-    return $he_init_value;
-  }
-  
-  static method array_create_he_init_value : float[] ($array_length : int, $inputs_length : int) {
-    
-    my $data_ret = new float[$array_length];
-    for (my $i = 0; $i < $array_length; $i++) {
-      $data_ret->[$i] = &create_he_init_value($inputs_length);
     }
     
     return $data_ret;
