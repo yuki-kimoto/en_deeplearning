@@ -429,14 +429,16 @@ class MyAIUtil2 : precompile {
     return &randn(0, Math->sqrtf((float)1 / $inputs_length));
   }
   
-  static method array_create_xavier_init_value : float[] ($array_length : int, $inputs_length : int) {
+  static method array_create_xavier_init_value : R::NDArray::Float ($array_length : int, $inputs_length : int) {
     
     my $data_ret = new float[$array_length];
     for (my $i = 0; $i < $array_length; $i++) {
       $data_ret->[$i] = &create_xavier_init_value($inputs_length);
     }
     
-    return $data_ret;
+    my $ndarray_ret = FOP->c($data_ret);
+    
+    return $ndarray_ret;
   }
   
   static method sigmoid : float ($x : float) {
