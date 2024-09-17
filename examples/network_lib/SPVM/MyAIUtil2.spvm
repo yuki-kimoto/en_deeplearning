@@ -274,13 +274,14 @@ class MyAIUtil2 : precompile {
       
       # 重みと入力の行列積
       my $mul_weights_inputs_mat = MFOP->mul($weights_mat, $cur_inputs_mat);
-      my $mul_weights_inputs = $mul_weights_inputs_mat->data;
-
+      $mul_weights_inputs_mat->drop_dim;
+      my $mul_weights_inputs = $mul_weights_inputs_mat;
+      
       # バイアス
       my $biases = (R::NDArray::Float)$m_to_n_func_info->get("biases");
       
       # 出力 - 重みと入力の行列積とバイアスの和
-      my $outputs = FOP->add(FOP->c($mul_weights_inputs), $biases);
+      my $outputs = FOP->add($mul_weights_inputs, $biases);
       
       # 活性化された出力 - 出力に活性化関数を適用
       my $activate_outputs = MyAIUtil2->array_sigmoid(FOP->c($outputs));
