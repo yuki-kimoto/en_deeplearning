@@ -431,12 +431,12 @@ class MyAIUtil2 : precompile {
       die "Array length is diffent";
     }
     
-    my $data_out = new float[scalar @$data1];
+    my $data_ret = new float[scalar @$data1];
     for (my $i = 0; $i < @$data1; $i++) {
-      $data_out->[$i] = $data1->[$i] + $data2->[$i];
+      $data_ret->[$i] = $data1->[$i] + $data2->[$i];
     }
     
-    return $data_out;
+    return $data_ret;
   }
 
   # 配列の各要素の積
@@ -446,12 +446,12 @@ class MyAIUtil2 : precompile {
       die "Array length is diffent";
     }
     
-    my $data_out = new float[scalar @$data1];
+    my $data_ret = new float[scalar @$data1];
     for (my $i = 0; $i < @$data1; $i++) {
-      $data_out->[$i] = $data1->[$i] * $data2->[$i];
+      $data_ret->[$i] = $data1->[$i] * $data2->[$i];
     }
     
-    return $data_out;
+    return $data_ret;
   }
 
   # Xivierの初期値を取得
@@ -463,12 +463,12 @@ class MyAIUtil2 : precompile {
   # 配列の各要素にXivierの初期値を取得を適用する
   static method array_create_xavier_init_value : float[] ($array_length : int, $inputs_length : int) {
     
-    my $data_out = new float[$array_length];
+    my $data_ret = new float[$array_length];
     for (my $i = 0; $i < $array_length; $i++) {
-      $data_out->[$i] = &create_xavier_init_value($inputs_length);
+      $data_ret->[$i] = &create_xavier_init_value($inputs_length);
     }
     
-    return $data_out;
+    return $data_ret;
   }
 
   # Heの初期値を取得
@@ -482,12 +482,12 @@ class MyAIUtil2 : precompile {
   # 配列の各要素にHeの初期値を取得を適用する
   static method array_create_he_init_value : float[] ($array_length : int, $inputs_length : int) {
     
-    my $data_out = new float[$array_length];
+    my $data_ret = new float[$array_length];
     for (my $i = 0; $i < $array_length; $i++) {
-      $data_out->[$i] = &create_he_init_value($inputs_length);
+      $data_ret->[$i] = &create_he_init_value($inputs_length);
     }
     
-    return $data_out;
+    return $data_ret;
   }
 
   # シグモイド関数
@@ -509,23 +509,23 @@ class MyAIUtil2 : precompile {
   # 配列の各要素にシグモイド関数を適用する
   static method array_sigmoid : float[] ($data : float[]) {
     
-    my $data_out = new float[scalar @$data];
+    my $data_ret = new float[scalar @$data];
     for (my $i = 0; $i < @$data; $i++) {
-      $data_out->[$i] = &sigmoid($data->[$i]);
+      $data_ret->[$i] = &sigmoid($data->[$i]);
     }
     
-    return $data_out;
+    return $data_ret;
   }
 
   # 配列の各要素にシグモイド関数の導関数を適用する
   static method array_sigmoid_derivative : float[] ($data : float[]) {
     
-    my $data_out = new float[scalar @$data];
+    my $data_ret = new float[scalar @$data];
     for (my $i = 0; $i < @$data; $i++) {
-      $data_out->[$i] = &sigmoid_derivative($data->[$i]);
+      $data_ret->[$i] = &sigmoid_derivative($data->[$i]);
     }
     
-    return $data_out;
+    return $data_ret;
   }
 
   # ReLU関数
@@ -547,23 +547,23 @@ class MyAIUtil2 : precompile {
   # 配列の各要素にReLU関数を適用する
   static method array_relu : float[] ($data : float[]) {
     
-    my $data_out = new float[scalar @$data];
+    my $data_ret = new float[scalar @$data];
     for (my $i = 0; $i < @$data; $i++) {
-      $data_out->[$i] = &relu($data->[$i]);
+      $data_ret->[$i] = &relu($data->[$i]);
     }
     
-    return $data_out;
+    return $data_ret;
   }
   
   # 配列の各要素にReLU関数の導関数を適用する
   static method array_relu_derivative : float[] ($data : float[]) {
     
-    my $data_out = new float[scalar @$data];
+    my $data_ret = new float[scalar @$data];
     for (my $i = 0; $i < @$data; $i++) {
-      $data_out->[$i] = &relu_derivative($data->[$i]);
+      $data_ret->[$i] = &relu_derivative($data->[$i]);
     }
     
-    return $data_out;
+    return $data_ret;
   }
   
   static method cross_entropy_cost : float ($data_x : float[], $data_y : float[]) {
@@ -583,14 +583,14 @@ class MyAIUtil2 : precompile {
     
     my $data_y = $ndarray_y->data;
     
-    my $data_out = new float[scalar @$data_x];
+    my $data_ret = new float[scalar @$data_x];
     for (my $i = 0; $i < @$data_x; $i++) {
-      $data_out->[$i] = $data_x->[$i] - $data_y->[$i];
+      $data_ret->[$i] = $data_x->[$i] - $data_y->[$i];
     }
     
-    my $ndarray_out = FOP->c($data_out);
+    my $ndarray_ret = FOP->c($data_ret);
     
-    return $ndarray_out;
+    return $ndarray_ret;
   }
   
   # Get rundom value
