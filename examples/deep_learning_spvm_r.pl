@@ -11,52 +11,52 @@ use SPVM 'IntList';
 
 my $api = SPVM::api();
 
-# 学習率
+# Learning Rate
 my $learning_rate = 3;
 
-# エポック数 - 訓練セットの実行回数
+# Epoch count - the number of runs of the training set
 my $epoch_count = 30;
 
-# ミニバッチサイズ
+# Mini-batch size
 my $mini_batch_size = 10;
 
-# 各層のニューロンの数
-# 28 * 28 = 728のモノクロ画像を (入力)
-# 30個の中間出力を通って        (中間出力1)
-# 0～9の10個に分類する          (出力)
+# Number of neurons in each layer
+# 28 * 28 = 728 monochrome images         (input)
+# Through 30 intermediate outputs         (Intermediate Output 1)
+# Classify into 10 categories from 0 to 9 (output)
 my $neurons_count_in_layers = $api->new_int_array([784, 30, 10]);
 
-# MNIEST画像情報を読み込む - 入力用につかう手書きの訓練データ
+# Read MNIEST image information - handwritten training data to use as input
 my $mnist_train_image_file = "$FindBin::Bin/data/train-images-idx3-ubyte";
 my $mnist_train_image_info = load_mnist_train_image_file($mnist_train_image_file);
 
-# MNIESTラベル情報を読み込む - 手書きの訓練データの期待される出力
+# Read MNIEST label information - expected output for handwritten training data
 my $mnist_train_label_file = "$FindBin::Bin/data/train-labels-idx1-ubyte";
 my $mnist_train_label_info = load_mnist_train_label_file($mnist_train_label_file);
 
-# MNIEST画像情報をSPVMデータに変換
+# Converting MNIEST image information to SPVM data
 my $mnist_train_image_info_spvm = SPVM::Hash->new($api->new_object_array('object[]', []));
 $mnist_train_image_info_spvm->set_int(items_count => $mnist_train_image_info->{items_count});
 $mnist_train_image_info_spvm->set_int(rows_count => $mnist_train_image_info->{rows_count});
 $mnist_train_image_info_spvm->set_int(columns_count => $mnist_train_image_info->{columns_count});
 $mnist_train_image_info_spvm->set(data => $api->new_byte_array_from_bin($mnist_train_image_info->{data}));
 
-# MNIESTラベル情報をSPVMデータに変換
+# Converting MNIEST label information to SPVM data
 my $mnist_train_label_info_spvm = SPVM::Hash->new($api->new_object_array('object[]', []));
 $mnist_train_label_info_spvm->set_int(items_count => $mnist_train_label_info->{items_count});
 $mnist_train_label_info_spvm->set(label_numbers => SPVM::IntList->new($mnist_train_label_info->{label_numbers}));
 
-# ディープネットークを訓練
+# Train a deep network
 SPVM::MyAIUtil2->train_deep_network($mnist_train_image_info_spvm, $mnist_train_label_info_spvm, $epoch_count, $mini_batch_size, $neurons_count_in_layers, $learning_rate);
 
-# MNIST画像情報を読み込む
+# Load MNIST image information
 sub load_mnist_train_image_file {
   my ($mnist_image_file) = @_;
   
   open my $mnist_image_fh, '<', $mnist_image_file
     or die "Can't open file $mnist_image_file: $!";
 
-  # マジックナンバー
+  # Magic Number
   my $image_buffer;
   read($mnist_image_fh, $image_buffer, 4);
   my $magic_number = unpack('N1', $image_buffer);
@@ -64,19 +64,19 @@ sub load_mnist_train_image_file {
     die "Invalid magic number expected " . 0x00000803 . "actual $magic_number";
   }
 
-  # 画像数
+  # Number of images
   read($mnist_image_fh, $image_buffer, 4);
   my $items_count = unpack('N1', $image_buffer);
 
-  # 画像の行ピクセル数
+  # Image row pixel count
   read($mnist_image_fh, $image_buffer, 4);
   my $rows_count = unpack('N1', $image_buffer);
 
-  # 画像の列ピクセル数
+  # Image column pixel count
   read($mnist_image_fh, $image_buffer, 4);
   my $columns_count = unpack('N1', $image_buffer);
 
-  # 画像の読み込み
+  # Loading images
   my $image_data;
   my $all_images_length = $items_count * $rows_count * $columns_count;
   my $read_length = read $mnist_image_fh, $image_data, $all_images_length;
@@ -84,7 +84,7 @@ sub load_mnist_train_image_file {
     die "Can't read all images";
   }
 
-  # 画像情報
+  # Image information
   my $image_info = {};
   $image_info->{items_count} = $items_count;
   $image_info->{rows_count} = $rows_count;
@@ -94,14 +94,14 @@ sub load_mnist_train_image_file {
   return $image_info;
 }
 
-# MNIST画像情報を読み込む
+# Load MNIST image information
 sub load_mnist_train_label_file {
   my ($mnist_label_file) = @_;
 
   open my $mnist_label_fh, '<', $mnist_label_file
     or die "Can't open file $mnist_label_file: $!";
 
-  # マジックナンバー
+  # Magic Number
   my $label_buffer;
   read($mnist_label_fh, $label_buffer, 4);
   my $magic_number = unpack('N1', $label_buffer);
@@ -109,11 +109,11 @@ sub load_mnist_train_label_file {
     die "Invalid magic number expected " . 0x00000801 . "actual $magic_number";
   }
 
-  # ラベル数
+  # Number of labels
   read($mnist_label_fh, $label_buffer, 4);
   my $items_count = unpack('N1', $label_buffer);
 
-  # ラベルの読み込み
+  # Loading labels
   my $label_numbers = [];
   for (my $i = 0; $i < $items_count; $i++) {
     read $mnist_label_fh, $label_buffer, 1;
@@ -121,7 +121,7 @@ sub load_mnist_train_label_file {
     push @$label_numbers, $label_number;
   }
 
-  # ラベル情報
+  # Label Information
   my $label_info = {};
   $label_info->{items_count} = $items_count;
   $label_info->{label_numbers} = $label_numbers;
