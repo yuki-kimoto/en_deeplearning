@@ -282,7 +282,7 @@ class MyAIUtil2 : precompile {
       my $outputs = MyAIUtil2->array_add($mul_weights_inputs, $biases);
       
       # 活性化された出力 - 出力に活性化関数を適用
-      my $activate_outputs = MyAIUtil2->array_sigmoid($outputs);
+      my $activate_outputs = MyAIUtil2->array_sigmoid(FOP->c($outputs))->data;
       
       # バックプロパゲーションのために出力を保存
       $outputs_in_m_to_n_funcs->push($outputs);
@@ -498,14 +498,18 @@ class MyAIUtil2 : precompile {
     return $sigmoid_derivative;
   }
   
-  static method array_sigmoid : float[] ($data : float[]) {
+  static method array_sigmoid : R::NDArray::Float ($ndarray : R::NDArray::Float) {
+    
+    my $data = $ndarray->data;
     
     my $data_ret = new float[scalar @$data];
     for (my $i = 0; $i < @$data; $i++) {
       $data_ret->[$i] = &sigmoid($data->[$i]);
     }
     
-    return $data_ret;
+    my $ndarray_ret = FOP->c($data_ret);
+    
+    return $ndarray_ret;
   }
   
   static method array_sigmoid_derivative : R::NDArray::Float ($ndarray : R::NDArray::Float) {
