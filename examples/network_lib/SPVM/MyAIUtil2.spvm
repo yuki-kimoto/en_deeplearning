@@ -423,8 +423,7 @@ class MyAIUtil2 : precompile {
     
     return $desired_outputs;
   }
-
-  # 配列の各要素の和
+  
   static method array_add : float[] ($data1 : float[], $data2 : float[]) {
     
     if (@$data1 != @$data2) {
@@ -439,7 +438,6 @@ class MyAIUtil2 : precompile {
     return $data_ret;
   }
 
-  # 配列の各要素の積
   static method array_mul : float[] ($data1 : float[], $data2 : float[]) {
     
     if (@$data1 != @$data2) {
@@ -453,14 +451,12 @@ class MyAIUtil2 : precompile {
     
     return $data_ret;
   }
-
-  # Xivierの初期値を取得
+  
   static method create_xavier_init_value : float ($inputs_length : int) {
       
     return &randn(0, Math->sqrtf((float)1 / $inputs_length));
   }
-
-  # 配列の各要素にXivierの初期値を取得を適用する
+  
   static method array_create_xavier_init_value : float[] ($array_length : int, $inputs_length : int) {
     
     my $data_ret = new float[$array_length];
@@ -470,16 +466,14 @@ class MyAIUtil2 : precompile {
     
     return $data_ret;
   }
-
-  # Heの初期値を取得
+  
   static method create_he_init_value : float ($inputs_length : int) {
     
     my $he_init_value = &randn(0, Math->sqrtf((float)2 / $inputs_length));
     
     return $he_init_value;
   }
-
-  # 配列の各要素にHeの初期値を取得を適用する
+  
   static method array_create_he_init_value : float[] ($array_length : int, $inputs_length : int) {
     
     my $data_ret = new float[$array_length];
@@ -489,24 +483,21 @@ class MyAIUtil2 : precompile {
     
     return $data_ret;
   }
-
-  # シグモイド関数
+  
   static method sigmoid : float ($x : float) {
     
     my $sigmoid = 1.0f / (1.0f + Math->expf(-$x));
     
     return $sigmoid;
   }
-
-  # シグモイド関数の導関数
+  
   static method sigmoid_derivative : float ($x : float) {
     
     my $sigmoid_derivative = &sigmoid($x) * (1 - &sigmoid($x));
     
     return $sigmoid_derivative;
   }
-
-  # 配列の各要素にシグモイド関数を適用する
+  
   static method array_sigmoid : float[] ($data : float[]) {
     
     my $data_ret = new float[scalar @$data];
@@ -516,8 +507,7 @@ class MyAIUtil2 : precompile {
     
     return $data_ret;
   }
-
-  # 配列の各要素にシグモイド関数の導関数を適用する
+  
   static method array_sigmoid_derivative : float[] ($data : float[]) {
     
     my $data_ret = new float[scalar @$data];
