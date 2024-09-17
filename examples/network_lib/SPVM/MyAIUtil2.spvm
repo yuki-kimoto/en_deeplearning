@@ -227,7 +227,7 @@ class MyAIUtil2 : precompile {
     # 期待される出力を確率分布化する
     my $label_numbers = (IntList)$mnist_train_label_info_spvm->get("label_numbers");
     my $label_number = (Int)$label_numbers->get($training_data_index);
-    my $desired_outputs = MyAIUtil2->probabilize_desired_outputs($label_number);
+    my $desired_outputs = MyAIUtil2->probabilize_desired_outputs($label_number)->data;
     
     # 各変換関数のバイアスの傾き
     my $biase_grads_in_m_to_n_funcs = List->new_len(new float[][0], $m_to_n_func_infos->length);
@@ -409,7 +409,7 @@ class MyAIUtil2 : precompile {
   }
 
   # 期待される出力を確率分布化する
-  static method probabilize_desired_outputs : float[] ($label_number : int) {
+  static method probabilize_desired_outputs : R::NDArray::Float ($label_number : int) {
     
     my $desired_outputs = new float[10];
     for (my $desired_outputs_index = 0; $desired_outputs_index < 10; $desired_outputs_index++) {
@@ -421,7 +421,9 @@ class MyAIUtil2 : precompile {
       }
     }
     
-    return $desired_outputs;
+    my $ndarray_ret = FOP->c($desired_outputs);
+    
+    return $ndarray_ret;
   }
   
   static method create_xavier_init_value : float ($inputs_length : int) {
