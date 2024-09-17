@@ -115,13 +115,13 @@ class MyAIUtil2 : precompile {
           my $m_to_n_func_mini_batch_info = (Hash)$m_to_n_func_mini_batch_infos->get($m_to_n_func_index);
           my $biase_grad_totals = (float[])$m_to_n_func_mini_batch_info->get("biase_grad_totals");
           my $biase_grads = (float[])$biase_grads_list->get($m_to_n_func_index);
-          $biase_grad_totals = MyAIUtil2->array_add($biase_grad_totals, $biase_grads);
+          $biase_grad_totals = FOP->add(FOP->c($biase_grad_totals), FOP->c($biase_grads))->data;
 
           # ミニバッチにおける各変換関数の重みの傾きを加算
           my $weight_grad_totals_mat = (R::NDArray::Float)$m_to_n_func_mini_batch_info->get("weight_grad_totals_mat");
           my $weight_grads_mat = (R::NDArray::Float)$weight_grads_mat_list->get($m_to_n_func_index);
           
-          # $weight_grad_totals_mat->{data} = MyAIUtil2->array_add($weight_grad_totals_mat->data, $weight_grads_mat->data);
+          # $weight_grad_totals_mat->{data} = FOP->add($weight_grad_totals_mat, $weight_grads_mat)->data;
           
           Fn->memcpy($weight_grad_totals_mat->data, 0, FOP->add($weight_grad_totals_mat, $weight_grads_mat)->data, 0, 4 * @{$weight_grad_totals_mat->data});
         }
@@ -279,7 +279,7 @@ class MyAIUtil2 : precompile {
       my $biases = (float[])$m_to_n_func_info->get("biases");
       
       # 出力 - 重みと入力の行列積とバイアスの和
-      my $outputs = MyAIUtil2->array_add($mul_weights_inputs, $biases);
+      my $outputs = FOP->add(FOP->c($mul_weights_inputs), FOP->c($biases))->data;
       
       # 活性化された出力 - 出力に活性化関数を適用
       my $activate_outputs = MyAIUtil2->array_sigmoid(FOP->c($outputs))->data;
@@ -424,20 +424,6 @@ class MyAIUtil2 : precompile {
     return $desired_outputs;
   }
   
-  static method array_add : float[] ($data1 : float[], $data2 : float[]) {
-    
-    if (@$data1 != @$data2) {
-      die "Array length is diffent";
-    }
-    
-    my $data_ret = new float[scalar @$data1];
-    for (my $i = 0; $i < @$data1; $i++) {
-      $data_ret->[$i] = $data1->[$i] + $data2->[$i];
-    }
-    
-    return $data_ret;
-  }
-
   static method create_xavier_init_value : float ($inputs_length : int) {
       
     return &randn(0, Math->sqrtf((float)1 / $inputs_length));
