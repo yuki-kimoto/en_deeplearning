@@ -7,6 +7,7 @@ class MyAIUtil2 : precompile {
   use Array;
   use Format;
   use Sys;
+  use R::OP::Int as IOP;
   use R::OP::Float as FOP;
   use R::OP::Matrix::Float as MFOP;
   use R::NDArray::Float;
@@ -303,8 +304,8 @@ class MyAIUtil2 : precompile {
     print "Cost: " . Format->sprintf("%.3f", [(object)$cost]) . "\n";
     
     # 正解したかどうか
-    my $answer = MyAIUtil2->max_index($last_activate_outputs);
-    my $desired_answer = MyAIUtil2->max_index($desired_outputs);
+    my $answer = MyAIUtil2->max_index(FOP->c($last_activate_outputs))->data->[0];
+    my $desired_answer = MyAIUtil2->max_index(FOP->c($desired_outputs))->data->[0];
     $TOTAL_COUNT++;
     if ($answer == $desired_answer) {
       $ANSWER_MATCH_COUNT++;
@@ -373,7 +374,7 @@ class MyAIUtil2 : precompile {
     
     return $m_to_n_func_grad_infos;
   }
-
+  
   static method convert_ubyte_array_to_float_array : float[] ($ubytes : byte[]) {
     my $floats = new float[scalar @$ubytes];
     
@@ -383,7 +384,7 @@ class MyAIUtil2 : precompile {
     
     return $floats;
   }
-
+  
   # 学習率とミニバッチ数を考慮してパラメーターを更新
   static method update_params : void ($params : float[], $param_grads : float[], $learning_rate : float, $mini_batch_size : int) {
     
@@ -392,9 +393,11 @@ class MyAIUtil2 : precompile {
       $params->[$param_index] -= $update_value;
     }
   }
-
+  
   # 配列の中で最大値のインデックスを求める。同じ数の場合は、最初の方を返す
-  static method max_index : int ($data : float[]) {
+  static method max_index : R::NDArray::Int ($ndarray : R::NDArray::Float) {
+    
+    my $data = $ndarray->data;
     
     my $max = $data->[0];
     my $max_index = 0;
@@ -405,9 +408,11 @@ class MyAIUtil2 : precompile {
       }
     }
     
-    return $max_index;
+    my $ndarray_ret = IOP->c($max_index);
+    
+    return $ndarray_ret;
   }
-
+  
   # 期待される出力を確率分布化する
   static method probabilize_desired_outputs : R::NDArray::Float ($label_number : int) {
     
