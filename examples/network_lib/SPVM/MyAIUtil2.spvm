@@ -45,7 +45,7 @@ class MyAIUtil2 : precompile {
     $epoch_count : int, $mini_batch_size : int, $neurons_count_in_layers : int[], $learning_rate : int)
   {
     # Information on the function that converts m inputs to n outputs for each layer. Number of inputs, number of outputs, bias, weights
-    my $m_to_n_func_infos = MyAIUtil2->init_m_to_n_func_infos($neurons_count_in_layers);
+    my $m_to_n_func_infos = &init_m_to_n_func_infos($neurons_count_in_layers);
 
     # Training data index (only the first 40,000 images are used as training data. The remaining 10,000 images are used as validation data)
     my $training_data_indexes = new int[40000];
@@ -55,16 +55,16 @@ class MyAIUtil2 : precompile {
     }
 
     # Information on each transformation function in a mini-batch
-    my $m_to_n_func_mini_batch_infos = MyAIUtil2->init_m_to_n_func_mini_batch_infos($m_to_n_func_infos);
+    my $m_to_n_func_mini_batch_infos = &init_m_to_n_func_mini_batch_infos($m_to_n_func_infos);
 
     # Run the training set for a number of epochs
     for (my $epoch_index = 0; $epoch_index < $epoch_count; $epoch_index++) {
       
       # Shuffle the training data index (it seems that random learning is more generalizable)
-      my $training_data_indexes_shuffle = MyAIUtil2->shufflei($training_data_indexes);
+      my $training_data_indexes_shuffle = &shufflei($training_data_indexes);
       
       # Update parameters using stochastic gradient descent
-      MyAIUtil2->update_params_sgd(
+      &update_params_sgd(
         $m_to_n_func_mini_batch_infos,
         $m_to_n_func_infos,
         $training_data_indexes_shuffle,
@@ -101,7 +101,7 @@ class MyAIUtil2 : precompile {
         my $training_data_index = $training_data_indexes_shuffle->[$training_data_indexes_shuffle_index + $mini_batch_index];
         
         # Use backpropagation to get the gradient of the weights and biases with respect to the loss function
-        my $m_to_n_func_grad_infos = MyAIUtil2->backprop($m_to_n_func_infos, $mnist_train_image_info_spvm, $mnist_train_label_info_spvm, $training_data_index);
+        my $m_to_n_func_grad_infos = &backprop($m_to_n_func_infos, $mnist_train_image_info_spvm, $mnist_train_label_info_spvm, $training_data_index);
         
         # The slope of the bias loss function
         my $biase_grads_list = (List)$m_to_n_func_grad_infos->get("biases");
@@ -138,12 +138,12 @@ class MyAIUtil2 : precompile {
         
         my $m_to_n_func_mini_batch_info = (Hash)$m_to_n_func_mini_batch_infos->get($m_to_n_func_index);
         my $biase_grad_totals = (R::NDArray::Float)$m_to_n_func_mini_batch_info->get("biase_grad_totals");
-        MyAIUtil2->update_params($biases, $biase_grad_totals, $learning_rate, $mini_batch_size);
+        &update_params($biases, $biase_grad_totals, $learning_rate, $mini_batch_size);
         
         # Update the weights of each transformation function (taking into account the learning rate, sum of the gradients by the number of mini-batches, divided by the number of mini-batches)
         my $weights_mat = (R::NDArray::Float)$m_to_n_func_info->get("weights_mat");
         my $weight_grad_totals_mat = (R::NDArray::Float)$m_to_n_func_mini_batch_info->get("weight_grad_totals_mat");
-        MyAIUtil2->update_params($weights_mat, $weight_grad_totals_mat, $learning_rate, $mini_batch_size);
+        &update_params($weights_mat, $weight_grad_totals_mat, $learning_rate, $mini_batch_size);
       }
     }
   }
@@ -162,7 +162,7 @@ class MyAIUtil2 : precompile {
       
       # Initialize weights with Xavier initial values. Weights are column-major matrix.
       my $weights_length = $outputs_length * $inputs_length;
-      my $weights_mat = MFOP->matrix(MyAIUtil2->array_create_xavier_init_value($weights_length, $inputs_length), $outputs_length, $inputs_length);
+      my $weights_mat = MFOP->matrix(&array_create_xavier_init_value($weights_length, $inputs_length), $outputs_length, $inputs_length);
       
       # Set conversion function information
       my $m_to_n_func_info = Hash->new({});
@@ -221,14 +221,14 @@ class MyAIUtil2 : precompile {
     my $mnist_train_image_data = (byte[])$mnist_train_image_info_spvm->get("data");
     
     my $first_inputs_raw_uint8 = Array->copy_byte($mnist_train_image_data, $image_unit_length * $training_data_index, $image_unit_length);
-    my $first_inputs_raw_float = FOP->c(MyAIUtil2->convert_ubyte_array_to_float_array($first_inputs_raw_uint8));
+    my $first_inputs_raw_float = FOP->c(&convert_ubyte_array_to_float_array($first_inputs_raw_uint8));
     
     my $first_inputs = FOP->scadiv($first_inputs_raw_float, FOP->c(255f));
     
     # Generate a probability distribution for the expected outputる
     my $label_numbers = (IntList)$mnist_train_label_info_spvm->get("label_numbers");
     my $label_number = (Int)$label_numbers->get($training_data_index);
-    my $desired_outputs = MyAIUtil2->probabilize_desired_outputs($label_number);
+    my $desired_outputs = &probabilize_desired_outputs($label_number);
     
     # The bias slope of each transformation function
     my $biase_grads_in_m_to_n_funcs = List->new_len(new R::NDArray::Float[0], $m_to_n_func_infos->length);
@@ -284,7 +284,7 @@ class MyAIUtil2 : precompile {
       my $outputs = FOP->add($mul_weights_inputs, $biases);
       
       # Activated output - Apply the activation function to the output
-      my $activate_outputs = MyAIUtil2->array_sigmoid($outputs);
+      my $activate_outputs = &array_sigmoid($outputs);
       
       # Save output for backpropagation
       $outputs_in_m_to_n_funcs->push($outputs);
@@ -301,12 +301,12 @@ class MyAIUtil2 : precompile {
     
     # error
     
-    my $cost = MyAIUtil2->cross_entropy_cost($last_activate_outputs, $desired_outputs)->data->[0];
+    my $cost = &cross_entropy_cost($last_activate_outputs, $desired_outputs)->data->[0];
     print "Cost: " . Format->sprintf("%.3f", [(object)$cost]) . "\n";
     
     # Did you get it right?
-    my $answer = MyAIUtil2->max_index($last_activate_outputs)->data->[0];
-    my $desired_answer = MyAIUtil2->max_index($desired_outputs)->data->[0];
+    my $answer = &max_index($last_activate_outputs)->data->[0];
+    my $desired_answer = &max_index($desired_outputs)->data->[0];
     $TOTAL_COUNT++;
     if ($answer == $desired_answer) {
       $ANSWER_MATCH_COUNT++;
@@ -317,10 +317,10 @@ class MyAIUtil2 : precompile {
     print "Match Rate: " . Format->sprintf("%.02f", [(object)(100 * $match_rate)]) . "%\n";
     
     # Activated Output Change / Last Output Change
-    my $grad_last_outputs_to_activate_func = MyAIUtil2->array_sigmoid_derivative($last_outputs);
+    my $grad_last_outputs_to_activate_func = &array_sigmoid_derivative($last_outputs);
     
     # Small change in loss function / Small change in last activated output
-    my $grad_last_activate_outputs_to_cost_func = MyAIUtil2->cross_entropy_cost_derivative($last_activate_outputs, $desired_outputs);
+    my $grad_last_activate_outputs_to_cost_func = &cross_entropy_cost_derivative($last_activate_outputs, $desired_outputs);
 
     # Small change in loss function / Small change in final output (composite derivative)
     my $grad_last_outputs_to_cost_func = FOP->mul($grad_last_outputs_to_activate_func, $grad_last_activate_outputs_to_cost_func);
@@ -353,7 +353,7 @@ class MyAIUtil2 : precompile {
       my $forword_biase_grads_mat = MFOP->matrix($forword_biase_grads, $forword_biase_grads->length, 1);
       my $mul_forword_weights_transpose_mat_forword_biase_grads_mat = MFOP->mul($forword_weights_mat_transpose, $forword_biase_grads_mat);
       $mul_forword_weights_transpose_mat_forword_biase_grads_mat->drop_dim;
-      my $grads_outputs_to_array_sigmoid = MyAIUtil2->array_sigmoid_derivative($outputs);
+      my $grads_outputs_to_array_sigmoid = &array_sigmoid_derivative($outputs);
       my $biase_grads = FOP->mul($mul_forword_weights_transpose_mat_forword_biase_grads_mat, $grads_outputs_to_array_sigmoid);
 
       $biase_grads_in_m_to_n_funcs->set($m_to_n_func_index => $biase_grads);
