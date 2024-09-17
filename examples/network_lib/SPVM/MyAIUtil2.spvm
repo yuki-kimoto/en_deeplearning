@@ -528,44 +528,6 @@ class MyAIUtil2 : precompile {
     return $data_ret;
   }
 
-  # ReLU関数
-  static method relu : float ($x : float) {
-    
-    my $relu = $x * ($x > 0.0);
-    
-    return $relu;
-  }
-
-  # ReLU関数の導関数
-  static method relu_derivative : float ($x : float) {
-    
-    my $relu_derivative = 1 * ($x > 0.0);
-    
-    return $relu_derivative;
-  }
-
-  # 配列の各要素にReLU関数を適用する
-  static method array_relu : float[] ($data : float[]) {
-    
-    my $data_ret = new float[scalar @$data];
-    for (my $i = 0; $i < @$data; $i++) {
-      $data_ret->[$i] = &relu($data->[$i]);
-    }
-    
-    return $data_ret;
-  }
-  
-  # 配列の各要素にReLU関数の導関数を適用する
-  static method array_relu_derivative : float[] ($data : float[]) {
-    
-    my $data_ret = new float[scalar @$data];
-    for (my $i = 0; $i < @$data; $i++) {
-      $data_ret->[$i] = &relu_derivative($data->[$i]);
-    }
-    
-    return $data_ret;
-  }
-  
   static method cross_entropy_cost : R::NDArray::Float ($ndarray_x : R::NDArray::Float, $ndarray_y : R::NDArray::Float) {
     
     my $data_x = $ndarray_x->data;
