@@ -92,9 +92,9 @@ class MyAIUtil2 : precompile {
         # ミニバッチにおける各変換関数の重みの傾きの合計を0で初期化して作成
         my $weight_grad_totals_mat = (R::NDArray::Float)$m_to_n_func_mini_batch_info->get("weight_grad_totals_mat");
         
-        # $weight_grad_totals_mat->set_data(new float[scalar @{$weight_grad_totals_mat->data}]);
+        # $weight_grad_totals_mat->set_data(FOP->c(undef, [$weight_grad_totals_mat->length]);
         
-        Fn->memcpy($weight_grad_totals_mat->data, 0, new float[scalar @{$weight_grad_totals_mat->data}], 0, 4 * (scalar @{$weight_grad_totals_mat->data}));
+        Fn->memcpy($weight_grad_totals_mat->data, 0, FOP->c(undef, [$weight_grad_totals_mat->length])->data, 0, 4 * $weight_grad_totals_mat->length);
       }
       
       for (my $mini_batch_index = 0; $mini_batch_index < $mini_batch_size; $mini_batch_index++) {        
@@ -223,7 +223,7 @@ class MyAIUtil2 : precompile {
     my $first_inputs_raw_uint8 = Array->copy_byte($mnist_train_image_data, $image_unit_length * $training_data_index, $image_unit_length);
     my $first_inputs_raw_float = FOP->c(MyAIUtil2->convert_ubyte_array_to_float_array($first_inputs_raw_uint8))->data;
     
-    my $first_inputs = FOP->scadiv(FOP->c($first_inputs_raw_float), FOP->c(255f))->data;
+    my $first_inputs = FOP->scadiv(FOP->c($first_inputs_raw_float), FOP->c(255f));
     
     # 期待される出力を確率分布化する
     my $label_numbers = (IntList)$mnist_train_label_info_spvm->get("label_numbers");
@@ -250,24 +250,24 @@ class MyAIUtil2 : precompile {
     }
 
     # 各層の入力
-    my $inputs_in_m_to_n_funcs = List->new(new float[][0]);
+    my $inputs_in_m_to_n_funcs = List->new(new R::NDArray::Float[0]);
     $inputs_in_m_to_n_funcs->push($first_inputs);
     
     
     # 各層の活性化された出力
-    my $outputs_in_m_to_n_funcs = List->new(new float[][0]);
+    my $outputs_in_m_to_n_funcs = List->new(new R::NDArray::Float[0]);
     
     # 入力層の入力から出力層の出力を求める
     # バックプロパゲーションのために各層の出力と活性化された出力を保存
     for (my $m_to_n_func_index = 0; $m_to_n_func_index < $m_to_n_func_infos->length; $m_to_n_func_index++) {
-      my $cur_inputs = (float[])$inputs_in_m_to_n_funcs->get($inputs_in_m_to_n_funcs->length - 1);
+      my $cur_inputs = (R::NDArray::Float)$inputs_in_m_to_n_funcs->get($inputs_in_m_to_n_funcs->length - 1);
       my $m_to_n_func_info = (Hash)$m_to_n_func_infos->get($m_to_n_func_index);
       
       # 重み行列
       my $weights_mat = (R::NDArray::Float)$m_to_n_func_info->get("weights_mat");
       
       # 入力行列
-      my $cur_inputs_nrow = @$cur_inputs;
+      my $cur_inputs_nrow = $cur_inputs->length;
       my $cur_inputs_ncol = 1;
       
       my $cur_inputs_mat = MFOP->matrix($cur_inputs, $cur_inputs_nrow, $cur_inputs_ncol);
@@ -280,10 +280,10 @@ class MyAIUtil2 : precompile {
       my $biases = (R::NDArray::Float)$m_to_n_func_info->get("biases");
       
       # 出力 - 重みと入力の行列積とバイアスの和
-      my $outputs = FOP->add(FOP->c($mul_weights_inputs), $biases)->data;
+      my $outputs = FOP->add(FOP->c($mul_weights_inputs), $biases);
       
       # 活性化された出力 - 出力に活性化関数を適用
-      my $activate_outputs = MyAIUtil2->array_sigmoid(FOP->c($outputs))->data;
+      my $activate_outputs = MyAIUtil2->array_sigmoid(FOP->c($outputs));
       
       # バックプロパゲーションのために出力を保存
       $outputs_in_m_to_n_funcs->push($outputs);
@@ -293,10 +293,10 @@ class MyAIUtil2 : precompile {
     }
     
     # 最後の出力
-    my $last_outputs = (float[])$outputs_in_m_to_n_funcs->get($outputs_in_m_to_n_funcs->length - 1);
+    my $last_outputs = (R::NDArray::Float)$outputs_in_m_to_n_funcs->get($outputs_in_m_to_n_funcs->length - 1);
     
     # 最後の活性化された出力
-    my $last_activate_outputs = (float[])$inputs_in_m_to_n_funcs->pop;
+    my $last_activate_outputs = (R::NDArray::Float)$inputs_in_m_to_n_funcs->pop;
     
     # 誤差
     
@@ -330,8 +330,8 @@ class MyAIUtil2 : precompile {
 
     # 損失関数の微小変化 / 最終の層の重みの微小変化
     my $last_biase_grads_mat = MFOP->matrix($last_biase_grads, $last_biase_grads->length, 1);
-    my $last_inputs = (float[])$inputs_in_m_to_n_funcs->get($inputs_in_m_to_n_funcs->length - 1);
-    my $last_inputs_transpose_mat = MFOP->matrix($last_inputs, 1, scalar @$last_inputs);
+    my $last_inputs = (R::NDArray::Float)$inputs_in_m_to_n_funcs->get($inputs_in_m_to_n_funcs->length - 1);
+    my $last_inputs_transpose_mat = MFOP->matrix($last_inputs, 1, $last_inputs->length);
     my $last_weight_grads_mat = MFOP->mul($last_biase_grads_mat, $last_inputs_transpose_mat);
       
     $biase_grads_in_m_to_n_funcs->set($biase_grads_in_m_to_n_funcs->length - 1 => $last_biase_grads);
@@ -341,7 +341,7 @@ class MyAIUtil2 : precompile {
     for (my $m_to_n_func_index = $m_to_n_func_infos->length - 2; $m_to_n_func_index >= 0; $m_to_n_func_index--) {
       
       # 活性化された出力の微小変化 / 出力の微小変化
-      my $outputs = (float[])$outputs_in_m_to_n_funcs->get($m_to_n_func_index);
+      my $outputs = (R::NDArray::Float)$outputs_in_m_to_n_funcs->get($m_to_n_func_index);
 
       # 損失関数の微小変化 / この層のバイアスの微小変化(微分の連鎖率を使って求める)
       # 次の層の重みの傾きの転置行列とバイアスの傾きの転置行列をかけて、それぞれの要素に、活性化関数の導関数をかける
@@ -359,9 +359,9 @@ class MyAIUtil2 : precompile {
       
       # 損失関数の微小変化 / この層の重みの微小変化(微分の連鎖率を使って求める)
       my $biase_grads_mat = MFOP->matrix($biase_grads, $biase_grads->length, 1);
-      my $inputs = (float[])$inputs_in_m_to_n_funcs->get($m_to_n_func_index);
+      my $inputs = (R::NDArray::Float)$inputs_in_m_to_n_funcs->get($m_to_n_func_index);
       
-      my $inputs_mat_transpose = MFOP->matrix($inputs, 1, scalar @$inputs);
+      my $inputs_mat_transpose = MFOP->matrix($inputs, 1, $inputs->length);
       
       my $weights_grads_mat = MFOP->mul($biase_grads_mat, $inputs_mat_transpose);
       
