@@ -138,7 +138,7 @@ class MyAIUtil2 : precompile {
         
         my $m_to_n_func_mini_batch_info = (Hash)$m_to_n_func_mini_batch_infos->get($m_to_n_func_index);
         my $biase_grad_totals = (R::NDArray::Float)$m_to_n_func_mini_batch_info->get("biase_grad_totals");
-        MyAIUtil2->update_params($biases, FOP->c($biase_grad_totals), $learning_rate, $mini_batch_size);
+        MyAIUtil2->update_params($biases, $biase_grad_totals, $learning_rate, $mini_batch_size);
         
         # 各変換関数の重みを更新(学習率を考慮し、傾きの合計をミニバッチ数で、ミニバッチ数で割る)
         my $weights_mat = (R::NDArray::Float)$m_to_n_func_info->get("weights_mat");
