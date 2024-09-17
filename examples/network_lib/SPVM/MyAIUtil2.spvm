@@ -306,7 +306,7 @@ class MyAIUtil2 : precompile {
     
     # 正解したかどうか
     my $answer = MyAIUtil2->max_index($last_activate_outputs)->data->[0];
-    my $desired_answer = MyAIUtil2->max_index(FOP->c($desired_outputs))->data->[0];
+    my $desired_answer = MyAIUtil2->max_index($desired_outputs)->data->[0];
     $TOTAL_COUNT++;
     if ($answer == $desired_answer) {
       $ANSWER_MATCH_COUNT++;
@@ -317,13 +317,13 @@ class MyAIUtil2 : precompile {
     print "Match Rate: " . Format->sprintf("%.02f", [(object)(100 * $match_rate)]) . "%\n";
     
     # 活性化された出力の微小変化 / 最後の出力の微小変化 
-    my $grad_last_outputs_to_activate_func = MyAIUtil2->array_sigmoid_derivative(FOP->c($last_outputs))->data;
+    my $grad_last_outputs_to_activate_func = MyAIUtil2->array_sigmoid_derivative($last_outputs);
     
     # 損失関数の微小変化 / 最後に活性化された出力の微小変化
-    my $grad_last_activate_outputs_to_cost_func = MyAIUtil2->cross_entropy_cost_derivative(FOP->c($last_activate_outputs), FOP->c($desired_outputs))->data;
+    my $grad_last_activate_outputs_to_cost_func = MyAIUtil2->cross_entropy_cost_derivative($last_activate_outputs, $desired_outputs);
 
     # 損失関数の微小変化 / 最後の出力の微小変化 (合成微分)
-    my $grad_last_outputs_to_cost_func = FOP->mul(FOP->c($grad_last_outputs_to_activate_func), FOP->c($grad_last_activate_outputs_to_cost_func));
+    my $grad_last_outputs_to_cost_func = FOP->mul($grad_last_outputs_to_activate_func, $grad_last_activate_outputs_to_cost_func);
 
     # 損失関数の微小変化 / 最終の層のバイアスの微小変化
     my $last_biase_grads = $grad_last_outputs_to_cost_func;
@@ -353,7 +353,7 @@ class MyAIUtil2 : precompile {
       my $forword_biase_grads_mat = MFOP->matrix($forword_biase_grads, $forword_biase_grads->length, 1);
       my $mul_forword_weights_transpose_mat_forword_biase_grads_mat = MFOP->mul($forword_weights_mat_transpose, $forword_biase_grads_mat);
       my $mul_forword_weights_transpose_mat_forword_biase_grads_mat_data = $mul_forword_weights_transpose_mat_forword_biase_grads_mat->data;
-      my $grads_outputs_to_array_sigmoid = MyAIUtil2->array_sigmoid_derivative(FOP->c($outputs))->data;
+      my $grads_outputs_to_array_sigmoid = MyAIUtil2->array_sigmoid_derivative($outputs);
       my $biase_grads = FOP->mul(FOP->c($mul_forword_weights_transpose_mat_forword_biase_grads_mat_data), FOP->c($grads_outputs_to_array_sigmoid));
 
       $biase_grads_in_m_to_n_funcs->set($m_to_n_func_index => $biase_grads);
