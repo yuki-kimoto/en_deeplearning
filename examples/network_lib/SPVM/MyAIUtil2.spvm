@@ -299,7 +299,7 @@ class MyAIUtil2 : precompile {
     
     # 誤差
     
-    my $cost = MyAIUtil2->cross_entropy_cost($last_activate_outputs, $desired_outputs);
+    my $cost = MyAIUtil2->cross_entropy_cost(FOP->c($last_activate_outputs), FOP->c($desired_outputs))->data->[0];
     print "Cost: " . Format->sprintf("%.3f", [(object)$cost]) . "\n";
     
     # 正解したかどうか
@@ -566,15 +566,21 @@ class MyAIUtil2 : precompile {
     return $data_ret;
   }
   
-  static method cross_entropy_cost : float ($data_x : float[], $data_y : float[]) {
+  static method cross_entropy_cost : R::NDArray::Float ($ndarray_x : R::NDArray::Float, $ndarray_y : R::NDArray::Float) {
     
-    my $cross_entropy_cost = 0f;
+    my $data_x = $ndarray_x->data;
+    
+    my $data_y = $ndarray_y->data;
+    
+    my $data_ret = 0f;
     for (my $i = 0; $i < @$data_x; $i++) {
       my $tmp = -$data_y->[$i] * Math->logf($data_x->[$i]) - (1 - $data_y->[$i]) * Math->logf(1 - $data_x->[$i]);
-      $cross_entropy_cost += $tmp;
+      $data_ret += $tmp;
     }
     
-    return $cross_entropy_cost;
+    my $ndarray_ret = FOP->c($data_ret);
+    
+    return $ndarray_ret;
   }
   
   static method cross_entropy_cost_derivative : R::NDArray::Float ($ndarray_x : R::NDArray::Float, $ndarray_y : R::NDArray::Float) {
