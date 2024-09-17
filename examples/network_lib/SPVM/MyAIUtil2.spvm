@@ -220,8 +220,7 @@ class MyAIUtil2 : precompile {
     my $mnist_train_image_data = (byte[])$mnist_train_image_info_spvm->get("data");
     
     my $first_inputs_raw_uint8 = Array->copy_byte($mnist_train_image_data, $image_unit_length * $training_data_index, $image_unit_length);
-    my $first_inputs_raw_float = MyAIUtil2->convert_ubyte_array_to_float_array($first_inputs_raw_uint8);
-    
+    my $first_inputs_raw_float = FOP->c(MyAIUtil2->convert_ubyte_array_to_float_array($first_inputs_raw_uint8))->data;
     
     my $first_inputs = FOP->scadiv(FOP->c($first_inputs_raw_float), FOP->c(255f))->data;
     
