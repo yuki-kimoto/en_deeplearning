@@ -7,6 +7,7 @@ class MyAIUtil2 {
   use Array;
   use Format;
   use Sys;
+  use R::OP::Byte as BOP;
   use R::OP::Int as IOP;
   use R::OP::Float as FOP;
   use R::OP::Matrix::Float as MFOP;
@@ -221,7 +222,7 @@ class MyAIUtil2 {
     my $mnist_train_image_data = (byte[])$mnist_train_image_info_spvm->get("data");
     
     my $first_inputs_raw_uint8 = Array->copy_byte($mnist_train_image_data, $image_unit_length * $training_data_index, $image_unit_length);
-    my $first_inputs_raw_float = FOP->c(&convert_ubyte_array_to_float_array($first_inputs_raw_uint8));
+    my $first_inputs_raw_float = IOP->bit_and(BOP->c($first_inputs_raw_uint8)->to_int_ndarray, IOP->c(0xFF))->to_float_ndarray;
     
     my $first_inputs = FOP->div($first_inputs_raw_float, FOP->c(255f));
     
@@ -374,16 +375,6 @@ class MyAIUtil2 {
     $m_to_n_func_grad_infos->set(weights_mat => $weight_grads_mat_in_m_to_n_funcs);
     
     return $m_to_n_func_grad_infos;
-  }
-  
-  static method convert_ubyte_array_to_float_array : float[] ($ubytes : byte[]) {
-    my $floats = new float[scalar @$ubytes];
-    
-    for (my $i = 0; $i < @$ubytes; $i++) {
-      $floats->[$i] = ((int)$ubytes->[$i]) & 0xFF;
-    }
-    
-    return $floats;
   }
   
   # Update parameters taking into account learning rate and mini-batch size
