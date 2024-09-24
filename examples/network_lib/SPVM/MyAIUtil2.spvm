@@ -223,7 +223,7 @@ class MyAIUtil2 {
     my $first_inputs_raw_uint8 = Array->copy_byte($mnist_train_image_data, $image_unit_length * $training_data_index, $image_unit_length);
     my $first_inputs_raw_float = FOP->c(&convert_ubyte_array_to_float_array($first_inputs_raw_uint8));
     
-    my $first_inputs = FOP->scadiv($first_inputs_raw_float, FOP->c(255f));
+    my $first_inputs = FOP->div($first_inputs_raw_float, FOP->c(255f));
     
     # Generate a probability distribution for the expected outputる
     my $label_numbers = (IntList)$mnist_train_label_info_spvm->get("label_numbers");
