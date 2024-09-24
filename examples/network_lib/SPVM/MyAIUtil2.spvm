@@ -26,22 +26,6 @@ class MyAIUtil2 {
     $SEED = (int)Sys->time;
   }
   
-  
-  # Shuffle
-  static method shufflei : int[] ($array_original : int[]) {
-    my $size = @$array_original;
-    my $array = Array->copy_int($array_original);
-    for (my $i = 0; $i < $size; $i++) {
-      my $seed = $SEED;
-      my $j = Fn->crand(\$seed) % $size;
-      $SEED = $seed;
-      my $t = $array->[$i];
-      $array->[$i] = $array->[$j];
-      $array->[$j] = $t;
-    }
-    return $array;
-  }
-  
   static method train_deep_network : void ($mnist_train_image_info_spvm : Hash, $mnist_train_label_info_spvm : Hash,
     $epoch_count : int, $mini_batch_size : int, $neurons_count_in_layers : int[], $learning_rate : int)
   {
@@ -62,7 +46,10 @@ class MyAIUtil2 {
     for (my $epoch_index = 0; $epoch_index < $epoch_count; $epoch_index++) {
       
       # Shuffle the training data index (it seems that random learning is more generalizable)
-      my $training_data_indexes_shuffle = &shufflei($training_data_indexes);
+      my $training_data_indexes_shuffle = copy $training_data_indexes;
+      my $seed = $SEED;
+      Array->shuffle($training_data_indexes_shuffle, \$seed);
+      $SEED = $seed;
       
       # Update parameters using stochastic gradient descent
       &update_params_sgd(
