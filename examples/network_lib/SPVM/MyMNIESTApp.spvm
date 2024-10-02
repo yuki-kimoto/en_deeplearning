@@ -5,9 +5,11 @@ class MyMNIESTApp {
   use Hash;
   use List;
   use IntList;
-
-  static method main () {
+  use IO::File;
+  use FindBin;
   
+  static method main : void () {
+    
     # Learning Rate
     my $learning_rate = 3;
     
@@ -21,106 +23,96 @@ class MyMNIESTApp {
     # 28 * 28 = 728 monochrome images         (input)
     # Through 30 intermediate outputs         (Intermediate Output 1)
     # Classify into 10 categories from 0 to 9 (output)
-    my $neurons_count_in_layers = $api->new_int_array([784, 30, 10]);
+    my $neurons_count_in_layers = [784, 30, 10];
+    
+    my $program_dir = FindBin->Bin;
     
     # Read MNIEST image information - handwritten training data to use as input
-    my $mnist_train_image_file = "$FindBin::Bin/data/train-images-idx3-ubyte";
-    my $mnist_train_image_info = load_mnist_train_image_file($mnist_train_image_file);
+    my $mnist_train_image_file = "$program_dir/data/train-images-idx3-ubyte";
+    my $mnist_train_image_info = &load_mnist_train_image_file($mnist_train_image_file);
     
     # Read MNIEST label information - expected output for handwritten training data
-    my $mnist_train_label_file = "$FindBin::Bin/data/train-labels-idx1-ubyte";
-    my $mnist_train_label_info = load_mnist_train_label_file($mnist_train_label_file);
-    
-    # Converting MNIEST image information to SPVM data
-    my $mnist_train_image_info_spvm = Hash->new($api->new_object_array('object[]', []));
-    $mnist_train_image_info_spvm->set_int(items_count => $mnist_train_image_info->{items_count});
-    $mnist_train_image_info_spvm->set_int(rows_count => $mnist_train_image_info->{rows_count});
-    $mnist_train_image_info_spvm->set_int(columns_count => $mnist_train_image_info->{columns_count});
-    $mnist_train_image_info_spvm->set(data => $api->new_byte_array_from_bin($mnist_train_image_info->{data}));
-    
-    # Converting MNIEST label information to SPVM data
-    my $mnist_train_label_info_spvm = Hash->new($api->new_object_array('object[]', []));
-    $mnist_train_label_info_spvm->set_int(items_count => $mnist_train_label_info->{items_count});
-    $mnist_train_label_info_spvm->set(label_numbers => IntList->new($mnist_train_label_info->{label_numbers}));
+    my $mnist_train_label_file = "$program_dir/data/train-labels-idx1-ubyte";
+    my $mnist_train_label_info = &load_mnist_train_label_file($mnist_train_label_file);
     
     # Train a deep network
-    MyAIUtil2->train_deep_network($mnist_train_image_info_spvm, $mnist_train_label_info_spvm, $epoch_count, $mini_batch_size, $neurons_count_in_layers, $learning_rate);
+    MyAIUtil2->train_deep_network($mnist_train_image_info, $mnist_train_label_info, $epoch_count, $mini_batch_size, $neurons_count_in_layers, $learning_rate);
   }
   
   # Load MNIST image information
-  static method load_mnist_train_image_file ($mnist_image_file : string) {
+  static method load_mnist_train_image_file : Hash ($mnist_image_file : string) {
     
-    open my $mnist_image_fh, '<', $mnist_image_file
-      or die "Can't open file $mnist_image_file: $!";
+    my $mnist_image_fh = IO::File->new($mnist_image_file, "<");
     
     # Magic Number
-    my $image_buffer;
-    read($mnist_image_fh, $image_buffer, 4);
-    my $magic_number = unpack('N1', $image_buffer);
+    my $image_buffer = (mutable string)new_string_len 256;
+    $mnist_image_fh->read($image_buffer, 4);
+    
+    my $magic_number = Fn->unpack("l>", $image_buffer)->[0]->(int);
     if ($magic_number != 0x00000803) {
       die "Invalid magic number expected " . 0x00000803 . "actual $magic_number";
     }
     
     # Number of images
-    read($mnist_image_fh, $image_buffer, 4);
-    my $items_count = unpack('N1', $image_buffer);
+    $mnist_image_fh->read($image_buffer, 4);
+    my $items_count = Fn->unpack("l>", $image_buffer)->[0]->(int);
     
     # Image row pixel count
-    read($mnist_image_fh, $image_buffer, 4);
-    my $rows_count = unpack('N1', $image_buffer);
+    $mnist_image_fh->read($image_buffer, 4);
+    my $rows_count = Fn->unpack("l>", $image_buffer)->[0]->(int);
     
     # Image column pixel count
-    read($mnist_image_fh, $image_buffer, 4);
-    my $columns_count = unpack('N1', $image_buffer);
+    $mnist_image_fh->read($image_buffer, 4);
+    my $columns_count = Fn->unpack("l>", $image_buffer)->[0]->(int);
     
     # Loading images
-    my $image_data;
     my $all_images_length = $items_count * $rows_count * $columns_count;
-    my $read_length = read $mnist_image_fh, $image_data, $all_images_length;
+    my $image_data = (mutable string)new_string_len $all_images_length;
+    my $read_length = $mnist_image_fh->read($image_data, $all_images_length);
     unless ($read_length == $all_images_length) {
       die "Can't read all images";
     }
     
     # Image information
-    my $image_info = {};
-    $image_info->{items_count} = $items_count;
-    $image_info->{rows_count} = $rows_count;
-    $image_info->{columns_count} = $columns_count;
-    $image_info->{data} = $image_data;
+    my $image_info = Hash->new;
+    $image_info->set(items_count => $items_count);
+    $image_info->set(rows_count => $rows_count);
+    $image_info->set(columns_count => $columns_count);
+    $image_info->set(data => $image_data);
     
     return $image_info;
   }
-
+  
   # Load MNIST image information
-  static method load_mnist_train_label_file ($mnist_label_file : string) {
+  static method load_mnist_train_label_file : Hash ($mnist_label_file : string) {
     
-    open my $mnist_label_fh, '<', $mnist_label_file
-      or die "Can't open file $mnist_label_file: $!";
+    my $mnist_label_fh = IO::File->new($mnist_label_file, "<");
     
     # Magic Number
-    my $label_buffer;
-    read($mnist_label_fh, $label_buffer, 4);
-    my $magic_number = unpack('N1', $label_buffer);
+    my $label_buffer = (mutable string)new_string_len 256;
+    $mnist_label_fh->read($label_buffer, 4);
+    my $magic_number = Fn->unpack("l>", $label_buffer)->[0]->(int);;
     if ($magic_number != 0x00000801) {
       die "Invalid magic number expected " . 0x00000801 . "actual $magic_number";
     }
     
     # Number of labels
-    read($mnist_label_fh, $label_buffer, 4);
-    my $items_count = unpack('N1', $label_buffer);
+    $mnist_label_fh->read($label_buffer, 4);
+    my $items_count = Fn->unpack("l>", $label_buffer)->[0]->(int);
     
     # Loading labels
-    my $label_numbers = [];
+    my $label_numbers_list = IntList->new;
     for (my $i = 0; $i < $items_count; $i++) {
-      read $mnist_label_fh, $label_buffer, 1;
-      my $label_number = unpack('C1', $label_buffer);
-      push @$label_numbers, $label_number;
+      $mnist_label_fh->read($label_buffer, 1);
+      my $label_number = Fn->unpack("c", $label_buffer)->[0]->(byte)->(int);
+      $label_numbers_list->push($label_number);
     }
+    my $label_numbers = $label_numbers_list->to_array;
     
     # Label Information
-    my $label_info = {};
-    $label_info->{items_count} = $items_count;
-    $label_info->{label_numbers} = $label_numbers;
+    my $label_info = Hash->new;
+    $label_info->set(items_count => $items_count);
+    $label_info->set(label_numbers => $label_numbers);
     
     return $label_info;
   }
