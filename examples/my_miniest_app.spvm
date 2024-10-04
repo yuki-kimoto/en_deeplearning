@@ -1,4 +1,4 @@
-class MyMNIESTApp {
+class {
   
   use MyAIUtil2;
   use Array;

@@ -206,16 +206,17 @@ class MyAIUtil2 {
     my $mnist_train_image_rows_count = (int)$mnist_train_image_info_spvm->get("rows_count");
     my $mnist_train_image_columns_count = (int)$mnist_train_image_info_spvm->get("columns_count");
     my $image_unit_length = $mnist_train_image_rows_count * $mnist_train_image_columns_count;
-    my $mnist_train_image_data = (byte[])$mnist_train_image_info_spvm->get("data");
+    my $mnist_train_image_data = (string)$mnist_train_image_info_spvm->get("data");
     
-    my $first_inputs_raw_uint8 = Array->copy_byte($mnist_train_image_data, $image_unit_length * $training_data_index, $image_unit_length);
+    my $first_inputs_raw_uint8 = new byte[$image_unit_length];
+    Fn->memcpy($first_inputs_raw_uint8, 0, $mnist_train_image_data, $image_unit_length * $training_data_index, $image_unit_length);
     my $first_inputs_raw_float = IOP->bit_and(BOP->c($first_inputs_raw_uint8)->to_int_ndarray, IOP->c(0xFF))->to_float_ndarray;
     
     my $first_inputs = FOP->div($first_inputs_raw_float, FOP->c(255f));
     
     # Generate a probability distribution for the expected outputる
-    my $label_numbers = (IntList)$mnist_train_label_info_spvm->get("label_numbers");
-    my $label_number = (Int)$label_numbers->get($training_data_index);
+    my $label_numbers = (int[])$mnist_train_label_info_spvm->get("label_numbers");
+    my $label_number = $label_numbers->[$training_data_index];
     my $desired_outputs = &probabilize_desired_outputs($label_number);
     
     # The bias slope of each transformation function
