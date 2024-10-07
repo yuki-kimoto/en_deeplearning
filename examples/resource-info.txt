@@ -1,0 +1,352 @@
+[Fn]
+# /home/kimoto/perl5/perlbrew/perls/perl-5.36.0/lib/site_perl/5.36.0/x86_64-linux/SPVM/Fn.config
+# Loaded Resources:
+#    Fn::Resource
+# Copyright & License
+# Copyright 2023 Yuki Kimoto. All Rights Reserved.
+# MIT License.
+
+use strict;
+use warnings;
+
+use SPVM::Builder::Config;
+my $config = SPVM::Builder::Config->new_gnu99(file => __FILE__);;
+
+# For test only
+$config->use_resource('Fn::Resource');
+
+$config;
+
+[R::OP::Matrix::Float]
+# /home/kimoto/perl5/perlbrew/perls/perl-5.36.0/lib/site_perl/5.36.0/SPVM/R/OP/Matrix/Float.config
+# Loaded Resources:
+#    Resource::Eigen
+# Copyright (c) 2024 Yuki Kimoto
+# MIT License
+
+use strict;
+use warnings;
+use SPVM::Builder::Config;
+
+my $config = SPVM::Builder::Config->new_cpp17(file => __FILE__);
+
+$config->use_resource('Resource::Eigen');
+
+$config;
+
+[Sys::Ioctl]
+# /home/kimoto/perl5/perlbrew/perls/perl-5.36.0/lib/site_perl/5.36.0/SPVM/Sys/Ioctl.config
+# Loaded Resources:
+#    Resource::SocketUtil
+# Copyright (c) 2023 Yuki Kimoto
+# MIT License
+
+use strict;
+use warnings;
+use SPVM::Builder::Config;
+
+my $config = SPVM::Builder::Config->new_gnu99(file => __FILE__);
+
+$config->use_resource('Resource::SocketUtil');
+
+if ($^O eq 'MSWin32') {
+  $config->add_lib('wsock32', 'ws2_32');
+}
+
+$config;
+
+[Sys::Select]
+# /home/kimoto/perl5/perlbrew/perls/perl-5.36.0/lib/site_perl/5.36.0/SPVM/Sys/Select.config
+# Loaded Resources:
+#    Resource::SocketUtil
+# Copyright (c) 2023 Yuki Kimoto
+# MIT License
+
+use strict;
+use warnings;
+use SPVM::Builder::Config;
+
+my $config = SPVM::Builder::Config->new_gnu99(file => __FILE__);
+
+$config->use_resource('Resource::SocketUtil');
+
+if ($^O eq 'MSWin32') {
+  $config->add_lib('wsock32', 'ws2_32');
+}
+
+$config;
+
+[Sys::Socket]
+# /home/kimoto/perl5/perlbrew/perls/perl-5.36.0/lib/site_perl/5.36.0/SPVM/Sys/Socket.config
+# Loaded Resources:
+#    Resource::SocketUtil
+# Copyright (c) 2023 Yuki Kimoto
+# MIT License
+
+use strict;
+use warnings;
+use SPVM::Builder::Config;
+
+my $config = SPVM::Builder::Config->new_gnu99(file => __FILE__);
+
+$config->use_resource('Resource::SocketUtil');
+
+if ($^O eq 'MSWin32') {
+  $config->add_lib('wsock32', 'ws2_32');
+}
+
+$config;
+
+[Sys::Socket::Constant]
+# /home/kimoto/perl5/perlbrew/perls/perl-5.36.0/lib/site_perl/5.36.0/SPVM/Sys/Socket/Constant.config
+# Loaded Resources:
+#    Resource::SocketUtil
+# Copyright (c) 2023 Yuki Kimoto
+# MIT License
+
+use strict;
+use warnings;
+use SPVM::Builder::Config;
+
+my $config = SPVM::Builder::Config->new_gnu99(file => __FILE__);
+
+$config->use_resource('Resource::SocketUtil');
+
+if ($^O eq 'MSWin32') {
+  $config->add_lib('wsock32', 'ws2_32');
+}
+
+$config;
+
+[Sys::Socket::Sockaddr::Storage]
+# /home/kimoto/perl5/perlbrew/perls/perl-5.36.0/lib/site_perl/5.36.0/SPVM/Sys/Socket/Sockaddr/Storage.config
+# Loaded Resources:
+#    Resource::SocketUtil
+# Copyright (c) 2023 Yuki Kimoto
+# MIT License
+
+use strict;
+use warnings;
+use SPVM::Builder::Config;
+
+my $config = SPVM::Builder::Config->new_gnu99(file => __FILE__);
+
+$config->use_resource('Resource::SocketUtil');
+
+if ($^O eq 'MSWin32') {
+  $config->add_lib('wsock32', 'ws2_32');
+}
+
+$config;
+
+[Sys::Socket::Errno]
+# /home/kimoto/perl5/perlbrew/perls/perl-5.36.0/lib/site_perl/5.36.0/SPVM/Sys/Socket/Errno.config
+# Loaded Resources:
+#    Resource::SocketUtil
+# Copyright (c) 2023 Yuki Kimoto
+# MIT License
+
+use strict;
+use warnings;
+use SPVM::Builder::Config;
+
+my $config = SPVM::Builder::Config->new_gnu99(file => __FILE__);
+
+$config->use_resource('Resource::SocketUtil');
+
+if ($^O eq 'MSWin32') {
+  $config->add_lib('wsock32', 'ws2_32');
+}
+
+$config;
+
+[Sys::Socket::Addrinfo]
+# /home/kimoto/perl5/perlbrew/perls/perl-5.36.0/lib/site_perl/5.36.0/SPVM/Sys/Socket/Addrinfo.config
+# Loaded Resources:
+#    Resource::SocketUtil
+# Copyright (c) 2023 Yuki Kimoto
+# MIT License
+
+use strict;
+use warnings;
+use SPVM::Builder::Config;
+
+my $config = SPVM::Builder::Config->new_gnu99(file => __FILE__);
+
+$config->use_resource('Resource::SocketUtil');
+
+if ($^O eq 'MSWin32') {
+  $config->add_lib('wsock32', 'ws2_32');
+}
+
+$config;
+
+[Sys::Socket::AddrinfoLinkedList]
+# /home/kimoto/perl5/perlbrew/perls/perl-5.36.0/lib/site_perl/5.36.0/SPVM/Sys/Socket/AddrinfoLinkedList.config
+# Loaded Resources:
+#    Resource::SocketUtil
+# Copyright (c) 2023 Yuki Kimoto
+# MIT License
+
+use strict;
+use warnings;
+use SPVM::Builder::Config;
+
+my $config = SPVM::Builder::Config->new_gnu99(file => __FILE__);
+
+$config->use_resource('Resource::SocketUtil');
+
+if ($^O eq 'MSWin32') {
+  $config->add_lib('wsock32', 'ws2_32');
+}
+
+$config;
+
+[Sys::Socket::Sockaddr]
+# /home/kimoto/perl5/perlbrew/perls/perl-5.36.0/lib/site_perl/5.36.0/SPVM/Sys/Socket/Sockaddr.config
+# Loaded Resources:
+#    Resource::SocketUtil
+# Copyright (c) 2023 Yuki Kimoto
+# MIT License
+
+use strict;
+use warnings;
+use SPVM::Builder::Config;
+
+my $config = SPVM::Builder::Config->new_gnu99(file => __FILE__);
+
+$config->use_resource('Resource::SocketUtil');
+
+if ($^O eq 'MSWin32') {
+  $config->add_lib('wsock32', 'ws2_32');
+}
+
+$config;
+
+[Sys::Socket::Sockaddr::In]
+# /home/kimoto/perl5/perlbrew/perls/perl-5.36.0/lib/site_perl/5.36.0/SPVM/Sys/Socket/Sockaddr/In.config
+# Loaded Resources:
+#    Resource::SocketUtil
+# Copyright (c) 2023 Yuki Kimoto
+# MIT License
+
+use strict;
+use warnings;
+use SPVM::Builder::Config;
+
+my $config = SPVM::Builder::Config->new_gnu99(file => __FILE__);
+
+$config->use_resource('Resource::SocketUtil');
+
+if ($^O eq 'MSWin32') {
+  $config->add_lib('wsock32', 'ws2_32');
+}
+
+$config;
+
+[Sys::Socket::Sockaddr::In6]
+# /home/kimoto/perl5/perlbrew/perls/perl-5.36.0/lib/site_perl/5.36.0/SPVM/Sys/Socket/Sockaddr/In6.config
+# Loaded Resources:
+#    Resource::SocketUtil
+# Copyright (c) 2023 Yuki Kimoto
+# MIT License
+
+use strict;
+use warnings;
+use SPVM::Builder::Config;
+
+my $config = SPVM::Builder::Config->new_gnu99(file => __FILE__);
+
+$config->use_resource('Resource::SocketUtil');
+
+if ($^O eq 'MSWin32') {
+  $config->add_lib('wsock32', 'ws2_32');
+}
+
+$config;
+
+[Sys::Socket::Sockaddr::Un]
+# /home/kimoto/perl5/perlbrew/perls/perl-5.36.0/lib/site_perl/5.36.0/SPVM/Sys/Socket/Sockaddr/Un.config
+# Loaded Resources:
+#    Resource::SocketUtil
+# Copyright (c) 2023 Yuki Kimoto
+# MIT License
+
+use strict;
+use warnings;
+use SPVM::Builder::Config;
+
+my $config = SPVM::Builder::Config->new_gnu99(file => __FILE__);
+
+$config->use_resource('Resource::SocketUtil');
+
+if ($^O eq 'MSWin32') {
+  $config->add_lib('wsock32', 'ws2_32');
+}
+
+$config;
+
+[Sys::Socket::In_addr]
+# /home/kimoto/perl5/perlbrew/perls/perl-5.36.0/lib/site_perl/5.36.0/SPVM/Sys/Socket/In_addr.config
+# Loaded Resources:
+#    Resource::SocketUtil
+# Copyright (c) 2023 Yuki Kimoto
+# MIT License
+
+use strict;
+use warnings;
+use SPVM::Builder::Config;
+
+my $config = SPVM::Builder::Config->new_gnu99(file => __FILE__);
+
+$config->use_resource('Resource::SocketUtil');
+
+if ($^O eq 'MSWin32') {
+  $config->add_lib('wsock32', 'ws2_32');
+}
+
+$config;
+
+[Sys::Socket::In6_addr]
+# /home/kimoto/perl5/perlbrew/perls/perl-5.36.0/lib/site_perl/5.36.0/SPVM/Sys/Socket/In6_addr.config
+# Loaded Resources:
+#    Resource::SocketUtil
+# Copyright (c) 2023 Yuki Kimoto
+# MIT License
+
+use strict;
+use warnings;
+use SPVM::Builder::Config;
+
+my $config = SPVM::Builder::Config->new_gnu99(file => __FILE__);
+
+$config->use_resource('Resource::SocketUtil');
+
+if ($^O eq 'MSWin32') {
+  $config->add_lib('wsock32', 'ws2_32');
+}
+
+$config;
+
+[Regex]
+# /home/kimoto/perl5/perlbrew/perls/perl-5.36.0/lib/site_perl/5.36.0/SPVM/Regex.config
+# Loaded Resources:
+#    Resource::RE2
+use strict;
+use warnings;
+use SPVM::Builder::Config;
+
+my $config = SPVM::Builder::Config->new_cpp17(file => __FILE__);
+
+my $resource = $config->use_resource('Resource::RE2');
+
+
+if ($^O eq 'MSWin32') {
+  $config->add_static_lib('stdc++', 'winpthread', 'gcc');
+}
+else {
+  $config->add_lib('stdc++');
+}
+
+$config;
+
