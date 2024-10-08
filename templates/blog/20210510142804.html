@@ -1,17 +1,64 @@
-<h2> Accelerate deep learning using SPVM </h2>
+<h2>Deep Learning using SPVM</h2>
 
-Deep learning acceleration using <a href="https://metacpan.org/pod/SPVM"> SPVM</a>. MNIST handwriting recognition deep learning is written in SPVM and called from <a href="https://perlzemi.com/"> Perl</a>. SPVM is transpiled to C, so <a href="https://en.c.perlzemi.com/"> C</a> performance is achieved.
+SPVM is a Perl-like static typed programing language that can generate an executable file.
 
-<h4> Accelerating deep learning using SPVM-Part 1 Partial SPVM </h4>
+<h4>A Perl Program using SPVM partially version 1 - MNIST</h4>
 
-Part of the source code for MNIST handwriting recognition deep learning written in <a href="/blog/20200926161518.html"> Pure Perl</a> has been rewritten using SPVM.
+<a href="/blog/20200926161518.html">A Perl deep learning program</a> is rewrriten using SPVM partially. Performance has improved.
 
-In addition, it was rewritten to SPVM in earnest. Performance has improved dramatically.
+<ul>
+  <li><a href="https://github.com/yuki-kimoto/en_deeplearning/blob/master/examples/deep_learning_spvm.pl">deep_learning_spvm.pl</a></li>
+  <li><a href="https://github.com/yuki-kimoto/en_deeplearning/blob/master/examples/network_lib/SPVM/MyAIUtil.spvm">MyAIUtil</a></li>
+  <li><a href="https://github.com/yuki-kimoto/en_deeplearning/blob/master/examples/network_lib/SPVM/MyAIUtil/FloatMatrix.spvm">MyAIUtil::FloatMatrix</a></li>
+</ul>
 
-<a href="https://github.com/yuki-kimoto/perlzemideeplearning/tree/master/examples"> Deep learning acceleration sample using SPVM</a> <b> deep_learning_spvm.pl </b> >.
+<h4>A Perl Program using SPVM partially version 2 - MNIST</h4>
 
-<h4> Accelerating deep learning using SPVM-Part 2 Full-scale SPVM conversion </h4>
+The above program is rewritten using SPVM partially. Performance is even better.
 
-In addition, it was rewritten to SPVM in earnest. Performance is even better.
+<ul>
+  <li><a href="https://github.com/yuki-kimoto/en_deeplearning/blob/master/examples/deep_learning_spvm2.pl">deep_learning_spvm2.pl</a></li>
+  <li><a href="https://github.com/yuki-kimoto/en_deeplearning/blob/master/examples/network_lib/SPVM/MyAIUtil.spvm">MyAIUtil</a></li>
+  <li><a href="https://github.com/yuki-kimoto/en_deeplearning/blob/master/examples/network_lib/SPVM/MyAIUtil/FloatMatrix.spvm">MyAIUtil::FloatMatrix</a></li>
+</ul>
 
-<a href="https://github.com/yuki-kimoto/perlzemideeplearning/tree/master/examples"> Samples for speeding up deep learning using SPVM</a> <b> deep_learning_spvm2.pl </b> >.
+<h4>SPVM program - MNIST</h4>
+
+The above program is rewritten using full SPVM with <a href="https://metacpan.org/pod/SPVM::R">R</a> class to manipulate n-dimentional array. Performance has improved and an executable file can be generated.
+
+<ul>
+  <li><a href="https://github.com/yuki-kimoto/en_deeplearning/blob/master/examples/my_minist_app.spvm">my_minist_app.spvm</a></li>
+  <li><a href="https://github.com/yuki-kimoto/en_deeplearning/blob/master/examples/my_minist_app.config">my_minist_app.config</a></li>
+  <li><a href="https://github.com/yuki-kimoto/en_deeplearning/blob/master/examples/network_lib/SPVM/MyAIUtil2.spvm">MyAIUtil2.spvm</a></li>
+</ul>
+
+Install dependent modules.
+
+<pre>
+cpanm SPVM
+cpanm SPVM::Errno
+cpanm SPVM::File::Basename
+cpanm SPVM::File::Spec
+cpanm SPVM::FindBin
+cpanm SPVM::Math
+cpanm SPVM::Regex
+cpanm SPVM::Sys
+cpanm SPVM::Time::Local
+cpanm SPVM::Time::Piece
+cpanm SPVM::IO
+cpanm SPVM::R
+</pre>
+
+Execute an SPVM program.
+
+<pre>
+spvm -I network_lib/SPVM my_minist_app.spvm
+</pre>
+
+Generate an executable file and execute it.
+
+<pre>
+spvmcc -I network_lib/SPVM -o my_minist_app my_minist_app.spvm
+
+./my_minist_app
+</pre>
