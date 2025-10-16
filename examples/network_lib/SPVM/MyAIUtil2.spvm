@@ -154,8 +154,8 @@ class MyAIUtil2 {
       
       # Set conversion function information
       my $m_to_n_func_info = Hash->new({});
-      $m_to_n_func_info->set_int(inputs_length => $inputs_length);
-      $m_to_n_func_info->set_int(outputs_length => $outputs_length);
+      $m_to_n_func_info->set(inputs_length => $inputs_length);
+      $m_to_n_func_info->set(outputs_length => $outputs_length);
       $m_to_n_func_info->set(biases => $biases);
       $m_to_n_func_info->set(weights_mat => $weights_mat);
       
